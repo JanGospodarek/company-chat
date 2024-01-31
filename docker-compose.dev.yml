@@ -3,11 +3,13 @@ version: '3.1'
 services: 
   frontend:
     container_name: frontend
-    build: ./frontend
+    build: {
+      context: ./frontend,
+      dockerfile: Dockerfile.dev
+    }
 
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
+      - ./frontend/:/app/
     
     networks:
       - proxy
@@ -19,11 +21,13 @@ services:
 
   backend:
     container_name: backend
-    build: ./backend
+    build: {
+      context: ./backend,
+      dockerfile: Dockerfile.dev
+    }
 
     volumes:
       - ./backend/:/app/
-      - ./backend/src:/app/src
     
     networks:
       - proxy

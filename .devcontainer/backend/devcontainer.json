@@ -1,0 +1,10 @@
+{
+    "name": "Miau - Backend",
+
+    "dockerComposeFile": "../../docker-compose.dev.yml",
+    "service": "backend",
+    "workspaceFolder": "/app",
+
+    "runServices": ["frontend", "backend", "web", "db"],
+    "shutdownAction": "none"
+}
