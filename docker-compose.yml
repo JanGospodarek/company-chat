@@ -1,0 +1,86 @@
+version: '3.1'
+
+services: 
+  frontend:
+    container_name: frontend
+    build: ./frontend
+
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    
+    networks:
+      - proxy
+
+    restart: always
+
+  backend:
+    container_name: backend
+    build: ./backend
+
+    volumes:
+      - ./backend/:/app/
+      - ./backend/src:/app/src
+    
+    networks:
+      - proxy
+      - backend
+
+    depends_on:
+      - db
+
+    restart: always
+
+  web:
+    container_name: web
+    build: ./web
+    
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - ./web/conf:/etc/nginx/conf.d
+    
+    networks:
+      - proxy
+    
+    depends_on:
+      - frontend
+      - backend
+
+  db: 
+    container_name: db
+    build: ./db
+
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+
+    networks:
+      - backend
+
+    restart: always
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+
+    networks:
+      - proxy
+      - backend
+
+    depends_on:
+      - db
+
+    restart: always
+
+
+networks:
+  proxy:
+    driver: bridge
+  backend:
+    internal: true    
