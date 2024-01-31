@@ -1,9 +1,11 @@
-import Image from "next/image";
+import { Card, CardHeader } from "@nextui-org/card";
 
 export default function Home() {
   return (
     <main>
-      super jest
+      <Card className="w-48" isPressable>
+        <CardHeader>Card Header</CardHeader>
+      </Card>
     </main>
   );
 }
