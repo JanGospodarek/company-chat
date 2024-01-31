@@ -9,7 +9,7 @@ services:
     }
 
     volumes:
-      - ./frontend/:/app/
+      - ./:/app
     
     networks:
       - proxy
@@ -27,7 +27,7 @@ services:
     }
 
     volumes:
-      - ./backend/:/app/
+      - ./:/app
     
     networks:
       - proxy
@@ -86,7 +86,6 @@ services:
       - db
 
     restart: always
-
 
 networks:
   proxy:

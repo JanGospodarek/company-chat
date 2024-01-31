@@ -1,12 +1,14 @@
 FROM oven/bun:debian
 
-WORKDIR /app
+COPY . /app/backend
+WORKDIR /app/backend
 
-COPY package.json bun.lockb ./
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN bun install --frozen-lockfile
-
-COPY src ./src
-COPY tsconfig.json .
+RUN curl -s https://raw.githubusercontent.com/dkomeza/tiny-git-helper/main/scripts/install.sh | sh
+RUN cd /app/backend
 
 CMD ["bun", "dev"]

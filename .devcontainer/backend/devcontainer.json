@@ -3,8 +3,20 @@
 
     "dockerComposeFile": "../../docker-compose.dev.yml",
     "service": "backend",
-    "workspaceFolder": "/app",
+    "workspaceFolder": "/app/backend",
 
     "runServices": ["frontend", "backend", "web", "db"],
-    "shutdownAction": "none"
+    "shutdownAction": "none",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "usernamehw.errorlens",
+                "yoavbls.pretty-ts-errors"
+            ]
+        }
+    }
 }
