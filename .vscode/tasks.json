@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Container Logs",
+            "command": "./scripts/log.sh",
+            "args": [
+                "${input:container}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "Container Shell",
+            "command": "./scripts/shell.sh",
+            "args": [
+                "${input:container}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "container",
+            "description": "Select a container",
+            "options": [
+                "frontend",
+                "backend",
+                "web"
+            ],
+            "default": "frontend"
+        }
+    ]
+}
