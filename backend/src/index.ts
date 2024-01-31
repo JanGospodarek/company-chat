@@ -1,11 +1,15 @@
 import express from "express";
+import { Server } from "socket.io";
 
 const app = express();
+const server = app.listen(5000);
+const io = new Server(server);
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  console.log("Hello World!");
+  res.send("Hello World! asdfa");
 });
 
-app.listen(5000, () => {
-  console.log("Server listening on port 5000");
+app.get("/test", (req, res) => {
+  res.send("test");
 });

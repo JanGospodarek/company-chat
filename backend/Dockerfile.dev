@@ -3,6 +3,7 @@ FROM oven/bun:debian
 COPY . /app/backend
 WORKDIR /app/backend
 
+
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -11,4 +12,4 @@ RUN apt-get update && apt-get install -y \
 RUN curl -s https://raw.githubusercontent.com/dkomeza/tiny-git-helper/main/scripts/install.sh | sh
 RUN cd /app/backend
 
-CMD ["bun", "dev"]
+CMD ["bun","dev"]
