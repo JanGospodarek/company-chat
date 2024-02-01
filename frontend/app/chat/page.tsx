@@ -1,4 +1,5 @@
 import LeftNavbar from "@/components/chat/LeftNavbar";
+import Conversation from "@/components/chat/conversation/Conversation";
 import ChatsList from "@/components/chat/messages-tab/MessagesTab";
 
 const ChatPage = () => {
@@ -7,6 +8,7 @@ const ChatPage = () => {
       <div className="rounded-[50px]  bg-white w-[80%] h-[80%] flex">
         <LeftNavbar />
         <ChatsList />
+        <Conversation />
       </div>
     </div>
   );
