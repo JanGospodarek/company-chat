@@ -8,6 +8,8 @@ The users table contains the information about the users of the application. It 
 | ---------- | -------- | --------------------- | --------------- | ------------------------------------------------- |
 | id         | integer  | not null, primary key | autoincrement() | The unique identifier of the user.                |
 | username   | string   | not null, unique      |                 | The username of the user.                         |
+| name       | string   | not null              |                 | The name of the user.                             |
+| surname    | string   | not null              |                 | The surname of the user.                          |
 | password   | string   | not null              |                 | The password of the user. (hashed)                |
 | created_at | datetime | not null              | now()           | The date and time when the user was created.      |
 | updated_at | datetime | not null              | now()           | The date and time when the user was last updated. |
@@ -25,23 +27,23 @@ The users table contains the information about the users of the application. It 
 ### Get all users
 
 ```sql
-SELECT id, username, updated_at FROM users;
+SELECT id, username, name, surname, updated_at FROM users;
 ```
 
 ### Get a user by id
 
 ```sql
-SELECT id, username, updated_at FROM users WHERE id = ?;
+SELECT id, username, name, surname, updated_at FROM users WHERE id = ?;
 ```
 
 ### Get a user by username
 
 ```sql
-SELECT id, username, updated_at FROM users WHERE username = ?;
+SELECT id, username, name, surname, updated_at FROM users WHERE username = ?;
 ```
 
 ### Create a user
 
 ```sql
-INSERT INTO users (username, password) VALUES (?, ?);
+INSERT INTO users (username, password, name, username) VALUES (?, ?, ?, ?);
 ```
