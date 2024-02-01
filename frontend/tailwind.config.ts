@@ -32,6 +32,9 @@ const config: Config = {
             secondary: {
               DEFAULT: "#E5E2F7",
             },
+            background: {
+              DEFAULT: "#FFFFFF",
+            },
           },
         },
       },
