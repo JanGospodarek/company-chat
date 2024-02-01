@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;600&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -26,6 +28,21 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+/* .page {
+  font-family: "League Spartan", sans-serif;
+  color: hsl(
+    var(--nextui-foreground) /
+      var(--nextui-foreground-opacity, var(--tw-text-opacity))
+  );
+  background-color: hsl(
+    var(--nextui-background) /
+      var(--nextui-background-opacity, var(--tw-bg-opacity))
+  );
+} */
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;

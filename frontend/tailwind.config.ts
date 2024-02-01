@@ -15,6 +15,9 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      fontFamily: {
+        league: ["League Spartan", "sans-serif"],
+      },
     },
   },
   darkMode: "class",
@@ -27,13 +30,16 @@ const config: Config = {
           colors: {
             primary: {
               DEFAULT: "#8980BD",
-              foreground: "#000000",
+              foreground: "#252525",
             },
             secondary: {
               DEFAULT: "#E5E2F7",
             },
             background: {
               DEFAULT: "#FFFFFF",
+            },
+            text: {
+              DEFAULT: "#252525",
             },
           },
         },

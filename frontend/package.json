@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
+    "@phosphor-icons/react": "^2.0.15",
+    "crypto-js": "^4.2.0",
     "framer-motion": "^11.0.3",
     "next": "14.1.0",
     "next-auth": "^4.24.5",

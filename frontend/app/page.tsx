@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function Home() {
   const [logged, setLogged] = useState(false);
   return (
-    <main className="flex flex-col justify-center items-center gap-4 h-[100vh] w-[100vw] light text-foreground bg-background">
+    <main className="flex flex-col justify-center items-center gap-4 h-[100vh] w-[100vw] light text-foreground bg-background font-league">
       <div className="text-5xl  font-semibold">Team chat</div>
       {logged ? (
         <>

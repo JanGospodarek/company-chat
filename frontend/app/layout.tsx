@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
+    <html className="font-league">
       <body className={inter.className}>{children}</body>
     </html>
   );
