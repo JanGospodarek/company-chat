@@ -25,9 +25,14 @@ const Conversation = (props: Props) => {
         </Badge>
         <div className="flex flex-col ml-2 justify-center w-full">
           <div className="text-xl font-semibold">Mateusz Kowalski</div>
-          <p className="font-light text-sm text-primary ">
+          <button
+            className="font-light text-sm text-primary underline text-left"
+            onClick={() => {
+              navigator.clipboard.writeText("mateusz@kowalski.co.pl");
+            }}
+          >
             mateusz@kowalski.co.pl
-          </p>
+          </button>
         </div>
       </div>
       <div className="flex flex-col mt-6 w-full h-full">
