@@ -35,7 +35,7 @@ const Conversation = (props: Props) => {
           </button>
         </div>
       </div>
-      <div className="flex flex-col mt-6 w-full h-full">
+      <div className="flex flex-col mt-6 w-full h-full gap-4">
         <Message isMine={false} />
         <Message isMine />
       </div>
