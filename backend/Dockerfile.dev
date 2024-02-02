@@ -1,15 +1,22 @@
 FROM oven/bun:debian
 
-COPY . /app/backend
-WORKDIR /app/backend
+WORKDIR /app
 
+COPY package.json ./
+
+RUN bun install
+
+COPY src ./src
+COPY prisma ./prisma
+COPY tsconfig.json .
+COPY .env .
 
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -s https://raw.githubusercontent.com/dkomeza/tiny-git-helper/main/scripts/install.sh | sh
-RUN cd /app/backend
+RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - &&\
+    apt-get install -y nodejs
 
 CMD ["bun","dev"]
