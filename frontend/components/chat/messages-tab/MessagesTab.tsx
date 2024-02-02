@@ -1,5 +1,5 @@
 "use client";
-import { MagnifyingGlass, UserPlus } from "@phosphor-icons/react";
+import { MagnifyingGlass, UserPlus, XCircle } from "@phosphor-icons/react";
 import ActiveUsers from "./ActiveUsers";
 import ChatsList from "./ChatsList";
 import { useState } from "react";
@@ -34,7 +34,11 @@ const MessagesTab = (props: Props) => {
               setShowSearchTab((state) => !state);
             }}
           >
-            <MagnifyingGlass size={24} />
+            {showSearchTab ? (
+              <XCircle size={24} />
+            ) : (
+              <MagnifyingGlass size={24} />
+            )}
           </button>
         </div>
         <div

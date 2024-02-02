@@ -56,9 +56,15 @@ body {
 .animate-open-search {
   animation: extendWithFromRight 0.3s ease-out forwards;
 }
+.animate-close-search {
+  animation: extendWithFromRight 0.3s ease-out forwards reverse;
+}
 
 .animate-open-search-results {
   animation: extendHeightFromTop 0.4s ease-out 0.3s forwards;
+}
+.animate-close-search-results {
+  animation: extendHeightFromTop 0.4s ease-out 0.3s forwards reverse;
 }
 @keyframes extendWithFromRight {
   0% {
