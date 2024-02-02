@@ -1,35 +1,31 @@
 import express from "express";
 import { Server } from "socket.io";
-import { config } from "dotenv";
-import { PrismaClient } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import cookieParser from "cookie-parser";
+import passport from "passport";
 
-// Prisma client
-const prisma = new PrismaClient();
+import { authRouter } from "./routes";
+import prisma from "./config/db";
 
-// Load environment variables
-config();
+const test = process.env.NODE_ENV === "test";
+const port = test ? 5138 : process.env.PORT || 5000;
 
 const app = express();
-const server = app.listen(5000);
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
+app.use(cookieParser());
+
+// Routes
+app.use("/auth", authRouter);
+
+const server = app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
 const io = new Server(server);
 
-app.get("/", async (req, res) => {
+app.get("/status", async (req, res) => {
   const users = await prisma.users.findMany();
-  try {
-    await prisma.users.create({
-      data: {
-        username: "test",
-        password: "test",
-      },
-    });
-  } catch (e) {
-    if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
-      console.log("Username already exists");
-    }
-  }
-
-  console.log(users);
-
-  res.send("Hello World! superasdf");
+  res.send({ status: "ok", users });
 });
