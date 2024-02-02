@@ -3,11 +3,26 @@ import { MagnifyingGlass, UserPlus } from "@phosphor-icons/react";
 import ActiveUsers from "./ActiveUsers";
 import ChatsList from "./ChatsList";
 import { useState } from "react";
+import { type handleMobileTabChange } from "../types";
+type Props = {
+  handleTabChange: handleMobileTabChange;
+};
 
-const MessagesTab = () => {
+const MessagesTab = (props: Props) => {
+  const { handleTabChange } = props;
   const [showSearchTab, setShowSearchTab] = useState(false);
+  const handleChatSelect = () => {
+    if (window.innerWidth < 768) {
+      // Open chat tab and fetch chat info
+      handleTabChange("conversation");
+      console.log("small");
+    } else {
+      console.log("big");
+      // fetch chat info directly
+    }
+  };
   return (
-    <div className="my-4 px-8 w-[350px] flex flex-col justify-start border-r-2 border-secondary ">
+    <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[350px] flex flex-col justify-start md:border-r-2 border-secondary ">
       <div className=" flex justify-between relative">
         <p className=" text-3xl font-semibold">Messages</p>
         <div className="flex gap-3">
@@ -41,7 +56,7 @@ const MessagesTab = () => {
           }`}
         ></div>
         <ActiveUsers />
-        <ChatsList />
+        <ChatsList handleChatSelect={handleChatSelect} />
       </div>
     </div>
   );

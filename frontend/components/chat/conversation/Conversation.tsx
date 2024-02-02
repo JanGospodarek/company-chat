@@ -1,11 +1,21 @@
 import { Avatar, Badge } from "@nextui-org/react";
 import Message from "./Message";
 import TypeBar from "./TypeBar";
+import { type handleMobileTabChange } from "../types";
+import { ArrowCircleLeft } from "@phosphor-icons/react";
+type Props = {
+  handleTabChange: handleMobileTabChange;
+};
 
-const Conversation = () => {
+const Conversation = (props: Props) => {
+  const { handleTabChange } = props;
   return (
     <div className="flex flex-col  m-4 flex-1">
-      <div className="flex">
+      <div className="flex items-center gap-4">
+        <button onClick={() => handleTabChange("messages")}>
+          <ArrowCircleLeft size={48} className="md:hidden fill-primary" />
+        </button>
+
         <Badge content="" color="success" shape="circle" className="mt-1">
           <Avatar
             radius="full"

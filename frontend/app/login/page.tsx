@@ -1,7 +1,7 @@
 "use client";
 import { Input, Button } from "@nextui-org/react";
 
-import CryptoJS from "crypto-js";
+// import CryptoJS from "crypto-js";
 
 import { useRef } from "react";
 export default function Page() {
@@ -10,15 +10,15 @@ export default function Page() {
   const handleLogin = async () => {
     if (email.current && password.current) {
       try {
-        const res = await fetch("http://localhost:5000/login", {
-          method: "POST",
-          body: JSON.stringify({
-            email: email.current.value,
-            password: password.current.value,
-          }),
-        });
-        const data = await res.json();
-        console.log(data);
+        // const res = await fetch("http://localhost:5000/login", {
+        //   method: "POST",
+        //   body: JSON.stringify({
+        //     email: email.current.value,
+        //     password: password.current.value,
+        //   }),
+        // });
+        // const data = await res.json();
+        // console.log(data);
       } catch (error) {}
     }
   };
