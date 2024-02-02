@@ -6,10 +6,11 @@ import { useState } from "react";
 import { type handleMobileTabChange } from "../types";
 type Props = {
   handleTabChange: handleMobileTabChange;
+  handleShowGroupModal: () => void;
 };
 
 const MessagesTab = (props: Props) => {
-  const { handleTabChange } = props;
+  const { handleTabChange, handleShowGroupModal } = props;
   const [showSearchTab, setShowSearchTab] = useState(false);
   const handleChatSelect = () => {
     if (window.innerWidth < 768) {
@@ -26,7 +27,7 @@ const MessagesTab = (props: Props) => {
       <div className=" flex justify-between relative">
         <p className=" text-3xl font-semibold">Messages</p>
         <div className="flex gap-3">
-          <button>
+          <button onClick={handleShowGroupModal}>
             <UserPlus size={24} />
           </button>
           <button
