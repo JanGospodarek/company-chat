@@ -18,13 +18,7 @@ services:
 
   backend:
     container_name: backend
-    build: { context: ./backend, dockerfile: Dockerfile.dev }
-
-    ports:
-      - "5555:5555" # for prisma studio
-
-    volumes:
-      - ./backend:/app
+    build: { context: ./backend, dockerfile: Dockerfile.test }
 
     networks:
       - proxy
@@ -58,9 +52,6 @@ services:
   db:
     container_name: db
     build: ./db
-
-    volumes:
-      - ./db/data:/var/lib/postgresql/data
 
     networks:
       - backend
