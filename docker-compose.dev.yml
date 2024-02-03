@@ -1,16 +1,13 @@
-version: '3.1'
+version: "3.1"
 
-services: 
+services:
   frontend:
     container_name: frontend
-    build: {
-      context: ./frontend,
-      dockerfile: Dockerfile.dev
-    }
+    build: { context: ./frontend, dockerfile: Dockerfile.dev }
 
     volumes:
-      - ./:/app
-    
+      - ./frontend:/app
+
     networks:
       - proxy
 
@@ -21,14 +18,14 @@ services:
 
   backend:
     container_name: backend
-    build: {
-      context: ./backend,
-      dockerfile: Dockerfile.dev
-    }
+    build: { context: ./backend, dockerfile: Dockerfile.dev }
+
+    ports:
+      - "5555:5555" # for prisma studio
 
     volumes:
-      - ./:/app
-    
+      - ./backend:/app
+
     networks:
       - proxy
       - backend
@@ -41,14 +38,14 @@ services:
   web:
     container_name: web
     build: ./web
-    
+
     ports:
       - "80:80"
       - "443:443"
 
     volumes:
       - ./web/conf:/etc/nginx/conf.d
-    
+
     networks:
       - proxy
 
@@ -58,7 +55,7 @@ services:
 
     restart: always
 
-  db: 
+  db:
     container_name: db
     build: ./db
 
@@ -91,4 +88,4 @@ networks:
   proxy:
     driver: bridge
   backend:
-    internal: true    
+    internal: true
