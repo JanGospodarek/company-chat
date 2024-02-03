@@ -48,6 +48,40 @@ describe("signup", () => {
     expect(res.status).toBe(400);
     expect(data.error).toBe("Missing fields");
   });
+
+  test("User cannot signup with existing username", async () => {
+    await databaseCleanup();
+
+    const username = "test";
+    const password = "test";
+    const name = "test";
+    const surname = "test";
+
+    const resSignup = await fetch("http://localhost:5138/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password, name, surname }),
+    });
+
+    if (resSignup.status !== 200) {
+      throw new Error("Error signing up");
+    }
+
+    const res = await fetch("http://localhost:5138/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password, name, surname }),
+    });
+
+    const data: { error: string } = (await res.json()) as any;
+
+    expect(res.status).toBe(400);
+    expect(data.error).toBe("Username already exists");
+  });
 });
 
 describe("login", () => {

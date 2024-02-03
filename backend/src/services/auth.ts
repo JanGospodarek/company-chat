@@ -77,7 +77,7 @@ const register = async (
   const user = await getUserByUsername(username);
 
   if (user) {
-    throw new Error("User already exists");
+    throw new Error("Username already exists");
   }
 
   const hashedPassword = bcrypt.hashSync(password, 10);
