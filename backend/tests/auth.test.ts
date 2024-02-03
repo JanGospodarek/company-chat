@@ -154,6 +154,68 @@ describe("login", () => {
     const data = await res.json();
     expect(res.status).toBe(200);
   });
+
+  test("User cannot login with invalid password", async () => {
+    const username = "test";
+    const password = "Password1234";
+    const name = "test";
+    const surname = "test";
+    const resSignup = await fetch("http://localhost:5138/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password, name, surname }),
+    });
+    if (resSignup.status !== 200) {
+      throw new Error("Error signing up");
+    }
+    const res = await fetch("http://localhost:5138/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password: "password" }),
+    });
+
+    if (res.status !== 200) {
+      const data = (await res.json()) as { error: string };
+      expect(data.error).toBe("Wrong username or password");
+    }
+
+    expect(res.status).toBe(401);
+  });
+
+  test("User cannot login with invalid username", async () => {
+    const username = "test";
+    const password = "Password1234";
+    const name = "test";
+    const surname = "test";
+    const resSignup = await fetch("http://localhost:5138/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password, name, surname }),
+    });
+    if (resSignup.status !== 200) {
+      throw new Error("Error signing up");
+    }
+    const res = await fetch("http://localhost:5138/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: "test2", password }),
+    });
+
+    if (res.status !== 200) {
+      const data = (await res.json()) as { error: string };
+      expect(data.error).toBe("Wrong username or password");
+    }
+
+    expect(res.status).toBe(401);
+  });
 });
 
 describe("auth", () => {});

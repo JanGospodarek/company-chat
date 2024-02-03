@@ -41,13 +41,13 @@ const login = async (
   const user = await getUserByUsername(username);
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("Wrong username or password");
   }
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);
 
   if (!isPasswordValid) {
-    throw new Error("Invalid password");
+    throw new Error("Wrong username or password");
   }
 
   const payload = {
