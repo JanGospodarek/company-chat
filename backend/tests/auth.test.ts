@@ -27,6 +27,27 @@ describe("signup", () => {
 
     expect(res.status).toBe(200);
   });
+
+  test("User cannot signup with missing fields", async () => {
+    await databaseCleanup();
+
+    const username = "test";
+    const password = "test";
+    const name = "test";
+
+    const res = await fetch("http://localhost:5138/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password, name }),
+    });
+
+    const data: { error: string } = (await res.json()) as any;
+
+    expect(res.status).toBe(400);
+    expect(data.error).toBe("Missing fields");
+  });
 });
 
 describe("login", () => {
