@@ -1,5 +1,5 @@
 import express from "express";
-import { login, register } from "../services/auth";
+import { login, register, validatePassword } from "../services/auth";
 
 const authRouter = express.Router();
 
@@ -36,6 +36,8 @@ authRouter.post("/register", async (req, res) => {
   }
 
   try {
+    validatePassword(password, username);
+
     await register(username, password, name, surname);
 
     const token = await login(username, password, mobile);

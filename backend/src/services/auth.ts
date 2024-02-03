@@ -89,4 +89,20 @@ const register = async (
   }
 };
 
-export { authenticate, login, register };
+const validatePassword = (password: string, username: string) => {
+  // Password must be at least 8 characters long and contain at least one letter and one number and one uppercase letter
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/gm;
+
+  if (!regex.test(password)) {
+    throw new Error(
+      "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number"
+    );
+  }
+
+  // Password cannot contain the username
+  if (password.includes(username)) {
+    throw new Error("Password cannot contain the username");
+  }
+};
+
+export { authenticate, login, register, validatePassword };
