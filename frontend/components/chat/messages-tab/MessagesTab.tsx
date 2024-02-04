@@ -16,9 +16,7 @@ const MessagesTab = (props: Props) => {
     if (window.innerWidth < 768) {
       // Open chat tab and fetch chat info
       handleTabChange("conversation");
-      console.log("small");
     } else {
-      console.log("big");
       // fetch chat info directly
     }
   };
