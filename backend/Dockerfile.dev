@@ -9,7 +9,7 @@ RUN bun install
 COPY src ./src
 COPY prisma ./prisma
 COPY tsconfig.json .
-COPY .env .
+COPY .env.development .
 
 RUN apt-get update && apt-get install -y \
     git \
