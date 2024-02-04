@@ -1,6 +1,6 @@
 "use client";
 
-import LeftNavbar from "@/components/chat/LeftNavbar";
+import LeftNavbar from "@/components/chat/navbar/LeftNavbar";
 import Conversation from "@/components/chat/conversation/Conversation";
 import GroupModal from "@/components/chat/messages-tab/GroupModal/GroupModal";
 import MessagesTab from "@/components/chat/messages-tab/MessagesTab";

@@ -4,6 +4,8 @@ import ActiveUsers from "./ActiveUsers";
 import ChatsList from "./ChatsList";
 import { useState } from "react";
 import { type handleMobileTabChange } from "../types";
+import UserActionsDropdown from "../navbar/UserActionsDropdown";
+import { Avatar } from "@nextui-org/react";
 type Props = {
   handleTabChange: handleMobileTabChange;
   handleShowGroupModal: () => void;
@@ -24,7 +26,15 @@ const MessagesTab = (props: Props) => {
     <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[350px] flex flex-col justify-start md:border-r-2 border-secondary ">
       <div className=" flex justify-between relative">
         <p className=" text-3xl font-semibold">Messages</p>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <UserActionsDropdown
+            triggerElement={
+              <Avatar
+                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                size="sm"
+              />
+            }
+          />
           <button onClick={handleShowGroupModal}>
             <UserPlus size={24} />
           </button>
