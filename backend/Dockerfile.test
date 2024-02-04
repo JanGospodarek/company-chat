@@ -9,7 +9,7 @@ RUN bun install
 COPY src ./src
 COPY prisma ./prisma
 COPY tsconfig.json .
-COPY .env.development .
+COPY .env.test .
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -22,4 +22,4 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - &&\
 RUN npm install -g prisma
 RUN prisma generate
 
-CMD ["bun","dev"]
+CMD ["bun","test"]
