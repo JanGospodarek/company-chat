@@ -10,8 +10,6 @@ export const registerUser = async (
     data: {
       username,
       password,
-      name,
-      surname,
     },
   });
   return user;
