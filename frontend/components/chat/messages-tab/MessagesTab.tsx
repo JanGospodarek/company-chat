@@ -27,14 +27,17 @@ const MessagesTab = (props: Props) => {
       <div className=" flex justify-between relative">
         <p className=" text-3xl font-semibold">Messages</p>
         <div className="flex gap-3 items-center">
-          <UserActionsDropdown
-            triggerElement={
-              <Avatar
-                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                size="sm"
-              />
-            }
-          />
+          <div className="md:hidden">
+            <UserActionsDropdown
+              triggerElement={
+                <Avatar
+                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                  size="sm"
+                />
+              }
+            />
+          </div>
+
           <button onClick={handleShowGroupModal}>
             <UserPlus size={24} />
           </button>
@@ -51,20 +54,20 @@ const MessagesTab = (props: Props) => {
           </button>
         </div>
         <div
-          className={`absolute bg-slate-200 w-0 h-8 top-0 right-[28px] rounded-xl flex justify-center items-center ${
+          className={`absolute bg-secondary w-0 h-8 top-0 right-[28px] rounded-xl flex justify-center items-center ${
             showSearchTab && "animate-open-search"
           }`}
         >
           <input
             type="text"
             placeholder="Search user"
-            className="bg-slate-200 w-full text-sm mx-2"
+            className="bg-secondary w-full text-sm mx-2"
           />
         </div>
       </div>
       <div className="flex flex-col relative flex-1">
         <div
-          className={`w-full  rounded-[30px] bg-slate-100 absolute top-0 left-0 z-20 shadow-xl ${
+          className={`w-full  rounded-[30px] bg-secondary absolute top-0 left-0 z-20 shadow-xl ${
             showSearchTab && "animate-open-search-results"
           }`}
         ></div>

@@ -4,8 +4,8 @@ const ActiveUsers = () => {
   return (
     <div className="flex flex-col w-full mt-6">
       <div className="flex justify-between mb-2">
-        <p className="text-sm font-semibold ">Active Users</p>
-        <button className="text-sm font-semibold "> See All</button>
+        <p className="text-sm font-semibold text-primary">Active Users</p>
+        {/* <button className="text-sm font-semibold "> See All</button> */}
       </div>
       <div className="flex gap-3 overflow-x-scroll hide-scrollbar">
         <Badge content="" color="success" shape="circle" className="mt-1">
