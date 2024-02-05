@@ -17,8 +17,8 @@ const encryptData = (data: any) => {
   // Encrypt the data before sending it to the client
   const encrypt = new JSEncrypt();
   encrypt.setPublicKey(process.env.RSA_PUBLIC_KEY as string);
-
   const encrypted = encrypt.encrypt(JSON.stringify(data)).toString();
+
   return { data: encrypted };
 };
 export { decryptData, encryptData };

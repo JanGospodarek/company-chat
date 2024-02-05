@@ -1,6 +1,7 @@
 import { expect, test, describe, afterEach } from "bun:test";
 import "../src/index";
 import prisma from "../src/config/db";
+import { decryptData, encryptData } from "./utils";
 
 async function databaseCleanup() {
   await prisma.users.deleteMany();
@@ -22,13 +23,14 @@ describe("signup", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
 
     if (res.status !== 200) {
-      const data = (await res.json()) as { error: string };
-
-      console.error(data.error);
+      const resData = (await res.json()) as { data: { error: string } };
+      console.error(resData.data.error);
     }
 
     expect(res.status).toBe(200);
@@ -44,13 +46,14 @@ describe("signup", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name }),
+      }),
     });
 
-    const data: { error: string } = (await res.json()) as any;
-
+    const resData = (await res.json()) as { error: string };
     expect(res.status).toBe(400);
-    expect(data.error).toBe("Missing fields");
+    expect(resData.error).toBe("Missing fields");
   });
 
   test("User cannot signup with existing username", async () => {
@@ -64,7 +67,9 @@ describe("signup", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
 
     if (resSignup.status !== 200) {
@@ -76,13 +81,14 @@ describe("signup", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
 
-    const data: { error: string } = (await res.json()) as any;
-
+    const data: { data: { error: string } } = (await res.json()) as any;
     expect(res.status).toBe(400);
-    expect(data.error).toBe("Username already exists");
+    expect(data.data.error).toBe("Username already exists");
   });
 
   test("User cannot signup with invalid password", async () => {
@@ -96,13 +102,14 @@ describe("signup", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
 
-    const data: { error: string } = (await res.json()) as any;
-
+    const data: { data: { error: string } } = (await res.json()) as any;
     expect(res.status).toBe(400);
-    expect(data.error).toBe(
+    expect(data.data.error).toBe(
       "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number"
     );
   });
@@ -118,13 +125,14 @@ describe("signup", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
 
-    const data: { error: string } = (await res.json()) as any;
-
+    const data: { data: { error: string } } = (await res.json()) as any;
     expect(res.status).toBe(400);
-    expect(data.error).toBe("Password cannot contain the username");
+    expect(data.data.error).toBe("Password cannot contain the username");
   });
 });
 
@@ -139,7 +147,9 @@ describe("login", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
     if (resSignup.status !== 200) {
       throw new Error("Error signing up");
@@ -149,9 +159,19 @@ describe("login", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({
+        data: encryptData({ username, password }),
+      }),
     });
-    const data = await res.json();
+    const data: {
+      isEncrypted: boolean;
+      data: any;
+    } = (await res.json()) as any;
+    if (data.isEncrypted) {
+      console.log("DECRYPTED:", decryptData(data.data));
+    } else {
+      console.log(data.data);
+    }
     expect(res.status).toBe(200);
   });
 
@@ -165,7 +185,9 @@ describe("login", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
     if (resSignup.status !== 200) {
       throw new Error("Error signing up");
@@ -175,12 +197,14 @@ describe("login", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password: "password" }),
+      body: JSON.stringify({
+        data: encryptData({ username, password: "password" }),
+      }),
     });
 
     if (res.status !== 200) {
-      const data = (await res.json()) as { error: string };
-      expect(data.error).toBe("Wrong username or password");
+      const data: { data: { error: string } } = (await res.json()) as any;
+      expect(data.data.error).toBe("Wrong username or password");
     }
 
     expect(res.status).toBe(401);
@@ -196,7 +220,9 @@ describe("login", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({
+        data: encryptData({ username, password, name, surname }),
+      }),
     });
     if (resSignup.status !== 200) {
       throw new Error("Error signing up");
@@ -206,12 +232,14 @@ describe("login", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username: "test2", password }),
+      body: JSON.stringify({
+        data: encryptData({ username: "eee", password }),
+      }),
     });
 
     if (res.status !== 200) {
-      const data = (await res.json()) as { error: string };
-      expect(data.error).toBe("Wrong username or password");
+      const data: { data: { error: string } } = (await res.json()) as any;
+      expect(data.data.error).toBe("Wrong username or password");
     }
 
     expect(res.status).toBe(401);

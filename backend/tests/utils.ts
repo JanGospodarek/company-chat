@@ -6,7 +6,7 @@ const encryptData = (data: any) => {
 
   // Encrypting the data before sending it to the server
   let encryptedLoginData = encrypt.encrypt(JSON.stringify(data)).toString();
-  return JSON.stringify(encryptedLoginData);
+  return encryptedLoginData;
 };
 const decryptData = (data: any) => {
   const decrypt = new JSEncrypt();

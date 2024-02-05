@@ -18,8 +18,8 @@ app.use(passport.initialize());
 app.use(cookieParser());
 
 // Routes
+
 app.use("/auth", authRouter);
-app.use("/encrypt-test", decryptData);
 
 const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
@@ -31,7 +31,7 @@ app.get("/status", async (req, res) => {
   res.send({ status: "ok", users });
 });
 
-app.post("/encrypt-test", async (req, res) => {
-  console.log("req.body after mid", req.body);
-  res.send(encryptData(req.body));
-});
+// app.post("/encrypt-test", async (req, res) => {
+//   console.log("req.body after mid", req.body);
+//   res.send(encryptData(req.body));
+// });
