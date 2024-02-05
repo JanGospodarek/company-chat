@@ -1,11 +1,15 @@
 import { Avatar, Badge } from "@nextui-org/react";
-
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import computeFont from "@/components/utils/getComputedFontSize";
 type Props = {
   handleChatSelect: () => void;
 };
 
 const Chat = (props: Props) => {
   const { handleChatSelect } = props;
+  const fontSizeState = useSelector((state: RootState) => state.font.fontSize);
+
   return (
     <button className="w-full flex mt-2" onClick={handleChatSelect}>
       <div>
@@ -19,7 +23,7 @@ const Chat = (props: Props) => {
       </div>
       <div className="flex flex-col ml-2 justify-center w-full">
         <div className="flex justify-between w-full">
-          <div className="text-[15px] font-semibold">Mateusz Kowalski</div>
+          <div className="text-md font-semibold">Mateusz Kowalski</div>
           <div className="font-light text-xs">10:11 01.01.2024</div>
         </div>
         <p className="font-light text-xs text-left">

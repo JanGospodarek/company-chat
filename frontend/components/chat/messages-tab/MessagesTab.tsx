@@ -6,12 +6,17 @@ import { useState } from "react";
 import { type handleMobileTabChange } from "../types";
 import UserActionsDropdown from "../navbar/UserActionsDropdown";
 import { Avatar } from "@nextui-org/react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import computeFont from "@/components/utils/getComputedFontSize";
 type Props = {
   handleTabChange: handleMobileTabChange;
   handleShowGroupModal: () => void;
 };
 
 const MessagesTab = (props: Props) => {
+  const fontSizeState = useSelector((state: RootState) => state.font);
+
   const { handleTabChange, handleShowGroupModal } = props;
   const [showSearchTab, setShowSearchTab] = useState(false);
   const handleChatSelect = () => {
@@ -25,7 +30,11 @@ const MessagesTab = (props: Props) => {
   return (
     <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[350px] flex flex-col justify-start md:border-r-2 border-secondary ">
       <div className=" flex justify-between relative">
-        <p className=" text-3xl font-semibold">Messages</p>
+        <p
+          className={`${computeFont("text-3xl", fontSizeState)} font-semibold`}
+        >
+          Messages
+        </p>
         <div className="flex gap-3 items-center">
           <div className="md:hidden">
             <UserActionsDropdown
@@ -61,7 +70,10 @@ const MessagesTab = (props: Props) => {
           <input
             type="text"
             placeholder="Search user"
-            className="bg-secondary w-full text-sm mx-2"
+            className={`${computeFont(
+              "text-md",
+              fontSizeState
+            )} bg-secondary w-full  mx-2`}
           />
         </div>
       </div>

@@ -1,10 +1,21 @@
 import { Badge, Avatar } from "@nextui-org/react";
-
+import computeFont from "@/components/utils/getComputedFontSize";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 const ActiveUsers = () => {
+  const fontSizeState = useSelector((state: RootState) => state.font);
+
   return (
     <div className="flex flex-col w-full mt-6">
       <div className="flex justify-between mb-2">
-        <p className="text-sm font-semibold text-primary">Active Users</p>
+        <p
+          className={`${computeFont(
+            "text-lg",
+            fontSizeState
+          )} font-semibold text-primary`}
+        >
+          Active Users
+        </p>
         {/* <button className="text-sm font-semibold "> See All</button> */}
       </div>
       <div className="flex gap-3 overflow-x-scroll hide-scrollbar">
