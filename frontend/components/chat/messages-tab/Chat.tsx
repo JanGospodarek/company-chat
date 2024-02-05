@@ -1,15 +1,11 @@
 import { Avatar, Badge } from "@nextui-org/react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
-import computeFont from "@/components/utils/getComputedFontSize";
+
 type Props = {
   handleChatSelect: () => void;
 };
 
 const Chat = (props: Props) => {
   const { handleChatSelect } = props;
-  const fontSizeState = useSelector((state: RootState) => state.font.fontSize);
-
   return (
     <button className="w-full flex mt-2" onClick={handleChatSelect}>
       <div>
