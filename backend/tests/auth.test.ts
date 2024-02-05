@@ -3,7 +3,7 @@ import "../src/index";
 import prisma from "../src/config/db";
 
 async function databaseCleanup() {
-  await prisma.users.deleteMany();
+  await prisma.user.deleteMany();
 }
 
 afterEach(async () => {

@@ -7,42 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model group_chat_members {
-  member_id     Int         @id @default(autoincrement())
-  user_id       Int
-  group_chat_id Int
-  group_chats   group_chats @relation(fields: [group_chat_id], references: [group_chat_id], onDelete: NoAction, onUpdate: NoAction)
-  users         users       @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([user_id, group_chat_id])
+enum ChatType {
+  GROUP
+  PRIVATE
 }
 
-model group_chats {
-  group_chat_id      Int                  @id @default(autoincrement())
-  group_name         String               @db.VarChar(255)
-  group_chat_members group_chat_members[]
-  messages           messages[]
+model User {
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  UserChat  UserChat[]
+  Message   Message[]
 }
 
-model messages {
-  message_id                         Int          @id @default(autoincrement())
-  sender_id                          Int
-  recipient_id                       Int?
-  group_chat_id                      Int?
-  content                            String
-  timestamp                          DateTime?    @default(now()) @db.Timestamptz(6)
-  group_chats                        group_chats? @relation(fields: [group_chat_id], references: [group_chat_id], onDelete: NoAction, onUpdate: NoAction)
-  users_messages_recipient_idTousers users?       @relation("messages_recipient_idTousers", fields: [recipient_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  users_messages_sender_idTousers    users        @relation("messages_sender_idTousers", fields: [sender_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model Chat {
+  chatId    Int        @id @default(autoincrement())
+  name      String
+  createdAt DateTime   @default(now())
+  type      ChatType   @default(PRIVATE)
+  UserChat  UserChat[]
+  Message   Message[]
 }
 
-model users {
-  user_id                               Int                  @id @default(autoincrement())
-  username                              String               @unique @db.VarChar(255)
-  password                              String               @db.VarChar(255)
-  created_at                            DateTime?            @default(now()) @db.Timestamp(6)
-  updated_at                            DateTime?            @default(now()) @db.Timestamp(6)
-  group_chat_members                    group_chat_members[]
-  messages_messages_recipient_idTousers messages[]           @relation("messages_recipient_idTousers")
-  messages_messages_sender_idTousers    messages[]           @relation("messages_sender_idTousers")
+model Message {
+  messageId  Int      @id @default(autoincrement())
+  content    String
+  attachment String?
+  createdAt  DateTime @default(now())
+  chatId     Int
+  chat       Chat     @relation(fields: [chatId], references: [chatId])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model UserChat {
+  userId Int
+  chatId Int
+  User   User @relation(fields: [userId], references: [id])
+  Chat   Chat @relation(fields: [chatId], references: [chatId])
+
+  @@id([userId, chatId])
 }

@@ -27,11 +27,9 @@ const server = app.listen(port, () => {
 const io = new Server(server);
 
 app.get("/status", async (req, res) => {
-  const users = await prisma.users.findMany();
-  res.send({ status: "ok", users });
+  res.send({ status: "ok" });
 });
 
 app.post("/encrypt-test", async (req, res) => {
-  console.log("req.body after mid", req.body);
   res.send(encryptData(req.body));
 });
