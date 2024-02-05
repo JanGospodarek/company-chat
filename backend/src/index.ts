@@ -1,19 +1,37 @@
 import express from "express";
 import { Server } from "socket.io";
-import cors from "cors";
+import cookieParser from "cookie-parser";
+import passport from "passport";
+
+import { authRouter } from "./routes";
+import prisma from "./config/db";
+import { decryptData, encryptData } from "./services/encryption";
+const test = process.env.NODE_ENV === "test";
+const port = test ? 5138 : process.env.PORT || 5000;
+
 const app = express();
-app.use(cors());
-const server = app.listen(5000);
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
+app.use(cookieParser());
+
+// Routes
+app.use("/auth", authRouter);
+app.use("/encrypt-test", decryptData);
+
+const server = app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
 const io = new Server(server);
 
-app.get("/", (req, res) => {
-  console.log("Hello World!");
-  res.send("Hello World! asdfa");
+app.get("/status", async (req, res) => {
+  const users = await prisma.users.findMany();
+  res.send({ status: "ok", users });
 });
 
-app.get("/test", (req, res) => {
-  res.send("test");
-});
-app.post("/login", (req, res) => {
-  res.send("login");
+app.post("/encrypt-test", async (req, res) => {
+  console.log("req.body after mid", req.body);
+  res.send(encryptData(req.body));
 });
