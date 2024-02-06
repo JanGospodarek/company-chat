@@ -21,9 +21,10 @@ const ChatPage = () => {
     if (token && username) {
       dispatch(setUsername(username));
     } else {
-      window.location.href = "/login";
+      window.location.href = "/";
     }
   }, []);
+
   const handleTabChange = (tab: MobileTabs) => setCurrentTabMobile(tab);
   const handleShowModal = () => setShowCreateGroupModal((state) => !state);
 
