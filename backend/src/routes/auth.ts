@@ -37,7 +37,7 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/register", async (req, res) => {
   const { username, password, name, surname } = req.body;
   const mobile = false;
-
+  console.log("REGISTER", { username, password, name, surname });
   if (!username || !password || !name || !surname) {
     return res.status(400).send({ error: "Missing fields" });
   }
