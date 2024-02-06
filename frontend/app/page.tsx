@@ -3,15 +3,21 @@
 import { Button } from "@nextui-org/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUsername } from "@/lib/userSlice";
 export default function Home() {
   const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
     if (token && username) {
       setLogged(true);
-      setUsername(username);
+      setName(username);
+
+      dispatch(setUsername(username));
     }
   }, []);
   return (
@@ -19,7 +25,7 @@ export default function Home() {
       <div className="text-5xl  font-semibold">Team chat</div>
       {logged ? (
         <>
-          <p className="text-slate-400">You are logged in as {username}</p>
+          <p className="text-slate-400">You are logged in as {name}</p>
           <Button color="primary" variant="bordered">
             <Link href="/chat"> Chat app</Link>
           </Button>

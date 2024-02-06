@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import FontReducer from "./fontSlice";
+import UserReducer from "./userSlice";
 export const makeStore = () => {
   return configureStore({
     reducer: {
       font: FontReducer,
+      user: UserReducer,
     },
   });
 };
