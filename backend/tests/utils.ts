@@ -1,4 +1,5 @@
-import JSEncrypt from "node-jsencrypt";
+// @ts-ignore
+import JSEncrypt from "node-jsencrypt"; // @types/node-jsencrypt is not available
 
 const encryptData = (data: any) => {
   const encrypt = new JSEncrypt();
