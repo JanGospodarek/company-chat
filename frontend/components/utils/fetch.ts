@@ -24,7 +24,7 @@ const fetchData = async (
     if (response.status !== 200) {
       return {
         status: "error",
-        data: resData.data ? resData.data : "Error while fetching",
+        ...resData.data,
       };
     }
     if (resData.isEncrypted) return decryptData(resData.data);

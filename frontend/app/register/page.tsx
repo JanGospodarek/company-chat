@@ -4,6 +4,7 @@ import { Input, Button } from "@nextui-org/react";
 import fetchData from "@/components/utils/fetch";
 
 import { useRef, useState } from "react";
+import Alert from "@/components/reuseable/Alert";
 export default function Page() {
   const email = useRef<HTMLInputElement | null>(null);
   const password = useRef<HTMLInputElement | null>(null);
@@ -27,9 +28,10 @@ export default function Page() {
         surname: surname.current.value,
       });
       setLoading(false);
-      if (data.error) setError(data.error);
+      if (data.status && data.status === "error") setError(data.error);
       else {
         // set JWT token
+        setError(false);
         console.log(data);
       }
     }
@@ -67,6 +69,7 @@ export default function Page() {
       <Button color="success" variant="bordered" onClick={handleRegister}>
         {loading ? "Loading..." : "Register"}
       </Button>
+      {error && <Alert message={error} type="error" />}
     </div>
   );
 }
