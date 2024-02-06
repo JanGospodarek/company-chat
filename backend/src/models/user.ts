@@ -1,11 +1,6 @@
 import prisma from "../config/db";
 
-export const registerUser = async (
-  username: string,
-  password: string,
-  name: string,
-  surname: string
-) => {
+export const registerUser = async (username: string, password: string) => {
   const user = await prisma.user.create({
     data: {
       username,

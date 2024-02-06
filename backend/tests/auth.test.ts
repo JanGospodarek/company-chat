@@ -14,15 +14,13 @@ describe("signup", () => {
   test("User can signup", async () => {
     const username = "test";
     const password = "Password1234";
-    const name = "test";
-    const surname = "test";
 
     const res = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
 
     if (res.status !== 200) {
@@ -37,14 +35,13 @@ describe("signup", () => {
   test("User cannot signup with missing fields", async () => {
     const username = "test";
     const password = "Password1234";
-    const name = "test";
 
     const res = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name }),
+      body: JSON.stringify({ username }),
     });
 
     const data: { error: string } = (await res.json()) as any;
@@ -56,15 +53,13 @@ describe("signup", () => {
   test("User cannot signup with existing username", async () => {
     const username = "test";
     const password = "Password1234";
-    const name = "test";
-    const surname = "test";
 
     const resSignup = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
 
     if (resSignup.status !== 200) {
@@ -76,7 +71,7 @@ describe("signup", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data: { error: string } = (await res.json()) as any;
@@ -88,15 +83,13 @@ describe("signup", () => {
   test("User cannot signup with invalid password", async () => {
     const username = "test";
     const password = "password";
-    const name = "test";
-    const surname = "test";
 
     const res = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data: { error: string } = (await res.json()) as any;
@@ -110,15 +103,13 @@ describe("signup", () => {
   test("User cannot signup with password containing username", async () => {
     const username = "test";
     const password = "testPassword1234";
-    const name = "test";
-    const surname = "test";
 
     const res = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data: { error: string } = (await res.json()) as any;
@@ -132,14 +123,12 @@ describe("login", () => {
   test("User can login", async () => {
     const username = "test";
     const password = "Password1234";
-    const name = "test";
-    const surname = "test";
     const resSignup = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
     if (resSignup.status !== 200) {
       throw new Error("Error signing up");
@@ -158,14 +147,13 @@ describe("login", () => {
   test("User cannot login with invalid password", async () => {
     const username = "test";
     const password = "Password1234";
-    const name = "test";
-    const surname = "test";
+
     const resSignup = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
     if (resSignup.status !== 200) {
       throw new Error("Error signing up");
@@ -189,14 +177,12 @@ describe("login", () => {
   test("User cannot login with invalid username", async () => {
     const username = "test";
     const password = "Password1234";
-    const name = "test";
-    const surname = "test";
     const resSignup = await fetch("http://localhost:5138/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password, name, surname }),
+      body: JSON.stringify({ username, password }),
     });
     if (resSignup.status !== 200) {
       throw new Error("Error signing up");

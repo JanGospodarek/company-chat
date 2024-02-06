@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 
-import { authRouter } from "./routes";
+import { authRouter, chatRouter } from "./routes";
 import prisma from "./config/db";
 import { decryptData, encryptData } from "./services/encryption";
 const test = process.env.NODE_ENV === "test";

@@ -28,17 +28,17 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.post("/register", async (req, res) => {
-  const { username, password, name, surname } = req.body;
+  const { username, password } = req.body;
   const mobile = false;
 
-  if (!username || !password || !name || !surname) {
+  if (!username || !password) {
     return res.status(400).send({ error: "Missing fields" });
   }
 
   try {
     validatePassword(password, username);
 
-    await register(username, password, name, surname);
+    await register(username, password);
 
     const token = await login(username, password, mobile);
 

@@ -71,8 +71,6 @@ const login = async (
 const register = async (
   username: string,
   password: string,
-  name: string,
-  surname: string
 ) => {
   const user = await getUserByUsername(username);
 
@@ -83,7 +81,7 @@ const register = async (
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
-    const newUser = await registerUser(username, hashedPassword, name, surname);
+    const newUser = await registerUser(username, hashedPassword);
   } catch (error) {
     throw new Error("Error registering user");
   }
