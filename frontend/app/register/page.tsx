@@ -2,9 +2,9 @@
 
 import { Input, Button } from "@nextui-org/react";
 import fetchData from "@/components/utils/fetch";
-
 import { useRef, useState } from "react";
 import Alert from "@/components/reuseable/Alert";
+import Link from "next/link";
 export default function Page() {
   const email = useRef<HTMLInputElement | null>(null);
   const password = useRef<HTMLInputElement | null>(null);
@@ -12,6 +12,7 @@ export default function Page() {
   const surname = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<false | string>(false);
+  const [succeded, setSucceded] = useState<boolean>(false);
 
   const handleRegister = async () => {
     if (
@@ -32,13 +33,17 @@ export default function Page() {
       else {
         // set JWT token
         setError(false);
-        console.log(data);
+        setSucceded(true);
+        localStorage.clear();
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", email.current.value);
       }
     }
   };
+
   return (
     <div className=" flex flex-col justify-center items-center gap-4 h-[100vh] w-[100vw] light page">
-      <h1>Dummy login</h1>
+      <h1>Dummy register</h1>
 
       <Input
         type="email"
@@ -66,9 +71,18 @@ export default function Page() {
         className="w-1/3"
         ref={password}
       />
-      <Button color="success" variant="bordered" onClick={handleRegister}>
-        {loading ? "Loading..." : "Register"}
-      </Button>
+      {succeded ? (
+        <Button color="success">
+          <Link href="/chat" color="success">
+            Go to chats
+          </Link>
+        </Button>
+      ) : (
+        <Button color="primary" variant="bordered" onClick={handleRegister}>
+          {loading ? "Loading..." : "Register"}
+        </Button>
+      )}
+
       {error && <Alert message={error} type="error" />}
     </div>
   );
