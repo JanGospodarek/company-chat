@@ -19,6 +19,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/auth", authRouter);
+app.use("/chat", chatRouter);
 app.use("/encrypt-test", decryptData);
 
 const server = app.listen(port, () => {

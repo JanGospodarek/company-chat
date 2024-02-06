@@ -12,6 +12,14 @@ const strategy = new JWTStrategy(
     jwtFromRequest: (req: Request) => {
       const token = req.cookies["jwt"];
 
+      if (process.env.NODE_ENV === "test") {
+        const header = req.headers.authorization;
+
+        if (header) {
+          return header.split(" ")[1];
+        }
+      }
+
       if (token) {
         return token;
       }
@@ -29,7 +37,10 @@ const strategy = new JWTStrategy(
 );
 passport.use(strategy);
 
-const authenticate = passport.authenticate("jwt", { session: false });
+const authenticate = passport.authenticate("jwt", {
+  session: false,
+  assignProperty: "user",
+});
 
 const login = async (
   username: string,
@@ -68,10 +79,7 @@ const login = async (
   return token;
 };
 
-const register = async (
-  username: string,
-  password: string,
-) => {
+const register = async (username: string, password: string) => {
   const user = await getUserByUsername(username);
 
   if (user) {
