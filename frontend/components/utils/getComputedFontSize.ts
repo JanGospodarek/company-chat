@@ -23,7 +23,6 @@ const getComputedFontSize = (
   const currentFontSize = properity.split("-")[1];
 
   const currentIndex = tailwindFontsSizes.indexOf(currentFontSize);
-  console.log(currentIndex, currentFontSize, properityName);
   if (currentIndex === -1) return properity;
   if (
     currentIndex < tailwindFontsSizes.length - 1 &&
@@ -31,6 +30,7 @@ const getComputedFontSize = (
   )
     return `${properityName}-${tailwindFontsSizes[currentIndex + 1]}`;
   else if (currentIndex > 0 && computeTo.fontSize === "normal")
-    return `${properityName}-${tailwindFontsSizes[currentIndex - 1]}`;
+    // return `${properityName}-${tailwindFontsSizes[currentIndex - 1]}`;
+    return properity;
 };
 export default getComputedFontSize;

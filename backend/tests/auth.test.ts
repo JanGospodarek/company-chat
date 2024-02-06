@@ -151,6 +151,7 @@ describe("login", () => {
         data: encryptData({ username, password, name, surname }),
       }),
     });
+
     if (resSignup.status !== 200) {
       throw new Error("Error signing up");
     }

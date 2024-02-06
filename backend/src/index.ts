@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 app.use(cors());
 // Routes
-app.options("*", cors());
+// app.options("*", cors());
 // app.options("*", (req, res) => {
 //   res.setHeader("Access-Control-Allow-Origin", "*");
 //   if (req.method === "OPTIONS") {

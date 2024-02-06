@@ -7,18 +7,19 @@ import { useRef } from "react";
 export default function Page() {
   const email = useRef<HTMLInputElement | null>(null);
   const password = useRef<HTMLInputElement | null>(null);
+
   const handleLogin = async () => {
     if (email.current && password.current) {
       try {
-        // const res = await fetch("http://localhost:5000/login", {
-        //   method: "POST",
-        //   body: JSON.stringify({
-        //     email: email.current.value,
-        //     password: password.current.value,
-        //   }),
-        // });
-        // const data = await res.json();
-        // console.log(data);
+        const res = await fetch("http://localhost:5138/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: email.current.value,
+            password: password.current.value,
+          }),
+        });
+        const data = await res.json();
+        console.log(data);
       } catch (error) {}
     }
   };
@@ -33,6 +34,7 @@ export default function Page() {
         className="w-1/3"
         ref={email}
       />
+
       <Input
         type="password"
         label="Password"
