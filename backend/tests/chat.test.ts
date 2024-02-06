@@ -431,4 +431,93 @@ describe("Add users to chat", () => {
 
     expect(addChatRes.status).toBe(200);
   });
+
+  test("Multiple users can be in the chat", async () => {
+    const token = await login("test1", "Password1234");
+
+    const chatData = {
+      name: "Test Group",
+      group: true,
+      receipient: "",
+    };
+
+    const chatRes = await fetch("http://localhost:5138/chat/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+      body: JSON.stringify(chatData),
+    });
+
+    if (chatRes.status !== 200) {
+      const data = (await chatRes.json()) as { error: string };
+      throw new Error(data.error);
+    }
+
+    const data = (await chatRes.json()) as { chat: { chatId: number } };
+    const chatId = data.chat.chatId;
+
+    const addChatRes = await fetch("http://localhost:5138/chat/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        chatId,
+        usernames: ["test2"],
+      }),
+    });
+
+    if (addChatRes.status !== 200) {
+      const data = (await addChatRes.json()) as { error: string };
+      throw new Error(data.error);
+    }
+
+    const user1chats = await fetch("http://localhost:5138/chat", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    });
+
+    if (user1chats.status !== 200) {
+      const data = (await user1chats.json()) as { error: string };
+      throw new Error(data.error);
+    }
+
+    const user1data = (await user1chats.json()) as {
+      chats: { id: number; name: string; type: string }[];
+    };
+
+    expect(user1data.chats.length).toBe(1);
+
+    const token2 = await login("test2", "Password1234");
+
+    const user2chats = await fetch("http://localhost:5138/chat", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token2}`,
+      },
+      credentials: "include",
+    });
+
+    if (user2chats.status !== 200) {
+      const data = (await user2chats.json()) as { error: string };
+      throw new Error(data.error);
+    }
+
+    const user2data = (await user2chats.json()) as {
+      chats: { id: number; name: string; type: string }[];
+    };
+
+    expect(user2data.chats.length).toBe(1);
+    expect(user1data.chats[0]).toMatchObject(user2data.chats[0]);
+  });
 });
