@@ -1,3 +1,4 @@
+import ChatList from "@/components/messages/ChatList";
 import Heading from "@/components/messages/Heading";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
@@ -6,6 +7,7 @@ const MyComponent = () => {
   return (
     <View style={styles.container}>
       <Heading />
+      <ChatList />
     </View>
   );
 };
