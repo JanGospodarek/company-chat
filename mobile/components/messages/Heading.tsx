@@ -42,8 +42,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   text: {
+    fontFamily: "League-Spartan-Bold",
+
     fontSize: 32,
-    fontWeight: "bold",
   },
 });
 

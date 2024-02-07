@@ -42,6 +42,7 @@ const MessagesTab = (props: Props) => {
                 <Avatar
                   src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
                   size="sm"
+                  className="z-10"
                 />
               }
             />
@@ -63,7 +64,7 @@ const MessagesTab = (props: Props) => {
           </button>
         </div>
         <div
-          className={`absolute bg-secondary w-0 h-8 top-0 right-[28px] rounded-xl flex justify-center items-center ${
+          className={`absolute bg-secondary w-0 h-8 top-0 right-[28px] rounded-xl flex justify-center items-center z-20 ${
             showSearchTab && "animate-open-search"
           }`}
         >
