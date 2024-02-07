@@ -33,6 +33,15 @@ const StartScreen = () => {
             <Text>Register</Text>
           </Button>
         </Link>
+        <Link href="/chat/messages/" asChild>
+          <Button
+            mode="outlined"
+            style={{ width: "50%" }}
+            onPress={() => console.log("register")}
+          >
+            <Text>Chat</Text>
+          </Button>
+        </Link>
       </View>
     </PaperProvider>
   );
