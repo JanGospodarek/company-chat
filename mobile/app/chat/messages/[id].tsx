@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     justifyContent: "flex-start",
-    padding: 10,
+    padding: 20,
 
     height: "100%",
   },

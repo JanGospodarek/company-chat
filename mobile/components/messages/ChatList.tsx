@@ -9,7 +9,7 @@ const ChatList = () => {
       <Text
         style={{
           color: theme.colors.primary,
-          fontFamily: "League-Spartan-Bold",
+          fontFamily: "League-Spartan-SemiBold",
           fontSize: 18,
           marginBottom: 10,
         }}

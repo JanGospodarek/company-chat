@@ -8,6 +8,7 @@ const StartScreen = () => {
   const [fontsLoaded, fontError] = useFonts({
     "League-Spartan": require("../assets/fonts/LeagueSpartan-Regular.ttf"),
     "League-Spartan-Bold": require("../assets/fonts/LeagueSpartan-Bold.ttf"),
+    "League-Spartan-SemiBold": require("../assets/fonts/LeagueSpartan-SemiBold.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
