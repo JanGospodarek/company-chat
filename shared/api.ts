@@ -1,4 +1,6 @@
-const apiURL = process.env.TEST ? "http://localhost:5138" : "/api";
+// Check if the environment is test
+const test = process.env.NODE_ENV === "test";
+const apiURL = test ? "http://localhost:5138" : "/api";
 
 export const register = async (username: string, password: string) => {
   const res = await fetch(`${apiURL}/auth/register`, {
@@ -14,7 +16,9 @@ export const register = async (username: string, password: string) => {
     throw new Error(data.error);
   }
 
-  return res;
+  const d = (await res.json()) as { token: string };
+
+  return d.token;
 };
 
 export const login = async (username: string, password: string) => {
