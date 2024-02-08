@@ -1,10 +1,7 @@
 import { expect, test, describe, afterEach } from "bun:test";
 import "../src/index";
-import prisma from "../src/config/db";
-
-async function databaseCleanup() {
-  await prisma.user.deleteMany();
-}
+import { register } from "../../shared/api";
+import { databaseCleanup } from "./utils";
 
 afterEach(async () => {
   await databaseCleanup();
@@ -15,21 +12,13 @@ describe("signup", () => {
     const username = "test";
     const password = "Password1234";
 
-    const res = await fetch("http://localhost:5138/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const token = await register(username, password);
 
-    if (res.status !== 200) {
-      const data = (await res.json()) as { error: string };
-
-      console.error(data.error);
+      expect(token).toBeDefined();
+    } catch (error: any) {
+      throw new Error(error.message);
     }
-
-    expect(res.status).toBe(200);
   });
 
   test("User cannot signup with missing fields", async () => {

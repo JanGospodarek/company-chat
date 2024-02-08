@@ -1,5 +1,6 @@
 // @ts-ignore
 import JSEncrypt from "node-jsencrypt"; // @types/node-jsencrypt is not available
+import prisma from "../src/config/db";
 
 const encryptData = (data: any) => {
   const encrypt = new JSEncrypt();
@@ -18,4 +19,11 @@ const decryptData = (data: any) => {
   return JSON.parse(decrypted);
 };
 
-export { encryptData, decryptData };
+async function databaseCleanup() {
+  await prisma.message.deleteMany();
+  await prisma.userChat.deleteMany();
+  await prisma.chat.deleteMany();
+  await prisma.user.deleteMany();
+}
+
+export { encryptData, decryptData, databaseCleanup };
