@@ -1,6 +1,6 @@
-version: '3.1'
+version: "3.1"
 
-services: 
+services:
   frontend:
     container_name: frontend
     build: ./frontend
@@ -8,7 +8,7 @@ services:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
-    
+
     networks:
       - proxy
 
@@ -24,7 +24,7 @@ services:
     volumes:
       - ./backend/:/app/
       - ./backend/src:/app/src
-    
+
     networks:
       - proxy
       - backend
@@ -37,14 +37,14 @@ services:
   web:
     container_name: web
     build: ./web
-    
+
     ports:
       - "80:80"
       - "443:443"
 
     volumes:
       - ./web/conf:/etc/nginx/conf.d
-    
+
     networks:
       - proxy
 
@@ -54,7 +54,7 @@ services:
 
     restart: always
 
-  db: 
+  db:
     container_name: db
     build: ./db
 
@@ -83,9 +83,8 @@ services:
 
     restart: always
 
-
 networks:
   proxy:
     driver: bridge
   backend:
-    internal: true    
+    internal: true

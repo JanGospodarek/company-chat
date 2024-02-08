@@ -9,4 +9,6 @@ RUN bun install --frozen-lockfile
 COPY src ./src
 COPY tsconfig.json .
 
+
+
 CMD ["bun", "dev"]

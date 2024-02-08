@@ -5,12 +5,25 @@ import Conversation from "@/components/chat/conversation/Conversation";
 import GroupModal from "@/components/chat/messages-tab/GroupModal/GroupModal";
 import MessagesTab from "@/components/chat/messages-tab/MessagesTab";
 import { MobileTabs } from "@/components/chat/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUsername } from "@/lib/userSlice";
 
 const ChatPage = () => {
   const [currentTabMobile, setCurrentTabMobile] =
     useState<MobileTabs>("messages");
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+    if (token && username) {
+      dispatch(setUsername(username));
+    } else {
+      window.location.href = "/";
+    }
+  }, []);
 
   const handleTabChange = (tab: MobileTabs) => setCurrentTabMobile(tab);
   const handleShowModal = () => setShowCreateGroupModal((state) => !state);
