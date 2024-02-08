@@ -133,7 +133,7 @@ const wsAuthenticate = async (socket: Socket) => {
     throw new Error("Unauthorized");
   }
 
-  return user;
+  socket.data["user"] = user;
 };
 
 export { authenticate, wsAuthenticate, login, register, validatePassword };

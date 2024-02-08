@@ -96,3 +96,13 @@ export const addUsersToChat = async (chatID: number, users: number[]) => {
 
   return addedUsers;
 };
+
+export const getChatUsers = async (chatID: number) => {
+  const users = await prisma.userChat.findMany({
+    where: {
+      chatId: chatID,
+    },
+  });
+
+  return users.map((user) => user.userId);
+};

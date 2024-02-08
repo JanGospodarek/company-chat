@@ -10,10 +10,6 @@ authRouter.post("/login", async (req, res) => {
   try {
     const token = await login(username, password, false);
 
-    if (!token) {
-      throw new Error("Error signing token");
-    }
-
     if (!mobile) {
       res.cookie("jwt", token, {
         httpOnly: true,
@@ -41,10 +37,6 @@ authRouter.post("/register", async (req, res) => {
     await register(username, password);
 
     const token = await login(username, password, mobile);
-
-    if (!token) {
-      throw new Error("Error signing token");
-    }
 
     if (!mobile) {
       res.cookie("jwt", token, {

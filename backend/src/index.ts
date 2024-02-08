@@ -6,6 +6,7 @@ import passport from "passport";
 import { authRouter, chatRouter } from "./routes";
 import { decryptData, encryptData } from "./services/encryption";
 import { wsAuthenticate } from "./services/auth";
+import { connectUser, disconnectUser, sendMessage } from "./services/message";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
@@ -32,13 +33,10 @@ app.get("/status", async (req, res) => {
 });
 
 const io = new Server(server);
-const socketMap = new Map<number, Socket>();
 
 io.use(async (socket, next) => {
   try {
-    const user = await wsAuthenticate(socket);
-
-    socket.data["user"] = user;
+    await wsAuthenticate(socket);
 
     next();
   } catch (error) {
@@ -47,5 +45,17 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log(socket.data["user"]);
+  connectUser(socket);
+
+  socket.on("disconnect", () => {
+    disconnectUser(socket.data["user"]);
+  });
+
+  socket.on("message", async (data) => {
+    try {
+      await sendMessage(data, socket);
+    } catch (error: any) {
+      socket.emit("error", { message: error.message });
+    }
+  });
 });
