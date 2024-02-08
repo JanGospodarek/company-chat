@@ -1,15 +1,26 @@
-import { View, Text, StyleSheet } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
 import { Avatar, Badge, useTheme } from "react-native-paper";
 
 const Chat = () => {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => {
+        router.push({
+          pathname: "/chat/conversation/[id]",
+          params: { id: "bacon" },
+        });
+      }}
+    >
       <View>
         <Avatar.Image
           size={56}
           source={require("../../assets/images/avatar.jpeg")}
         />
-        <Badge style={styles.badge}></Badge>
+        <Badge style={styles.badge} size={15}></Badge>
       </View>
 
       <View style={styles.textContainer}>
@@ -43,7 +54,7 @@ const Chat = () => {
           lorem srolem djdjkdkjdjkd djkdkd....
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({
@@ -52,6 +63,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     marginVertical: 6,
+
+    justifyContent: "center",
   },
   textContainer: {},
   heading: {

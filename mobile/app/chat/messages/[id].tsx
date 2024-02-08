@@ -1,10 +1,13 @@
 import ChatList from "@/components/messages/ChatList";
 import Heading from "@/components/messages/Heading";
 import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const MyComponent = () => {
+const Messages = () => {
+  const { id } = useLocalSearchParams();
+
   return (
     <LinearGradient
       colors={["rgba(137, 128, 189,0.8)", "transparent"]}
@@ -33,4 +36,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MyComponent;
+export default Messages;

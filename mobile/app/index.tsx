@@ -37,7 +37,6 @@ const StartScreen = () => {
             fontFamily: "League-Spartan",
           }}
         >
-          {" "}
           Company chat
         </Text>
         <Link href="/auth/login" asChild>
@@ -59,7 +58,13 @@ const StartScreen = () => {
             <Text style={{ fontFamily: "League-Spartan" }}>Register</Text>
           </Button>
         </Link>
-        <Link href="/chat/messages/" asChild>
+        <Link
+          href={{
+            pathname: "/chat/messages/[id]",
+            params: { id: "bacon" },
+          }}
+          asChild
+        >
           <Button
             mode="outlined"
             style={{ width: "50%" }}
