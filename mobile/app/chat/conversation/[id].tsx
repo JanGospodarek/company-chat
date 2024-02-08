@@ -4,7 +4,7 @@ import TypeBar from "@/components/conversation/TypeBar";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import globalStyles from "@/app/globalStyles";
 const Conversation = () => {
   const { id } = useLocalSearchParams();
   useEffect(() => {
@@ -13,7 +13,7 @@ const Conversation = () => {
   return (
     <LinearGradient
       colors={["rgba(137, 128, 189,0.8)", "transparent"]}
-      style={styles.container}
+      style={{ ...globalStyles.container, padding: 10, alignItems: "center" }}
       start={{ x: 0, y: 2 }}
       end={{ x: 0, y: 0 }}
       locations={[0.5, 0.6]}
@@ -24,16 +24,5 @@ const Conversation = () => {
     </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    justifyContent: "flex-start",
-    padding: 10,
-    alignItems: "center",
-
-    height: "100%",
-  },
-});
 
 export default Conversation;

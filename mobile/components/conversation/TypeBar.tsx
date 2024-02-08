@@ -39,10 +39,10 @@ const styles = StyleSheet.create({
   },
   input: {
     margin: 10,
-    width: "65%",
     fontFamily: "League-Spartan-SemiBold",
     fontSize: 16,
     marginLeft: 15,
+    flex: 1,
   },
   btnContainer: {
     display: "flex",
