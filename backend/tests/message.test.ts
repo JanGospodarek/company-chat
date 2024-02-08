@@ -1,15 +1,10 @@
 import { expect, test, describe, afterEach, beforeEach } from "bun:test";
 import "../src/index";
-import "../../shared/api";
 import prisma from "../src/config/db";
 import { io } from "socket.io-client";
 
-async function databaseCleanup() {
-  await prisma.message.deleteMany();
-  await prisma.userChat.deleteMany();
-  await prisma.chat.deleteMany();
-  await prisma.user.deleteMany();
-}
+import { databaseCleanup } from "./utils";
+import { register, login } from "../../shared/api";
 
 async function createTestUsers() {
   const users = [
@@ -24,44 +19,8 @@ async function createTestUsers() {
   ];
 
   for (let user of users) {
-    const res = await fetch("http://localhost:5138/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-
-    if (res.status !== 200) {
-      const data = (await res.json()) as { error: string };
-      throw new Error(data.error);
-    }
+    await register(user.username, user.password);
   }
-}
-
-async function login(username: string, password: string) {
-  let token = "";
-
-  const res = await fetch("http://localhost:5138/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username,
-      password,
-    }),
-  });
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as { token: string };
-
-  token = d.token;
-  return token;
 }
 
 beforeEach(async () => {
