@@ -1,12 +1,14 @@
 import { expect, test, describe, afterEach, beforeEach } from "bun:test";
 import "../src/index";
-import prisma from "../src/config/db";
-
-async function databaseCleanup() {
-  await prisma.userChat.deleteMany();
-  await prisma.chat.deleteMany();
-  await prisma.user.deleteMany();
-}
+import { databaseCleanup } from "./utils";
+import {
+  register,
+  login,
+  createChat,
+  createGroupChat,
+  getChats,
+  addUsersToChat,
+} from "../../shared/api";
 
 async function createTestUsers() {
   const users = [
@@ -21,44 +23,8 @@ async function createTestUsers() {
   ];
 
   for (let user of users) {
-    const res = await fetch("http://localhost:5138/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-
-    if (res.status !== 200) {
-      const data = (await res.json()) as { error: string };
-      throw new Error(data.error);
-    }
+    await register(user.username, user.password);
   }
-}
-
-async function login(username: string, password: string) {
-  let token = "";
-
-  const res = await fetch("http://localhost:5138/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username,
-      password,
-    }),
-  });
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as { token: string };
-
-  token = d.token;
-  return token;
 }
 
 beforeEach(async () => {
@@ -73,125 +39,48 @@ describe("Chat creation", () => {
   test("User can create a chat", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "test2",
-    };
+    const chat = await createChat(token, "test2");
 
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    expect(chatRes.status).toBe(200);
-    const data = (await chatRes.json()) as {
-      chat: { id: number; name: string; type: string };
-    };
-
-    expect(data.chat.name).toBe("Private Chat");
-    expect(data.chat.type).toBe("PRIVATE");
+    expect(chat.name).toBe("Private Chat");
+    expect(chat.type).toBe("PRIVATE");
   });
 
   test("User cannot create a chat with themselves", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "test1",
-    };
-
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    expect(chatRes.status).toBe(400);
-    const data = (await chatRes.json()) as { error: string };
-
-    expect(data.error).toBe("You cannot create a chat with yourself");
+    try {
+      await createChat(token, "test1");
+    } catch (error: any) {
+      expect(error.message).toBe("You cannot create a chat with yourself");
+    }
   });
 
   test("User cannot create a chat with a user that doesn't exist", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "test3",
-    };
-
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    expect(chatRes.status).toBe(400);
-
-    const data = (await chatRes.json()) as { error: string };
-
-    expect(data.error).toBe("User not found");
+    try {
+      await createChat(token, "test3");
+    } catch (error: any) {
+      expect(error.message).toBe("User not found");
+    }
   });
 
   test("User cannot create a chat with missing fields", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "",
-    };
-
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    expect(chatRes.status).toBe(400);
-
-    const data = (await chatRes.json()) as { error: string };
-
-    expect(data.error).toBe("Missing fields");
+    try {
+      await createChat(token, "");
+    } catch (error: any) {
+      expect(error.message).toBe("Missing fields");
+    }
   });
 
   test("User cannot create a chat without being logged in", async () => {
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "test2",
-    };
-
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    expect(chatRes.status).toBe(401);
+    try {
+      await createChat("", "test2");
+    } catch (error: any) {
+      expect(error.message).toBe("Unauthorized");
+    }
   });
 });
 
@@ -199,56 +88,20 @@ describe("Group chat creation", () => {
   test("User can create a group chat", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "Test Group",
-      group: true,
-      receipient: "",
-    };
+    const chat = await createGroupChat(token, "Test Group");
 
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    expect(chatRes.status).toBe(200);
-
-    const data = (await chatRes.json()) as {
-      chat: { id: number; name: string; type: string };
-    };
-
-    expect(data.chat.name).toBe("Test Group");
-    expect(data.chat.type).toBe("GROUP");
+    expect(chat.name).toBe("Test Group");
+    expect(chat.type).toBe("GROUP");
   });
 
   test("User cannot create a group chat with missing fields", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "",
-      group: true,
-      receipient: "",
-    };
-
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    expect(chatRes.status).toBe(400);
-
-    const data = (await chatRes.json()) as { error: string };
-
-    expect(data.error).toBe("Missing fields");
+    try {
+      await createGroupChat(token, "");
+    } catch (error: any) {
+      expect(error.message).toBe("Missing fields");
+    }
   });
 });
 
@@ -256,130 +109,47 @@ describe("Get user chats", () => {
   test("User can get their chats", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "test2",
-    };
+    await createChat(token, "test2");
 
-    await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
+    const chats = await getChats(token);
 
-    const chatRes = await fetch("http://localhost:5138/chat", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-    });
-
-    expect(chatRes.status).toBe(200);
-
-    const data = (await chatRes.json()) as {
-      chats: { id: number; name: string; type: string }[];
-    };
-
-    expect(data.chats.length).toBe(1);
-    expect(data.chats[0].name).toBe("Private Chat");
-    expect(data.chats[0].type).toBe("PRIVATE");
+    expect(chats.length).toBe(1);
+    expect(chats[0].name).toBe("Private Chat");
+    expect(chats[0].type).toBe("PRIVATE");
   });
 
   test("User can get their group chats", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "Test Group",
-      group: true,
-      receipient: "",
-    };
+    await createGroupChat(token, "Test Group");
 
-    await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
+    const chats = await getChats(token);
 
-    const chatRes = await fetch("http://localhost:5138/chat", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-    });
-
-    expect(chatRes.status).toBe(200);
-
-    const data = (await chatRes.json()) as {
-      chats: { id: number; name: string; type: string }[];
-    };
-
-    expect(data.chats.length).toBe(1);
-    expect(data.chats[0].name).toBe("Test Group");
-    expect(data.chats[0].type).toBe("GROUP");
+    expect(chats.length).toBe(1);
+    expect(chats[0].name).toBe("Test Group");
+    expect(chats[0].type).toBe("GROUP");
   });
 
   test("User can get multiple chats", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "Test Group",
-      group: true,
-      receipient: "",
-    };
+    const chatCount = 5;
 
-    for (let i = 0; i < 5; i++) {
-      await fetch("http://localhost:5138/chat/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-        body: JSON.stringify(chatData),
-      });
+    for (let i = 0; i < chatCount; i++) {
+      await createGroupChat(token, "test group");
     }
 
-    const chatRes = await fetch("http://localhost:5138/chat", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-    });
+    const chats = await getChats(token);
 
-    expect(chatRes.status).toBe(200);
-
-    const data = (await chatRes.json()) as {
-      chats: { id: number; name: string; type: string }[];
-    };
-
-    expect(data.chats.length).toBe(5);
+    expect(chats.length).toBe(chatCount);
   });
 
   test("User cannot get chats without being logged in", async () => {
-    const chatRes = await fetch("http://localhost:5138/chat", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-
-    expect(chatRes.status).toBe(401);
+    try {
+      await getChats("");
+    } catch (error: any) {
+      expect(error.message).toBe("Unauthorized");
+    }
   });
 });
 
@@ -387,137 +157,27 @@ describe("Add users to chat", () => {
   test("User can add users to a chat", async () => {
     const token = await login("test1", "Password1234");
 
-    const chatData = {
-      name: "Test Group",
-      group: true,
-      receipient: "",
-    };
+    const createdChat = await createGroupChat(token, "Test Group");
 
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
+    const chat = await addUsersToChat(token, createdChat.chatId, ["test2"]);
 
-    if (chatRes.status !== 200) {
-      const data = (await chatRes.json()) as { error: string };
-      throw new Error(data.error);
-    }
-
-    const data = (await chatRes.json()) as { chat: { chatId: number } };
-    const chatId = data.chat.chatId;
-
-    const addChatRes = await fetch("http://localhost:5138/chat/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        chatId,
-        usernames: ["test2"],
-      }),
-    });
-
-    if (addChatRes.status !== 200) {
-      const data = (await addChatRes.json()) as { error: string };
-      throw new Error(data.error);
-    }
-
-    expect(addChatRes.status).toBe(200);
+    expect(chat.name).toBe("Test Group");
   });
 
   test("Multiple users can be in the chat", async () => {
-    const token = await login("test1", "Password1234");
-
-    const chatData = {
-      name: "Test Group",
-      group: true,
-      receipient: "",
-    };
-
-    const chatRes = await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify(chatData),
-    });
-
-    if (chatRes.status !== 200) {
-      const data = (await chatRes.json()) as { error: string };
-      throw new Error(data.error);
-    }
-
-    const data = (await chatRes.json()) as { chat: { chatId: number } };
-    const chatId = data.chat.chatId;
-
-    const addChatRes = await fetch("http://localhost:5138/chat/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        chatId,
-        usernames: ["test2"],
-      }),
-    });
-
-    if (addChatRes.status !== 200) {
-      const data = (await addChatRes.json()) as { error: string };
-      throw new Error(data.error);
-    }
-
-    const user1chats = await fetch("http://localhost:5138/chat", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-    });
-
-    if (user1chats.status !== 200) {
-      const data = (await user1chats.json()) as { error: string };
-      throw new Error(data.error);
-    }
-
-    const user1data = (await user1chats.json()) as {
-      chats: { id: number; name: string; type: string }[];
-    };
-
-    expect(user1data.chats.length).toBe(1);
-
+    const token1 = await login("test1", "Password1234");
     const token2 = await login("test2", "Password1234");
 
-    const user2chats = await fetch("http://localhost:5138/chat", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token2}`,
-      },
-      credentials: "include",
-    });
+    const createdChat = await createGroupChat(token1, "Test Group");
 
-    if (user2chats.status !== 200) {
-      const data = (await user2chats.json()) as { error: string };
-      throw new Error(data.error);
-    }
+    await addUsersToChat(token1, createdChat.chatId, ["test2"]);
 
-    const user2data = (await user2chats.json()) as {
-      chats: { id: number; name: string; type: string }[];
-    };
+    const chats1 = await getChats(token1);
+    const chats2 = await getChats(token2);
 
-    expect(user2data.chats.length).toBe(1);
-    expect(user1data.chats[0]).toMatchObject(user2data.chats[0]);
+    expect(chats1.length).toBe(1);
+    expect(chats2.length).toBe(1);
+
+    expect(chats1[0]).toMatchObject(chats2[0]);
   });
 });
