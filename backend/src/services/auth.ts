@@ -5,6 +5,7 @@ import type { Request } from "express";
 import jwt from "jsonwebtoken";
 
 import { getUserByUsername, registerUser } from "../models/user";
+import { Socket } from "socket.io";
 
 const strategy = new JWTStrategy(
   {
@@ -35,7 +36,7 @@ const strategy = new JWTStrategy(
     return done(null, false);
   }
 );
-passport.use(strategy);
+passport.use("jwt", strategy);
 
 const authenticate = passport.authenticate("jwt", {
   session: false,
@@ -111,4 +112,28 @@ const validatePassword = (password: string, username: string) => {
   }
 };
 
-export { authenticate, login, register, validatePassword };
+const wsAuthenticate = async (socket: Socket) => {
+  const token = socket.handshake.auth["token"];
+
+  if (!token) {
+    throw new Error("Unauthorized");
+  }
+
+  const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+    username: string;
+  };
+
+  if (!payload.username) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await getUserByUsername(payload.username);
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  return user;
+};
+
+export { authenticate, wsAuthenticate, login, register, validatePassword };
