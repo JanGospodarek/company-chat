@@ -2,7 +2,11 @@ import { useRouter } from "expo-router";
 import { View, Text, StyleSheet } from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
 
-const Heading = () => {
+interface Props {
+  showModal: () => void;
+}
+
+const Heading = (props: Props) => {
   const theme = useTheme();
   const router = useRouter();
   return (
@@ -25,6 +29,7 @@ const Heading = () => {
           size={30}
           iconColor={theme.colors.primary}
           style={{ margin: 0, padding: 0 }}
+          onPress={props.showModal}
         />
         <IconButton
           icon="account-group"
