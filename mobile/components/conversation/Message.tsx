@@ -30,7 +30,7 @@ const Message = (props: Props) => {
         <View
           style={{
             backgroundColor: isMine
-              ? theme.colors.primary
+              ? "rgba(115, 91, 178,0.7)"
               : theme.colors.primaryContainer,
             padding: 10,
             borderRadius: 20,

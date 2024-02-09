@@ -1,7 +1,11 @@
 import { useFonts } from "expo-font";
 import { Link } from "expo-router";
 import { View, Text, Pressable } from "react-native";
-import { Button, PaperProvider } from "react-native-paper";
+import {
+  Button,
+  PaperProvider,
+  MD3LightTheme as DefaultTheme,
+} from "react-native-paper";
 import { useCallback } from "react";
 import * as SplashScreen from "expo-splash-screen";
 const StartScreen = () => {
