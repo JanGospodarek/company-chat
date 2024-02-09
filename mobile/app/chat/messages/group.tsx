@@ -1,8 +1,9 @@
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import { View, StyleSheet, Text, TextInput, ScrollView } from "react-native";
 import globalStyles from "@/app/globalStyles";
 import { LinearGradient } from "expo-linear-gradient";
 import { Button, Icon, IconButton, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
+import Person from "@/components/createGroup/Person";
 const Search = () => {
   const theme = useTheme();
   const router = useRouter();
@@ -34,13 +35,22 @@ const Search = () => {
         <Icon source="magnify" color={theme.colors.primary} size={30} />
         <TextInput style={styles.input} placeholder="Type user's name" />
       </View>
-      <View style={styles.usersContainer}>
-        <Text style={{ fontFamily: "League-Spartan", fontSize: 18 }}>
-          Start typing to see users
-        </Text>
-      </View>
+      <ScrollView>
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+        <Person />
+      </ScrollView>
+
       <View>
-        <Button mode="contained" style={{ padding: 6 }}>
+        <Button mode="contained" style={{ padding: 6, marginTop: 10 }}>
           <Text style={{ fontFamily: "League-Spartan-SemiBold", fontSize: 18 }}>
             Create group
           </Text>
@@ -70,7 +80,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: "80%",
     backgroundColor: "rgba(115, 115, 115,0.2)",
-    marginVertical: 5,
+    marginVertical: 10,
     borderRadius: 25,
     display: "flex",
     flexDirection: "row",
@@ -84,6 +94,7 @@ const styles = StyleSheet.create({
     display: "flex",
     gap: 10,
     justifyContent: "flex-start",
+    padding: 10,
   },
 });
 export default Search;

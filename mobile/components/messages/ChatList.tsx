@@ -1,11 +1,11 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import Chat from "./Chat";
 import { useTheme } from "react-native-paper";
 
 const ChatList = () => {
   const theme = useTheme();
   return (
-    <View>
+    <ScrollView>
       <Text
         style={{
           color: theme.colors.primary,
@@ -19,7 +19,15 @@ const ChatList = () => {
       <Chat />
       <Chat />
       <Chat />
-    </View>
+      <Chat />
+      <Chat />
+      <Chat />
+      <Chat />
+      <Chat />
+      <Chat />
+      <Chat />
+      <Chat />
+    </ScrollView>
   );
 };
 export default ChatList;
