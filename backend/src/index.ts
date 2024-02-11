@@ -3,7 +3,7 @@ import { Server, type Socket } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 
-import { authRouter, chatRouter } from "./routes";
+import { authRouter, chatRouter, userRouter } from "./routes";
 import { decryptData, encryptData } from "./services/encryption";
 import { wsAuthenticate } from "./services/auth";
 import {
@@ -28,6 +28,7 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
+app.use("/user", userRouter);
 app.use("/encrypt-test", decryptData);
 
 const server = app.listen(port);

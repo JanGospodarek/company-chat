@@ -155,11 +155,13 @@ describe("Get user chats", () => {
 
     const miau = connect(token1);
 
-    miau.sendMessage(chatID, "Hello");
+    miau.enterChat(chatID);
+
+    miau.sendMessage("Hello");
     await sleep(50);
-    miau.sendMessage(chatID, "World");
+    miau.sendMessage("World");
     await sleep(50);
-    miau.sendMessage(chatID, "!");
+    miau.sendMessage("!");
     await sleep(100);
 
     // Wait for messages to be sent

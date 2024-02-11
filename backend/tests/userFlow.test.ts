@@ -1,7 +1,7 @@
 import { expect, test, describe, beforeAll, afterAll } from "bun:test";
 import "../src/index";
 
-import { databaseCleanup } from "./utils";
+import { databaseCleanup, sleep } from "./utils";
 import {
   register,
   login,
@@ -9,7 +9,10 @@ import {
   createChat,
   getChats,
   Miau,
+  getUsers,
 } from "../../shared/api";
+
+import type { Chat } from "../../shared/types";
 
 async function createTestUsers() {
   const users = [
@@ -29,6 +32,8 @@ async function createTestUsers() {
 }
 
 beforeAll(async () => {
+  await databaseCleanup();
+
   await createTestUsers();
 });
 
@@ -39,7 +44,8 @@ afterAll(async () => {
 describe("New user flow", () => {
   let token: string;
   let miau: Miau;
-  let messages: any[];
+  let targetUser: string;
+  let chats: Chat[];
 
   test("Should connect to the server", async () => {
     const res = await fetch("http://localhost:5138/status");
@@ -63,6 +69,12 @@ describe("New user flow", () => {
   });
 
   // Add api for getting all users
+  test("Should get all users", async () => {
+    const users = await getUsers(token);
+    expect(users.length).toBe(2);
+
+    targetUser = users[0].username;
+  });
 
   test("Should create a chat", async () => {
     const chat = await createChat(token, "test2");
@@ -77,15 +89,28 @@ describe("New user flow", () => {
     const chat = chats[0];
   });
 
-  test("Should send a message", async () => {
+  test("Should send a message (initial)", async (done) => {
     const chats = await getChats(token);
     const chat = chats[0];
 
     miau = connect(token);
 
-    miau.sendMessage(chat.chatId, "Hello");
+    miau.enterChat(chat.chatId);
+
+    miau.sendMessage("Hello");
+    await sleep(50);
+    miau.sendMessage("World");
     miau.onMessage((message) => {
-      messages.push(message);
+      done();
     });
+  });
+
+  test("Should get chats with messages", async () => {
+    chats = await getChats(token);
+    expect(chats.length).toBe(1);
+
+    const chat = chats[0];
+
+    expect(chat.messages.length).toBe(2);
   });
 });
