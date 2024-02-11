@@ -182,8 +182,34 @@ export const addUsersToChat = async (
   }
 };
 
+export const getUsers = async (token: string) => {
+  const res = await fetch(`${apiURL}/user`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    users: type.User[];
+  };
+
+  return d.users;
+};
+
 export class Miau {
   private socket: Socket;
+  private activeChat: number | null = null;
 
   constructor(token: string) {
     this.socket = io(apiURL, {
@@ -214,7 +240,13 @@ export class Miau {
     this.socket.on("message", cb);
   }
 
-  sendMessage(chatID: number, content: string) {
+  sendMessage(content: string) {
+    const chatID = this.activeChat;
+
+    if (chatID === null) {
+      throw new Error("No active chat");
+    }
+
     if (!this.socket.connected) {
       this.socket.once("connect", () => {
         this.socket.emit("message", { chatID, content });
@@ -224,6 +256,10 @@ export class Miau {
     }
 
     this.socket.emit("message", { chatID, content });
+  }
+
+  enterChat(chatID: number) {
+    this.activeChat = chatID;
   }
 }
 

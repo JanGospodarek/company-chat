@@ -64,7 +64,8 @@ describe("Socket connection", () => {
 
     const miau = connect(token);
 
-    miau.sendMessage(chatID, "Hello");
+    miau.enterChat(chatID);
+    miau.sendMessage("Hello");
     miau.onMessage((data) => {
       expect(data.content).toBe("Hello");
       done();
@@ -76,7 +77,8 @@ describe("Socket connection", () => {
 
     const miau = connect(token);
 
-    miau.sendMessage(-1, "Hello");
+    miau.enterChat(-1);
+    miau.sendMessage("Hello");
 
     miau.error((data) => {
       expect(data.message).toBe("Chat does not exist");
@@ -95,7 +97,8 @@ describe("Socket connection", () => {
       done();
     });
 
-    miau.sendMessage(chatID, "");
+    miau.enterChat(chatID);
+    miau.sendMessage("");
   });
 
   test("Should not be able to send a message with invalid chatID", async (done) => {
@@ -107,7 +110,11 @@ describe("Socket connection", () => {
       done();
     });
 
-    // @ts-ignore
-    miau.sendMessage(null, "Hello");
+    try {
+      miau.sendMessage("Hello");
+    } catch (error: any) {
+      expect(error.message).toBe("No active chat");
+      done();
+    }
   });
 });
