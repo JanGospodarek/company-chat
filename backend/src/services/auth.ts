@@ -5,6 +5,7 @@ import type { Request } from "express";
 import jwt from "jsonwebtoken";
 
 import { getUserByUsername, registerUser } from "../models/user";
+import { type LoggedInUser } from "../../../shared/types";
 import { Socket } from "socket.io";
 
 const strategy = new JWTStrategy(
@@ -43,11 +44,11 @@ const authenticate = passport.authenticate("jwt", {
   assignProperty: "user",
 });
 
-const login = async (
+async function login(
   username: string,
   password: string,
   is_mobile: boolean
-) => {
+): Promise<LoggedInUser> {
   let token = "";
 
   const user = await getUserByUsername(username);
@@ -77,8 +78,15 @@ const login = async (
     throw new Error("Error signing token");
   }
 
-  return token;
-};
+  const resUser: LoggedInUser = {
+    username: user.username,
+    id: user.id,
+    token,
+    createdAt: user.createdAt.toString(),
+  };
+
+  return resUser;
+}
 
 const register = async (username: string, password: string) => {
   const user = await getUserByUsername(username);

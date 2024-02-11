@@ -1,13 +1,8 @@
+import * as type from "./types";
+
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
 const apiURL = test ? "http://localhost:5138" : "/api";
-
-export interface Chat {
-  chatId: number;
-  name: string;
-  createdAt: string;
-  type: "PRIVATE" | "GROUP";
-}
 
 export const register = async (username: string, password: string) => {
   const res = await fetch(`${apiURL}/auth/register`, {
@@ -23,9 +18,9 @@ export const register = async (username: string, password: string) => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as { token: string };
+  const d = (await res.json()) as { user: type.LoggedInUser };
 
-  return d.token;
+  return d.user;
 };
 
 export const login = async (username: string, password: string) => {
@@ -42,9 +37,9 @@ export const login = async (username: string, password: string) => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as { token: string };
+  const d = (await res.json()) as { user: type.LoggedInUser };
 
-  return d.token;
+  return d.user;
 };
 
 export const createChat = async (token: string, receipient: string) => {
@@ -73,10 +68,14 @@ export const createChat = async (token: string, receipient: string) => {
   }
 
   const d = (await res.json()) as {
-    chat: Chat;
+    chat: type.Chat;
   };
 
-  return d.chat;
+  if (d.chat.type === "PRIVATE") {
+    return d.chat as type.PrivateChat;
+  } else {
+    return d.chat as type.GroupChat;
+  }
 };
 
 export const createGroupChat = async (token: string, chatName: string) => {
@@ -105,10 +104,14 @@ export const createGroupChat = async (token: string, chatName: string) => {
   }
 
   const d = (await res.json()) as {
-    chat: Chat;
+    chat: type.Chat;
   };
 
-  return d.chat;
+  if (d.chat.type === "PRIVATE") {
+    return d.chat as type.PrivateChat;
+  } else {
+    return d.chat as type.GroupChat;
+  }
 };
 
 export const getChats = async (token: string) => {
@@ -130,10 +133,18 @@ export const getChats = async (token: string) => {
   }
 
   const d = (await res.json()) as {
-    chats: Chat[];
+    chats: type.Chat[];
   };
 
-  return d.chats;
+  const chats = d.chats.map((c) => {
+    if (c.type === "PRIVATE") {
+      return c as type.PrivateChat;
+    } else {
+      return c as type.GroupChat;
+    }
+  });
+
+  return chats;
 };
 
 export const addUsersToChat = async (
@@ -160,8 +171,12 @@ export const addUsersToChat = async (
   }
 
   const d = (await res.json()) as {
-    chat: Chat;
+    chat: type.Chat;
   };
 
-  return d.chat;
+  if (d.chat.type === "PRIVATE") {
+    return d.chat as type.PrivateChat;
+  } else {
+    return d.chat as type.GroupChat;
+  }
 };

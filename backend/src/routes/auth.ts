@@ -8,16 +8,9 @@ authRouter.post("/login", async (req, res) => {
   const mobile = false;
 
   try {
-    const token = await login(username, password, false);
+    const user = await login(username, password, mobile);
 
-    if (!mobile) {
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      });
-    }
-
-    res.send({ token });
+    res.send({ user });
   } catch (error: any) {
     res.status(401).send({ error: error.message });
   }
@@ -36,16 +29,9 @@ authRouter.post("/register", async (req, res) => {
 
     await register(username, password);
 
-    const token = await login(username, password, mobile);
+    const user = await login(username, password, mobile);
 
-    if (!mobile) {
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      });
-    }
-
-    res.send({ token });
+    res.send({ user });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }

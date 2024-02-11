@@ -37,7 +37,7 @@ afterEach(async () => {
 
 describe("Chat creation", () => {
   test("User can create a chat", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const chat = await createChat(token, "test2");
 
@@ -46,7 +46,7 @@ describe("Chat creation", () => {
   });
 
   test("User cannot create a chat with themselves", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     try {
       await createChat(token, "test1");
@@ -56,7 +56,7 @@ describe("Chat creation", () => {
   });
 
   test("User cannot create a chat with a user that doesn't exist", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     try {
       await createChat(token, "test3");
@@ -66,7 +66,7 @@ describe("Chat creation", () => {
   });
 
   test("User cannot create a chat with missing fields", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     try {
       await createChat(token, "");
@@ -86,7 +86,7 @@ describe("Chat creation", () => {
 
 describe("Group chat creation", () => {
   test("User can create a group chat", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const chat = await createGroupChat(token, "Test Group");
 
@@ -95,7 +95,7 @@ describe("Group chat creation", () => {
   });
 
   test("User cannot create a group chat with missing fields", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     try {
       await createGroupChat(token, "");
@@ -107,7 +107,7 @@ describe("Group chat creation", () => {
 
 describe("Get user chats", () => {
   test("User can get their chats", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     await createChat(token, "test2");
 
@@ -119,7 +119,7 @@ describe("Get user chats", () => {
   });
 
   test("User can get their group chats", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     await createGroupChat(token, "Test Group");
 
@@ -131,7 +131,7 @@ describe("Get user chats", () => {
   });
 
   test("User can get multiple chats", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const chatCount = 5;
 
@@ -155,7 +155,7 @@ describe("Get user chats", () => {
 
 describe("Add users to chat", () => {
   test("User can add users to a chat", async () => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const createdChat = await createGroupChat(token, "Test Group");
 
@@ -165,8 +165,8 @@ describe("Add users to chat", () => {
   });
 
   test("Multiple users can be in the chat", async () => {
-    const token1 = await login("test1", "Password1234");
-    const token2 = await login("test2", "Password1234");
+    const token1 = (await login("test1", "Password1234")).token;
+    const token2 = (await login("test2", "Password1234")).token;
 
     const createdChat = await createGroupChat(token1, "Test Group");
 

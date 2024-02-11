@@ -33,7 +33,7 @@ afterEach(async () => {
 
 describe("Socket connection", () => {
   test("Should connect to the server", async (done) => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const socket = io("http://localhost:5138", {
       withCredentials: true,
@@ -56,7 +56,7 @@ describe("Socket connection", () => {
   });
 
   test("Should send a message", async (done) => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const chatData = {
       name: "",
@@ -106,7 +106,7 @@ describe("Socket connection", () => {
   });
 
   test("Should not be able to send a message to a chat that does not exist", async (done) => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const socket = io("http://localhost:5138", {
       withCredentials: true,
@@ -126,7 +126,7 @@ describe("Socket connection", () => {
   });
 
   test("Should not be able to send a message with invalid data", async (done) => {
-    const token = await login("test1", "Password1234");
+    const token = (await login("test1", "Password1234")).token;
 
     const chatData = {
       name: "",

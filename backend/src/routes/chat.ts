@@ -34,10 +34,6 @@ chatRouter.post("/create", authenticate, async (req, res) => {
   try {
     const chat = await createChat(user as IUser, group, name, receipient);
 
-    if (!chat) {
-      throw new Error("Error creating chat");
-    }
-
     res.send({ chat });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
@@ -51,10 +47,6 @@ chatRouter.post("/add", authenticate, async (req, res) => {
 
   try {
     const chat = await addUsersToChat(chatId, usernames, user.id);
-
-    if (!chat) {
-      throw new Error("Error adding users to chat");
-    }
 
     res.send({ chat });
   } catch (error: any) {
