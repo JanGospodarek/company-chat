@@ -22,3 +22,10 @@ export interface PrivateChat extends Chat {
 export interface GroupChat extends Chat {
   users: User[];
 }
+
+export interface Message {
+  messageId: number;
+  content: string;
+  createdAt: string;
+  sender: User;
+}

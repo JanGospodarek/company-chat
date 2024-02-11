@@ -4,7 +4,13 @@ import prisma from "../src/config/db";
 import { io } from "socket.io-client";
 
 import { databaseCleanup } from "./utils";
-import { register, login } from "../../shared/api";
+import {
+  register,
+  login,
+  connect,
+  createChat,
+  getChats,
+} from "../../shared/api";
 
 async function createTestUsers() {
   const users = [
@@ -35,12 +41,9 @@ describe("Socket connection", () => {
   test("Should connect to the server", async (done) => {
     const token = (await login("test1", "Password1234")).token;
 
-    const socket = io("http://localhost:5138", {
-      withCredentials: true,
-      auth: {
-        token,
-      },
-    });
+    // const socket = connect(token);
+    const socket = connect(token).get();
+
     socket.on("connect", () => {
       expect(socket.connected).toBe(true);
       done();
@@ -48,8 +51,9 @@ describe("Socket connection", () => {
   });
 
   test("Should not connect to the server", (done) => {
-    const socket = io("http://localhost:5138");
-    socket.on("connect_error", (error) => {
+    const miau = connect("miau");
+
+    miau.connect_error((error) => {
       expect(error.message).toBe("Authentication error");
       done();
     });
@@ -58,48 +62,12 @@ describe("Socket connection", () => {
   test("Should send a message", async (done) => {
     const token = (await login("test1", "Password1234")).token;
 
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "test2",
-    };
+    const chatID = (await createChat(token, "test2")).chatId;
 
-    await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(chatData),
-    });
+    const miau = connect(token);
 
-    const chats = await fetch("http://localhost:5138/chat", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (chats.status !== 200) {
-      const data = (await chats.json()) as { error: string };
-      throw new Error(data.error);
-    }
-
-    const data = (await chats.json()) as { chats: { chatId: number }[] };
-
-    const chatID = data.chats[0].chatId;
-
-    const socket = io("http://localhost:5138", {
-      withCredentials: true,
-      auth: {
-        token,
-      },
-    });
-
-    socket.on("connect", () => {
-      socket.emit("message", { chatID, content: "Hello" });
-    });
-
-    socket.on("message", (data) => {
+    miau.sendMessage(chatID, "Hello");
+    miau.onMessage((data) => {
       expect(data.content).toBe("Hello");
       done();
     });
@@ -108,50 +76,40 @@ describe("Socket connection", () => {
   test("Should not be able to send a message to a chat that does not exist", async (done) => {
     const token = (await login("test1", "Password1234")).token;
 
-    const socket = io("http://localhost:5138", {
-      withCredentials: true,
-      auth: {
-        token,
-      },
-    });
+    const miau = connect(token);
 
-    socket.on("connect", () => {
-      socket.emit("message", { chatID: 1, content: "Hello" });
-    });
+    miau.sendMessage(-1, "Hello");
 
-    socket.on("error", (data) => {
+    miau.error((data) => {
       expect(data.message).toBe("Chat does not exist");
       done();
     });
   });
 
-  test("Should not be able to send a message with invalid data", async (done) => {
+  test("Should not be able to send a message with invalid content", async (done) => {
     const token = (await login("test1", "Password1234")).token;
 
-    const chatData = {
-      name: "",
-      group: false,
-      receipient: "test2",
-    };
+    const chatID = (await createChat(token, "test2")).chatId;
 
-    await fetch("http://localhost:5138/chat/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(chatData),
+    const miau = connect(token);
+    miau.error((error) => {
+      expect(error.message).toBe("Invalid content");
+      done();
     });
 
-    const chats = await fetch("http://localhost:5138/chat", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    miau.sendMessage(chatID, "");
+  });
+
+  test("Should not be able to send a message with invalid chatID", async (done) => {
+    const token = (await login("test1", "Password1234")).token;
+
+    const miau = connect(token);
+    miau.error((error) => {
+      expect(error.message).toBe("Invalid chatID");
+      done();
     });
 
-    if (chats.status !== 200) {
-      const data = (await chats.json()) as { error: string };
-      throw new Error(data.error);
-    }
+    // @ts-ignore
+    miau.sendMessage(null, "Hello");
   });
 });

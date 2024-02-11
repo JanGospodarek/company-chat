@@ -15,11 +15,17 @@ export const disconnectUser = async (user: User) => {
   socketMap.delete(user.id);
 };
 
-export const sendMessage = async (data: any, socket: Socket) => {
+export const receiveMessage = async (data: any, socket: Socket) => {
   const { chatID, content }: { chatID: number; content: string } = data;
 
-  if (chatID === undefined || content === undefined) {
-    throw new Error("Invalid data");
+  // Validate chatID
+  if (typeof chatID !== "number") {
+    throw new Error("Invalid chatID");
+  }
+
+  // Validate content
+  if (typeof content !== "string" || content.length === 0) {
+    throw new Error("Invalid content");
   }
 
   const chat = await getChatByID(chatID);

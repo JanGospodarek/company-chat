@@ -1,4 +1,5 @@
 import * as type from "./types";
+import { Socket, io } from "socket.io-client";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
@@ -179,4 +180,53 @@ export const addUsersToChat = async (
   } else {
     return d.chat as type.GroupChat;
   }
+};
+
+class Miau {
+  private socket: Socket;
+
+  constructor(token: string) {
+    this.socket = io(apiURL, {
+      withCredentials: true,
+      auth: {
+        token,
+      },
+    });
+  }
+
+  /**
+   * Get the socket
+   * @returns The socket
+   */
+  get() {
+    return this.socket;
+  }
+
+  error(cb: (error: { message: string }) => void) {
+    this.socket.on("error", cb);
+  }
+
+  connect_error(cb: (error: Error) => void) {
+    this.socket.on("connect_error", cb);
+  }
+
+  onMessage(cb: (data: type.Message) => void) {
+    this.socket.on("message", cb);
+  }
+
+  sendMessage(chatID: number, content: string) {
+    if (!this.socket.connected) {
+      this.socket.once("connect", () => {
+        this.socket.emit("message", { chatID, content });
+      });
+
+      return;
+    }
+
+    this.socket.emit("message", { chatID, content });
+  }
+}
+
+export const connect = (token: string) => {
+  return new Miau(token);
 };
