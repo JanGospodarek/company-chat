@@ -4,16 +4,29 @@ import { View, Text, Pressable } from "react-native";
 import {
   Button,
   PaperProvider,
-  MD3LightTheme as DefaultTheme,
+  DefaultTheme,
+  useTheme,
 } from "react-native-paper";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
+import React from "react";
+
 const StartScreen = () => {
   const [fontsLoaded, fontError] = useFonts({
     "League-Spartan": require("../assets/fonts/LeagueSpartan-Regular.ttf"),
     "League-Spartan-Bold": require("../assets/fonts/LeagueSpartan-Bold.ttf"),
     "League-Spartan-SemiBold": require("../assets/fonts/LeagueSpartan-SemiBold.ttf"),
   });
+  const primaryTheme = {
+    ...DefaultTheme,
+    custom: "property",
+    colors: {
+      ...DefaultTheme.colors,
+      primary: "rgb(120, 69, 172)",
+      secondary: "#E5E2F7",
+      background: "#FFFFFF",
+    },
+  };
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
@@ -25,7 +38,7 @@ const StartScreen = () => {
     return null;
   }
   return (
-    <PaperProvider>
+    <PaperProvider theme={primaryTheme}>
       <View
         style={{
           flex: 1,
@@ -44,6 +57,7 @@ const StartScreen = () => {
         >
           Company chat
         </Text>
+
         <Link href="/auth/login" asChild>
           <Button
             mode="contained"
