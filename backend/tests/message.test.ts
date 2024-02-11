@@ -1,7 +1,5 @@
 import { expect, test, describe, afterEach, beforeEach } from "bun:test";
 import "../src/index";
-import prisma from "../src/config/db";
-import { io } from "socket.io-client";
 
 import { databaseCleanup } from "./utils";
 import {

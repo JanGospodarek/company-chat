@@ -26,4 +26,8 @@ async function databaseCleanup() {
   await prisma.user.deleteMany();
 }
 
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export { encryptData, decryptData, databaseCleanup };

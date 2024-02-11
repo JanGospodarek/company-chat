@@ -1,7 +1,7 @@
 export interface User {
   id: number;
   username: string;
-  createdAt: string;
+  createdAt: string | Date;
 }
 
 export interface LoggedInUser extends User {
@@ -12,7 +12,8 @@ export interface Chat {
   chatId: number;
   name: string;
   type: "PRIVATE" | "GROUP";
-  createdAt: string;
+  createdAt: string | Date;
+  messages: Message[];
 }
 
 export interface PrivateChat extends Chat {
@@ -26,6 +27,7 @@ export interface GroupChat extends Chat {
 export interface Message {
   messageId: number;
   content: string;
-  createdAt: string;
+  attachment: string | null;
+  createdAt: string | Date;
   sender: User;
 }

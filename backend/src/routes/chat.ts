@@ -1,6 +1,5 @@
 import express from "express";
-import { createChat, addUsersToChat } from "../services/chat";
-import { getUserChats } from "../models/chat";
+import { createChat, addUsersToChat, getChats } from "../services/chat";
 import { authenticate } from "../services/auth";
 import type { IUser } from "../models/user";
 
@@ -10,7 +9,7 @@ chatRouter.get("/", authenticate, async (req, res) => {
   const user = req.user as IUser;
 
   try {
-    const chats = await getUserChats(user.id);
+    const chats = await getChats(user.id);
 
     res.send({ chats });
   } catch (error: any) {

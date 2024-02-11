@@ -1,6 +1,6 @@
 import { expect, test, describe, afterEach, beforeEach } from "bun:test";
 import "../src/index";
-import { databaseCleanup } from "./utils";
+import { databaseCleanup, sleep } from "./utils";
 import {
   register,
   login,
@@ -8,6 +8,7 @@ import {
   createGroupChat,
   getChats,
   addUsersToChat,
+  connect,
 } from "../../shared/api";
 
 async function createTestUsers() {
@@ -142,6 +143,33 @@ describe("Get user chats", () => {
     const chats = await getChats(token);
 
     expect(chats.length).toBe(chatCount);
+  });
+
+  test("User can get their chats with messages", async () => {
+    const token1 = (await login("test1", "Password1234")).token;
+    const token2 = (await login("test2", "Password1234")).token;
+
+    const chat = await createChat(token1, "test2");
+
+    const chatID = chat.chatId;
+
+    const miau = connect(token1);
+
+    miau.sendMessage(chatID, "Hello");
+    await sleep(50);
+    miau.sendMessage(chatID, "World");
+    await sleep(50);
+    miau.sendMessage(chatID, "!");
+    await sleep(100);
+
+    // Wait for messages to be sent
+    const chats = await getChats(token2);
+
+    expect(chats.length).toBe(1);
+
+    const messages = chats[0].messages;
+
+    expect(messages.length).toBe(3);
   });
 
   test("User cannot get chats without being logged in", async () => {

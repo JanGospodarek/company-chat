@@ -5,7 +5,39 @@ import {
   getChatByID,
   userInChat as uInChat,
   addUsersToChat as aUsersToChat,
+  getUserChats,
 } from "../models/chat";
+
+import { type Chat } from "../../../shared/types";
+
+export async function getChats(userID: number): Promise<Chat[]> {
+  if (userID === undefined) {
+    throw new Error("Missing fields");
+  }
+
+  const rawChats = await getUserChats(userID);
+  const chats = rawChats.map((c) => {
+    const messages = c.Message.map((m) => {
+      return {
+        messageId: m.messageId,
+        content: m.content,
+        attachment: m.attachment,
+        createdAt: m.createdAt,
+        sender: m.user,
+      };
+    });
+
+    return {
+      chatId: c.chatId,
+      name: c.name,
+      type: c.type,
+      createdAt: c.createdAt,
+      messages: messages,
+    };
+  });
+
+  return chats;
+}
 
 export const createChat = async (
   user: IUser,

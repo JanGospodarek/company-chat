@@ -57,6 +57,30 @@ export const getUserChats = async (userID: number) => {
         },
       },
     },
+    include: {
+      Message: {
+        select: {
+          messageId: true,
+          content: true,
+          attachment: true,
+          createdAt: true,
+          chat: false,
+          chatId: false,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              createdAt: true,
+            },
+          },
+          userId: false,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        take: 25,
+      },
+    },
   });
 
   return chats;

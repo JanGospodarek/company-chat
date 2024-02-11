@@ -182,7 +182,7 @@ export const addUsersToChat = async (
   }
 };
 
-class Miau {
+export class Miau {
   private socket: Socket;
 
   constructor(token: string) {
