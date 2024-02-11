@@ -1,15 +1,24 @@
 import express from "express";
-import { Server } from "socket.io";
+import { Server, type Socket } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 
-import { authRouter } from "./routes";
-import prisma from "./config/db";
+import { authRouter, chatRouter, userRouter } from "./routes";
 import cors from "cors";
 import { decryptData, encryptData } from "./services/encryption";
+import { wsAuthenticate } from "./services/auth";
+import {
+  connectUser,
+  disconnectUser,
+  receiveMessage,
+  notifyActivity,
+} from "./services/message";
+
+// Check if the environment is test
 const test = process.env.NODE_ENV === "test";
 const port = test ? 5138 : process.env.PORT || 5000;
 
+// Initialize the app
 const app = express();
 
 // Middlewares
@@ -21,38 +30,43 @@ app.use(cookieParser());
 
 app.use(cors());
 // Routes
-// app.options("*", cors());
-// app.options("*", (req, res) => {
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   if (req.method === "OPTIONS") {
-//     // Set the necessary headers for preflight request
-//     res.setHeader(
-//       "Access-Control-Allow-Methods",
-//       "GET, POST, PUT, DELETE, PATCH"
-//     ); // Specify the allowed HTTP methods
-//     res.setHeader(
-//       "Access-Control-Allow-Headers",
-//       "Content-Type, Authorization"
-//     ); // Specify the allowed headers
-//     res.writeHead(204); // Send a successful response without any content
-//     res.end();
-//     return;
-//   }
-// });
-
 app.use("/auth", authRouter);
+app.use("/chat", chatRouter);
+app.use("/user", userRouter);
+app.use("/encrypt-test", decryptData);
 
-const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
-const io = new Server(server);
+const server = app.listen(port);
 
 app.get("/status", async (req, res) => {
-  const users = await prisma.users.findMany();
-  res.send({ status: "ok", users });
+  res.send({ status: "ok" });
 });
 
-// app.post("/encrypt-test", async (req, res) => {
-//   console.log("req.body after mid", req.body);
-//   res.send(encryptData(req.body));
-// });
+const io = new Server(server);
+
+io.use(async (socket, next) => {
+  try {
+    await wsAuthenticate(socket);
+
+    next();
+  } catch (error) {
+    next(new Error("Authentication error"));
+  }
+});
+
+io.on("connection", async (socket) => {
+  await connectUser(socket);
+  notifyActivity();
+
+  socket.on("disconnect", async () => {
+    await disconnectUser(socket.data["user"]);
+    notifyActivity();
+  });
+
+  socket.on("message", async (data) => {
+    try {
+      await receiveMessage(data, socket);
+    } catch (error: any) {
+      socket.emit("error", { message: error.message });
+    }
+  });
+});

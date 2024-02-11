@@ -5,12 +5,22 @@ import type { Request } from "express";
 import jwt from "jsonwebtoken";
 
 import { getUserByUsername, registerUser } from "../models/user";
+import { type LoggedInUser } from "../../../shared/types";
+import { Socket } from "socket.io";
 
 const strategy = new JWTStrategy(
   {
     secretOrKey: process.env.JWT_SECRET!,
     jwtFromRequest: (req: Request) => {
       const token = req.cookies["jwt"];
+
+      if (process.env.NODE_ENV === "test") {
+        const header = req.headers.authorization;
+
+        if (header) {
+          return header.split(" ")[1];
+        }
+      }
 
       if (token) {
         return token;
@@ -27,15 +37,18 @@ const strategy = new JWTStrategy(
     return done(null, false);
   }
 );
-passport.use(strategy);
+passport.use("jwt", strategy);
 
-const authenticate = passport.authenticate("jwt", { session: false });
+const authenticate = passport.authenticate("jwt", {
+  session: false,
+  assignProperty: "user",
+});
 
-const login = async (
+async function login(
   username: string,
   password: string,
   is_mobile: boolean
-) => {
+): Promise<LoggedInUser> {
   let token = "";
 
   const user = await getUserByUsername(username);
@@ -65,15 +78,17 @@ const login = async (
     throw new Error("Error signing token");
   }
 
-  return token;
-};
+  const resUser: LoggedInUser = {
+    username: user.username,
+    id: user.id,
+    token,
+    createdAt: user.createdAt.toString(),
+  };
 
-const register = async (
-  username: string,
-  password: string,
-  name: string,
-  surname: string
-) => {
+  return resUser;
+}
+
+const register = async (username: string, password: string) => {
   const user = await getUserByUsername(username);
 
   if (user) {
@@ -83,7 +98,7 @@ const register = async (
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
-    const newUser = await registerUser(username, hashedPassword, name, surname);
+    const newUser = await registerUser(username, hashedPassword);
   } catch (error) {
     throw new Error("Error registering user");
   }
@@ -106,4 +121,28 @@ const validatePassword = (password: string, username: string) => {
   }
 };
 
-export { authenticate, login, register, validatePassword };
+const wsAuthenticate = async (socket: Socket) => {
+  const token = socket.handshake.auth["token"];
+
+  if (!token) {
+    throw new Error("Unauthorized");
+  }
+
+  const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+    username: string;
+  };
+
+  if (!payload.username) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await getUserByUsername(payload.username);
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  socket.data["user"] = user;
+};
+
+export { authenticate, wsAuthenticate, login, register, validatePassword };
