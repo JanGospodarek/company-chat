@@ -89,20 +89,30 @@ describe("New user flow", () => {
     const chat = chats[0];
   });
 
+  test("Should get active users", async (done) => {
+    const token2 = (await login("test2", "Password1234")).token;
+    const miau2 = connect(token2);
+
+    miau = connect(token);
+    miau.onActivity((users) => {
+      expect(users.length).toBe(1);
+      done();
+    });
+  });
+
   test("Should send a message (initial)", async (done) => {
     const chats = await getChats(token);
     const chat = chats[0];
-
-    miau = connect(token);
 
     miau.enterChat(chat.chatId);
 
     miau.sendMessage("Hello");
     await sleep(50);
     miau.sendMessage("World");
-    miau.onMessage((message) => {
+
+    setTimeout(() => {
       done();
-    });
+    }, 100);
   });
 
   test("Should get chats with messages", async () => {

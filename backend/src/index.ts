@@ -10,6 +10,7 @@ import {
   connectUser,
   disconnectUser,
   receiveMessage,
+  notifyActivity,
 } from "./services/message";
 
 // Check if the environment is test
@@ -50,10 +51,12 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", async (socket) => {
-  connectUser(socket);
+  await connectUser(socket);
+  notifyActivity();
 
-  socket.on("disconnect", () => {
-    disconnectUser(socket.data["user"]);
+  socket.on("disconnect", async () => {
+    await disconnectUser(socket.data["user"]);
+    notifyActivity();
   });
 
   socket.on("message", async (data) => {

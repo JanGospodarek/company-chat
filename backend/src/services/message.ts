@@ -1,7 +1,7 @@
-import type { User } from "@prisma/client";
 import { createMessage, getMessages } from "../models/message";
 import { Socket } from "socket.io";
 import { getChatByID, getChatUsers } from "../models/chat";
+import type { User } from "../../../shared/types";
 
 const socketMap = new Map<number, Socket>();
 
@@ -53,4 +53,26 @@ export const getChatMessages = async (chatID: number) => {
   const messages = await getMessages(chatID);
 
   return messages;
+};
+
+export const notifyActivity = async () => {
+  const activeUsers: User[] = [];
+
+  for (let [_, socket] of socketMap) {
+    const _user = socket.data["user"];
+    const user: User = {
+      id: _user.id,
+      username: _user.username,
+      createdAt: _user.createdAt,
+    };
+
+    activeUsers.push(user);
+  }
+
+  for (let [_, socket] of socketMap) {
+    socket.emit(
+      "activity",
+      activeUsers.filter((u) => u.id !== socket.data["user"].id)
+    );
+  }
 };

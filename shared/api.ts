@@ -240,6 +240,10 @@ export class Miau {
     this.socket.on("message", cb);
   }
 
+  onActivity(cb: (data: type.User[]) => void) {
+    this.socket.on("activity", cb);
+  }
+
   sendMessage(content: string) {
     const chatID = this.activeChat;
 
