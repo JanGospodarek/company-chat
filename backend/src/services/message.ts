@@ -1,7 +1,14 @@
-import { createMessage, getMessages } from "../models/message";
+// import { createMessage, getMessages, getMessage } from "../models/message";
 import { Socket } from "socket.io";
-import { getChatByID, getChatUsers } from "../models/chat";
-import type { User } from "../../../shared/types";
+// import { getChatByID, getChatNotify, getChatUsers } from "../models/chat";
+import type { GroupChat, PrivateChat, User } from "@shared/types";
+import { getChat } from "@models/chat";
+import { createMessage, getMessage } from "@models/message";
+
+type Message = {
+  chatID: number;
+  content: string;
+};
 
 const socketMap = new Map<number, Socket>();
 
@@ -9,63 +16,55 @@ export const connectUser = async (socket: Socket) => {
   const user = socket.data["user"] as User;
 
   socketMap.set(user.id, socket);
+
+  notifyActivity();
 };
 
 export const disconnectUser = async (user: User) => {
   socketMap.delete(user.id);
+
+  notifyActivity();
 };
 
-export const receiveMessage = async (data: any, socket: Socket) => {
-  const { chatID, content }: { chatID: number; content: string } = data;
-
-  // Validate chatID
-  if (typeof chatID !== "number") {
+export async function receiveMessage(data: Message, socket: Socket) {
+  if (typeof data.chatID !== "number") {
     throw new Error("Invalid chatID");
   }
 
-  // Validate content
-  if (typeof content !== "string" || content.length === 0) {
+  if (typeof data.content !== "string" || data.content.length === 0) {
     throw new Error("Invalid content");
   }
 
-  const chat = await getChatByID(chatID);
+  const user = socket.data["user"] as User;
+
+  const chat = await getChat(data.chatID);
 
   if (!chat) {
     throw new Error("Chat does not exist");
   }
 
-  const user = socket.data["user"] as User;
+  const messageId = await createMessage(data.chatID, user.id, data.content);
+  const message = await getMessage(messageId);
 
-  const message = await createMessage(chatID, user.id, content);
-
-  const users = await getChatUsers(chatID);
+  const users =
+    chat.type === "PRIVATE"
+      ? [(chat as PrivateChat).receipient]
+      : (chat as GroupChat).users;
 
   for (let user of users) {
-    const s = socketMap.get(user);
+    const s = socketMap.get(user.id);
 
     if (s) {
       s.emit("message", message);
     }
   }
-};
+}
 
-export const getChatMessages = async (chatID: number) => {
-  const messages = await getMessages(chatID);
-
-  return messages;
-};
-
-export const notifyActivity = async () => {
+async function notifyActivity() {
   const activeUsers: User[] = [];
 
   for (let [_, socket] of socketMap) {
-    const _user = socket.data["user"];
-    const user: User = {
-      id: _user.id,
-      username: _user.username,
-      createdAt: _user.createdAt,
-    };
-
+    const user = socket.data["user"] as User;
     activeUsers.push(user);
   }
 
@@ -75,4 +74,4 @@ export const notifyActivity = async () => {
       activeUsers.filter((u) => u.id !== socket.data["user"].id)
     );
   }
-};
+}
