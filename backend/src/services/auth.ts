@@ -1,18 +1,23 @@
 import passport from "passport";
 import { Strategy as JWTStrategy } from "passport-jwt";
-import bcrypt from "bcrypt";
 import type { Request } from "express";
 import jwt from "jsonwebtoken";
 
-import { getUserByUsername, registerUser } from "../models/user";
-import { type LoggedInUser } from "../../../shared/types";
+import {
+  getUserByUsername,
+  getUserByUsernameLogin,
+  registerUser,
+} from "@models/user";
 import { Socket } from "socket.io";
+
+import { parse } from "cookie";
+import type { User } from "@shared/types";
 
 const strategy = new JWTStrategy(
   {
     secretOrKey: process.env.JWT_SECRET!,
     jwtFromRequest: (req: Request) => {
-      const token = req.cookies["jwt"];
+      const token = req.cookies["token"];
 
       if (process.env.NODE_ENV === "test") {
         const header = req.headers.authorization;
@@ -46,18 +51,21 @@ const authenticate = passport.authenticate("jwt", {
 
 async function login(
   username: string,
-  password: string,
-  is_mobile: boolean
-): Promise<LoggedInUser> {
+  password: string
+): Promise<{ user: User; token: string }> {
+  if (!username || !password) {
+    throw new Error("Missing fields");
+  }
+
   let token = "";
 
-  const user = await getUserByUsername(username);
+  const user = await getUserByUsernameLogin(username);
 
   if (!user) {
     throw new Error("Wrong username or password");
   }
 
-  const isPasswordValid = bcrypt.compareSync(password, user.password);
+  const isPasswordValid = Bun.password.verifySync(password, user.password);
 
   if (!isPasswordValid) {
     throw new Error("Wrong username or password");
@@ -67,38 +75,43 @@ async function login(
     username: user.username,
   };
 
-  // If the user is using a mobile device, the token will not expire
-  const expiresIn = is_mobile ? "365d" : "1d";
-
   try {
     token = jwt.sign(payload, process.env.JWT_SECRET!, {
-      expiresIn,
+      expiresIn: "1d",
     });
   } catch (error) {
     throw new Error("Error signing token");
   }
 
-  const resUser: LoggedInUser = {
+  const resUser: User = {
     username: user.username,
     id: user.id,
-    token,
     createdAt: user.createdAt.toString(),
   };
 
-  return resUser;
+  return { user: resUser, token };
 }
 
 const register = async (username: string, password: string) => {
+  if (!username || !password) {
+    throw new Error("Missing fields");
+  }
+
+  validatePassword(password, username);
+
   const user = await getUserByUsername(username);
 
   if (user) {
     throw new Error("Username already exists");
   }
 
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const hashedPassword = Bun.password.hashSync(password, {
+    cost: 10,
+    algorithm: "bcrypt",
+  });
 
   try {
-    const newUser = await registerUser(username, hashedPassword);
+    await registerUser(username, hashedPassword);
   } catch (error) {
     throw new Error("Error registering user");
   }
@@ -108,12 +121,11 @@ const validatePassword = (password: string, username: string) => {
   // Password must be at least 8 characters long and contain at least one letter and one number and one uppercase letter
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/gm;
 
-  // Teporarily removed the password validation
-  // if (!regex.test(password)) {
-  //   throw new Error(
-  //     "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number"
-  //   );
-  // }
+  if (!regex.test(password)) {
+    throw new Error(
+      "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number"
+    );
+  }
 
   // Password cannot contain the username
   if (password.includes(username)) {
@@ -122,7 +134,14 @@ const validatePassword = (password: string, username: string) => {
 };
 
 const wsAuthenticate = async (socket: Socket) => {
-  const token = socket.handshake.auth["token"];
+  const cookieString = socket.request.headers.cookie;
+
+  if (!cookieString) {
+    throw new Error("Unauthorized");
+  }
+
+  const cookies = parse(cookieString);
+  const token = cookies["token"];
 
   if (!token) {
     throw new Error("Unauthorized");
