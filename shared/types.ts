@@ -8,7 +8,7 @@ export interface LoggedInUser extends User {
   token: string;
 }
 
-export interface Chat {
+interface Chat {
   chatId: number;
   name: string;
   type: "PRIVATE" | "GROUP";
@@ -17,7 +17,7 @@ export interface Chat {
 }
 
 export interface PrivateChat extends Chat {
-  receipient: string;
+  receipient: User;
 }
 
 export interface GroupChat extends Chat {
@@ -25,9 +25,10 @@ export interface GroupChat extends Chat {
 }
 
 export interface Message {
+  chatId: number;
   messageId: number;
   content: string;
   attachment: string | null;
   createdAt: string | Date;
-  sender: User;
+  user: User;
 }

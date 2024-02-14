@@ -1,59 +1,116 @@
+import type { Prisma } from "@prisma/client";
 import prisma from "../config/db";
+import type { PrivateChat, GroupChat } from "@shared/types";
 
-export const createChat = async (userID: number, receipientID: number) => {
+type RawChat = Prisma.ChatGetPayload<{
+  include: {
+    Message: {
+      select: {
+        messageId: true;
+        chatId: true;
+        content: true;
+        attachment: true;
+        createdAt: true;
+        user: {
+          select: {
+            id: true;
+            username: true;
+            createdAt: true;
+          };
+        };
+      };
+    };
+    UserChat: {
+      select: {
+        User: {
+          select: {
+            id: true;
+            username: true;
+            createdAt: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+/**
+ * Create a new private chat in the database
+ * @param userID userID of the sender
+ * @param receipientID userID of the receipient
+ * @returns chatID
+ */
+export async function createPrivateChat(
+  userId: number,
+  receipientId: number
+): Promise<number> {
   // Check if chat already exists
-  const chat = await prisma.chat.findFirst({
+  const exists = await prisma.chat.findFirst({
     where: {
       AND: [
-        { UserChat: { some: { userId: userID } } },
-        { UserChat: { some: { userId: receipientID } } },
+        { UserChat: { some: { userId } } },
+        { UserChat: { some: { userId: receipientId } } },
       ],
     },
   });
 
-  if (chat) {
+  if (exists) {
     throw new Error("Chat already exists");
   }
 
-  // Create chat
-  const newChat = await prisma.chat.create({
+  const chat = await prisma.chat.create({
     data: {
       name: "Private Chat",
+      type: "PRIVATE",
       UserChat: {
         createMany: {
-          data: [{ userId: userID }, { userId: receipientID }],
+          data: [{ userId }, { userId: receipientId }],
         },
       },
-      type: "PRIVATE",
     },
   });
 
-  return newChat;
-};
+  return chat.chatId;
+}
 
-export const createGroupChat = async (name: string, userID: number) => {
-  // Create chat
-  const newChat = await prisma.chat.create({
+/**
+ * Create a new group chat in the database
+ * @param name name of the group chat
+ * @param userId userId of the sender
+ * @returns chatID
+ */
+export async function createGroupChat(
+  name: string,
+  userId: number
+): Promise<number> {
+  const chat = await prisma.chat.create({
     data: {
       name,
+      type: "GROUP",
       UserChat: {
         create: {
-          userId: userID,
+          userId,
         },
       },
-      type: "GROUP",
     },
   });
 
-  return newChat;
-};
+  return chat.chatId;
+}
 
-export const getUserChats = async (userID: number) => {
-  const chats = await prisma.chat.findMany({
+/**
+ * Get all chats for a user
+ * @param userId
+ * @returns array of Chats
+ */
+export async function getChats(
+  userId: number
+): Promise<(PrivateChat | GroupChat)[]> {
+  const rawChats = await prisma.chat.findMany({
     where: {
       UserChat: {
         some: {
-          userId: userID,
+          userId,
         },
       },
     },
@@ -61,11 +118,10 @@ export const getUserChats = async (userID: number) => {
       Message: {
         select: {
           messageId: true,
+          chatId: true,
           content: true,
           attachment: true,
           createdAt: true,
-          chat: false,
-          chatId: false,
           user: {
             select: {
               id: true,
@@ -73,60 +129,145 @@ export const getUserChats = async (userID: number) => {
               createdAt: true,
             },
           },
-          userId: false,
         },
-        orderBy: {
-          createdAt: "asc",
+      },
+      UserChat: {
+        where: {
+          NOT: {
+            userId,
+          },
         },
-        take: 25,
+        select: {
+          User: {
+            select: {
+              id: true,
+              username: true,
+              createdAt: true,
+            },
+          },
+        },
       },
     },
   });
 
-  return chats;
-};
+  const chats = rawChats.map((chat) => {
+    return parseChat(chat);
+  });
 
-export const getChatByID = async (chatID: number) => {
-  const chat = await prisma.chat.findUnique({
+  return chats;
+}
+
+/**
+ * Get a single chat by its ID
+ * @param chatId ID of the chat
+ * @returns Chat
+ */
+export async function getChat(
+  chatId: number
+): Promise<GroupChat | PrivateChat> {
+  const rawChat = await prisma.chat.findUnique({
     where: {
-      chatId: chatID,
+      chatId,
+    },
+    include: {
+      Message: {
+        select: {
+          messageId: true,
+          chatId: true,
+          content: true,
+          attachment: true,
+          createdAt: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+      UserChat: {
+        select: {
+          User: {
+            select: {
+              id: true,
+              username: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
     },
   });
 
-  return chat;
-};
+  if (!rawChat) {
+    throw new Error("Chat not found");
+  }
 
-export const userInChat = async (chatID: number, userID: number) => {
+  return parseChat(rawChat);
+}
+
+/**
+ * Check if a user is in a chat
+ * @param chatId ID of the chat
+ * @param userId ID of the user
+ * @returns boolean
+ */
+export async function userInChat(
+  chatId: number,
+  userId: number
+): Promise<boolean> {
   const chat = await prisma.chat.findFirst({
     where: {
-      AND: [{ chatId: chatID }, { UserChat: { some: { userId: userID } } }],
+      AND: [{ chatId }, { UserChat: { some: { userId } } }],
     },
   });
 
-  return chat;
-};
+  return Boolean(chat);
+}
 
-export const addUsersToChat = async (chatID: number, users: number[]) => {
+/**
+ * Add users to a chat
+ * @param chatId ID of the chat
+ * @param users array of userIDs
+ * @returns chatID
+ */
+export async function addUsersToChat(
+  chatId: number,
+  users: number[]
+): Promise<number> {
   const newUsers = users.map((userId) => {
     return {
-      chatId: chatID,
+      chatId,
       userId,
     };
   });
 
-  const addedUsers = await prisma.userChat.createMany({
+  await prisma.userChat.createMany({
     data: newUsers,
   });
 
-  return addedUsers;
-};
+  return chatId;
+}
 
-export const getChatUsers = async (chatID: number) => {
-  const users = await prisma.userChat.findMany({
-    where: {
-      chatId: chatID,
-    },
-  });
-
-  return users.map((user) => user.userId);
-};
+/**
+ * Parse raw chat data into a Chat object
+ * @param c raw chat data
+ * @returns GroupChat | PrivateChat
+ */
+function parseChat(c: RawChat): GroupChat | PrivateChat {
+  const messages = c.Message;
+  if (c.type === "PRIVATE") {
+    return {
+      ...c,
+      messages,
+      receipient: c.UserChat[0].User,
+    };
+  } else {
+    return {
+      ...c,
+      messages,
+      users: c.UserChat.map((user) => user.User),
+    };
+  }
+}
