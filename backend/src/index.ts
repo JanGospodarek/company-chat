@@ -1,18 +1,12 @@
 import express from "express";
-import { Server, type Socket } from "socket.io";
+import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 
-import { authRouter, chatRouter, userRouter } from "./routes";
-import cors from "cors";
-import { decryptData, encryptData } from "./services/encryption";
-import { wsAuthenticate } from "./services/auth";
-import {
-  connectUser,
-  disconnectUser,
-  receiveMessage,
-  notifyActivity,
-} from "./services/message";
+import { authRouter, chatRouter, userRouter } from "@routes";
+// import cors from "cors";
+import { wsAuthenticate } from "@services/auth";
+import { connectUser, disconnectUser, receiveMessage } from "@services/message";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
@@ -28,12 +22,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(cookieParser());
 
-app.use(cors());
 // Routes
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 app.use("/user", userRouter);
-app.use("/encrypt-test", decryptData);
 
 const server = app.listen(port);
 
@@ -41,7 +33,9 @@ app.get("/status", async (req, res) => {
   res.send({ status: "ok" });
 });
 
-const io = new Server(server);
+const io = new Server(server, {
+  path: "/ws",
+});
 
 io.use(async (socket, next) => {
   try {
@@ -55,11 +49,9 @@ io.use(async (socket, next) => {
 
 io.on("connection", async (socket) => {
   await connectUser(socket);
-  notifyActivity();
 
   socket.on("disconnect", async () => {
     await disconnectUser(socket.data["user"]);
-    notifyActivity();
   });
 
   socket.on("message", async (data) => {
