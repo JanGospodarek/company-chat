@@ -1,36 +1,57 @@
+import type { Prisma } from "@prisma/client";
 import prisma from "../config/db";
-import { type User } from "../../../shared/types";
+import type { User } from "@shared/types";
 
-export interface IUser {
-  id: number;
-  username: string;
-  password: string;
-  createdAt: Date;
-}
+export type RawUser = Prisma.UserGetPayload<{}>;
 
-export const registerUser = async (username: string, password: string) => {
+/**
+ * Register a new user in the database
+ * @param username username
+ * @param hash password hash
+ * @returns User
+ */
+export async function registerUser(
+  username: string,
+  hash: string
+): Promise<number> {
   const user = await prisma.user.create({
     data: {
       username,
-      password,
+      password: hash,
     },
   });
 
-  return user;
-};
+  return user.id;
+}
 
-export const getUserByUsername = async (username: string) => {
+/**
+ * Get a user by their username
+ * @param username  username
+ * @returns
+ */
+export async function getUserByUsername(username: string): Promise<User> {
   const user = await prisma.user.findUnique({
     where: {
       username,
     },
+    select: {
+      id: true,
+      username: true,
+      createdAt: true,
+    },
   });
+
+  if (!user) throw new Error("User not found");
+
   return user;
-};
+}
 
-export async function getUsers(user: User): Promise<User[]> {
-  if (!user.id) throw new Error("User not found");
-
+/**
+ * Get a list of users that do not have a private chat with the user
+ * @param user
+ * @returns array of Users
+ */
+export async function getNewUsers(userId: number): Promise<User[]> {
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -38,9 +59,29 @@ export async function getUsers(user: User): Promise<User[]> {
       createdAt: true,
     },
     where: {
-      NOT: {
-        id: user.id,
-      },
+      AND: [
+        {
+          NOT: {
+            id: userId,
+          },
+        },
+        {
+          NOT: {
+            UserChat: {
+              some: {
+                Chat: {
+                  type: "PRIVATE",
+                  UserChat: {
+                    some: {
+                      userId,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
     },
   });
 
