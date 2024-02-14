@@ -8,7 +8,7 @@ export type RawUser = Prisma.UserGetPayload<{}>;
  * Register a new user in the database
  * @param username username
  * @param hash password hash
- * @returns User
+ * @returns userID
  */
 export async function registerUser(
   username: string,
@@ -27,7 +27,7 @@ export async function registerUser(
 /**
  * Get a user by their username
  * @param username  username
- * @returns
+ * @returns User
  */
 export async function getUserByUsername(username: string): Promise<User> {
   const user = await prisma.user.findUnique({
@@ -38,6 +38,23 @@ export async function getUserByUsername(username: string): Promise<User> {
       id: true,
       username: true,
       createdAt: true,
+    },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  return user;
+}
+
+/**
+ * Get a user by their username (login)
+ */
+export async function getUserByUsernameLogin(
+  username: string
+): Promise<RawUser> {
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
     },
   });
 
