@@ -51,14 +51,12 @@ export async function getUserByUsername(username: string): Promise<User> {
  */
 export async function getUserByUsernameLogin(
   username: string
-): Promise<RawUser> {
+): Promise<RawUser | null> {
   const user = await prisma.user.findUnique({
     where: {
       username,
     },
   });
-
-  if (!user) throw new Error("User not found");
 
   return user;
 }

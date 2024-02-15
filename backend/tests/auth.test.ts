@@ -13,7 +13,7 @@ describe("signup", () => {
     const password = "Password1234";
 
     const user = await register(username, password);
-    expect(user.token).toBeDefined();
+    expect(user.username).toBeDefined();
   });
 
   test("User cannot signup with missing fields", async () => {
@@ -73,7 +73,7 @@ describe("login", () => {
 
     try {
       const user = await login(username, password);
-      expect(user.token).toBeDefined();
+      expect(user.username).toBeDefined();
     } catch (error: any) {
       throw new Error(error.message);
     }

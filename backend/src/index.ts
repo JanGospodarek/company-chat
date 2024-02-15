@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 
-import { authRouter, chatRouter, userRouter } from "@routes";
+import { authRouter, chatRouter } from "@routes";
 // import cors from "cors";
 import { wsAuthenticate } from "@services/auth";
 import { connectUser, disconnectUser, receiveMessage } from "@services/message";
@@ -25,7 +25,6 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
-app.use("/user", userRouter);
 
 const server = app.listen(port);
 

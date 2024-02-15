@@ -4,6 +4,8 @@ import { Socket, io } from "socket.io-client";
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
 const apiURL = test ? "http://localhost:5138" : "/api";
+const socketURL = test ? "http://localhost:5138" : "";
+const socketPath = test ? "" : "/ws";
 
 export const register = async (username: string, password: string) => {
   const res = await fetch(`${apiURL}/auth/register`, {
@@ -19,7 +21,7 @@ export const register = async (username: string, password: string) => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as { user: type.LoggedInUser };
+  const d = (await res.json()) as { user: type.User };
 
   return d.user;
 };
@@ -38,12 +40,50 @@ export const login = async (username: string, password: string) => {
     throw new Error(data.error);
   }
 
+  const d = (await res.json()) as { user: type.User };
+
+  return d.user;
+};
+
+export const logout = async () => {
+  const res = await fetch(`${apiURL}/auth/logout`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  return;
+};
+
+export const authenticate = async () => {
+  const res = await fetch(`${apiURL}/auth/authenticate`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
   const d = (await res.json()) as { user: type.LoggedInUser };
 
   return d.user;
 };
 
-export const createChat = async (token: string, receipient: string) => {
+export const createChat = async (receipient: string) => {
   const chatData = {
     name: "",
     group: false,
@@ -54,7 +94,6 @@ export const createChat = async (token: string, receipient: string) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(chatData),
   });
@@ -79,7 +118,7 @@ export const createChat = async (token: string, receipient: string) => {
   }
 };
 
-export const createGroupChat = async (token: string, chatName: string) => {
+export const createGroupChat = async (chatName: string) => {
   const chatData = {
     name: chatName,
     group: true,
@@ -90,7 +129,6 @@ export const createGroupChat = async (token: string, chatName: string) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(chatData),
   });
@@ -115,12 +153,11 @@ export const createGroupChat = async (token: string, chatName: string) => {
   }
 };
 
-export const getChats = async (token: string) => {
+export const getChats = async () => {
   const res = await fetch(`${apiURL}/chat`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -148,16 +185,11 @@ export const getChats = async (token: string) => {
   return chats;
 };
 
-export const addUsersToChat = async (
-  token: string,
-  chatId: number,
-  usernames: string[]
-) => {
+export const addUsersToChat = async (chatId: number, usernames: string[]) => {
   const res = await fetch(`${apiURL}/chat/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ chatId, usernames }),
   });
@@ -182,12 +214,35 @@ export const addUsersToChat = async (
   }
 };
 
-export const getUsers = async (token: string) => {
+export const getUsers = async () => {
   const res = await fetch(`${apiURL}/user`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    users: type.User[];
+  };
+
+  return d.users;
+};
+
+export const getNewUsers = async () => {
+  const res = await fetch(`${apiURL}/user/new`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
     },
   });
 
@@ -211,13 +266,16 @@ export class Miau {
   private socket: Socket;
   private activeChat: number | null = null;
 
-  constructor(token: string) {
-    this.socket = io(apiURL, {
+  constructor() {
+    this.socket = io("/", {
       withCredentials: true,
-      auth: {
-        token,
-      },
+      path: socketPath,
+      autoConnect: false,
     });
+  }
+
+  connect() {
+    this.socket.connect();
   }
 
   /**
@@ -267,6 +325,8 @@ export class Miau {
   }
 }
 
-export const connect = (token: string) => {
-  return new Miau(token);
+export const connect = () => {
+  miau.connect();
 };
+
+export const miau = new Miau();

@@ -99,7 +99,7 @@ const register = async (username: string, password: string) => {
 
   validatePassword(password, username);
 
-  const user = await getUserByUsername(username);
+  const user = await getUserByUsernameLogin(username);
 
   if (user) {
     throw new Error("Username already exists");

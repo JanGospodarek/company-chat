@@ -4,10 +4,6 @@ export interface User {
   createdAt: string | Date;
 }
 
-export interface LoggedInUser extends User {
-  token: string;
-}
-
 interface Chat {
   chatId: number;
   name: string;
