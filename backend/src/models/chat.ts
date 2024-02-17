@@ -130,6 +130,10 @@ export async function getChats(
             },
           },
         },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 50,
       },
       UserChat: {
         where: {
@@ -163,7 +167,8 @@ export async function getChats(
  * @returns Chat
  */
 export async function getChat(
-  chatId: number
+  chatId: number,
+  userId: number
 ): Promise<GroupChat | PrivateChat> {
   const rawChat = await prisma.chat.findUnique({
     where: {
@@ -185,6 +190,10 @@ export async function getChat(
             },
           },
         },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 50,
       },
       UserChat: {
         select: {
@@ -204,7 +213,11 @@ export async function getChat(
     throw new Error("Chat not found");
   }
 
-  return parseChat(rawChat);
+  if (!(await userInChat(chatId, userId))) {
+    throw new Error("User not in chat");
+  }
+
+  return parseChat(rawChat, userId);
 }
 
 /**
@@ -255,13 +268,20 @@ export async function addUsersToChat(
  * @param c raw chat data
  * @returns GroupChat | PrivateChat
  */
-function parseChat(c: RawChat): GroupChat | PrivateChat {
+function parseChat(c: RawChat, userID?: number): GroupChat | PrivateChat {
   const messages = c.Message;
+  messages.reverse();
+
   if (c.type === "PRIVATE") {
+    const receipient =
+      c.UserChat[0].User.id === userID
+        ? c.UserChat[1].User
+        : c.UserChat[0].User;
+
     return {
       ...c,
       messages,
-      receipient: c.UserChat[0].User,
+      receipient,
     };
   } else {
     return {

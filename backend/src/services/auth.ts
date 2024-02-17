@@ -97,7 +97,7 @@ const register = async (username: string, password: string) => {
     throw new Error("Missing fields");
   }
 
-  validatePassword(password, username);
+  // validatePassword(password, username);
 
   const user = await getUserByUsernameLogin(username);
 

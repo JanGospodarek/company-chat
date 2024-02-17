@@ -57,7 +57,8 @@ io.on("connection", async (socket) => {
     try {
       await receiveMessage(data, socket);
     } catch (error: any) {
-      socket.emit("error", { message: error.message });
+      // socket.emit("error", { message: error.message });
+      console.error(error);
     }
   });
 });

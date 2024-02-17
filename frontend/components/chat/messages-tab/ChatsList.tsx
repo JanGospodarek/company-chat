@@ -6,21 +6,51 @@ type Props = {
   handleChatSelect: () => void;
 };
 
+import { getChats } from "@shared/api";
+import { useEffect } from "react";
+
+import { useDispatch } from "react-redux";
+import { setChats } from "@/lib/chatsSlice";
+
 const ChatsList = (props: Props) => {
+  const dispatch = useDispatch();
+
+  const chats = useSelector((state: RootState) => state.chats.chats);
   const fontSizeState = useSelector((state: RootState) => state.font);
 
-  const { handleChatSelect } = props;
+  useEffect(() => {
+    async function fetchChats() {
+      const chats = await getChats();
+
+      const chatMap = chats.reduce(
+        (acc, chat) => ({ ...acc, [chat.chatId]: chat }),
+        {}
+      );
+      dispatch(setChats(chatMap));
+    }
+
+    fetchChats();
+  }, []);
+
   return (
     <div className="w-full flex flex-col mt-2 overflow-y-scroll h-full hide-scrollbar">
-      <div
+      <h2
         className={`${computeFont(
           "text-lg",
           fontSizeState
-        )} text-start  font-semibold text-primary`}
+        )} font-semibold text-primary`}
       >
         All Messages
-      </div>
-      <Chat handleChatSelect={handleChatSelect} />
+      </h2>
+      {Object.values(chats)
+        // .sort(
+        //   (a, b) =>
+        //     a.messages[a.messages.length - 1].createdAt -
+        //     b.messages[b.messages.length - 1].createdAt
+        // )
+        .map((chat) => (
+          <Chat chat={chat} key={chat.chatId} />
+        ))}
     </div>
   );
 };

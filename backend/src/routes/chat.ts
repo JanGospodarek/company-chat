@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticate } from "@services/auth";
-import { getChats } from "@models/chat";
+import { getChats, getChat } from "@models/chat";
 import { addUsersToChat, newChat } from "@services/chat";
 import { getNewUsers } from "@models/user";
 
@@ -25,7 +25,6 @@ chatRouter.get("/", authenticate, async (req, res) => {
  */
 chatRouter.post("/new", authenticate, async (req, res) => {
   const data = req.body as {
-    group: boolean;
     name?: string;
     receipient?: string;
   };
@@ -51,6 +50,19 @@ chatRouter.get("/new", authenticate, async (req, res) => {
     const newUsers = await getNewUsers(user.id);
 
     res.send({ newUsers });
+  } catch (error: any) {
+    res.status(400).send({ error: error.message });
+  }
+});
+
+chatRouter.get("/:id", authenticate, async (req, res) => {
+  const user = req.user as User;
+  const id = parseInt(req.params.id);
+
+  try {
+    const chat = await getChat(id, user.id);
+
+    res.send({ chat });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }

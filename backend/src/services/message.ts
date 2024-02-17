@@ -30,14 +30,12 @@ export async function receiveMessage(data: Message, socket: Socket) {
   if (typeof data.chatID !== "number") {
     throw new Error("Invalid chatID");
   }
-
   if (typeof data.content !== "string" || data.content.length === 0) {
     throw new Error("Invalid content");
   }
 
   const user = socket.data["user"] as User;
-
-  const chat = await getChat(data.chatID);
+  const chat = await getChat(data.chatID, user.id);
 
   if (!chat) {
     throw new Error("Chat does not exist");
@@ -48,12 +46,11 @@ export async function receiveMessage(data: Message, socket: Socket) {
 
   const users =
     chat.type === "PRIVATE"
-      ? [(chat as PrivateChat).receipient]
+      ? [(chat as PrivateChat).receipient, user]
       : (chat as GroupChat).users;
 
   for (let user of users) {
     const s = socketMap.get(user.id);
-
     if (s) {
       s.emit("message", message);
     }

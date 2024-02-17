@@ -1,10 +1,11 @@
 "use client";
 
 import { Input, Button } from "@nextui-org/react";
-import fetchData from "@/components/utils/fetch";
 import { useRef, useState } from "react";
 import Alert from "@/components/reuseable/Alert";
 import Link from "next/link";
+import { register } from "../../../shared/api";
+
 export default function Page() {
   const email = useRef<HTMLInputElement | null>(null);
   const password = useRef<HTMLInputElement | null>(null);
@@ -15,28 +16,23 @@ export default function Page() {
   const [succeded, setSucceded] = useState<boolean>(false);
 
   const handleRegister = async () => {
-    if (
-      email.current?.value &&
-      password.current?.value &&
-      name.current?.value &&
-      surname.current?.value
-    ) {
+    if (email.current?.value && password.current?.value) {
       setLoading(true);
-      const data = await fetchData("/api/auth/register", {
-        username: email.current.value,
-        password: password.current.value,
-        name: name.current.value,
-        surname: surname.current.value,
-      });
-      setLoading(false);
-      if (data.status && data.status === "error") setError(data.error);
-      else {
-        // set JWT token
+
+      try {
+        const data = await register(
+          email.current.value,
+          password.current.value
+        );
+        setLoading(false);
         setError(false);
         setSucceded(true);
+
         localStorage.clear();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("username", email.current.value);
+        localStorage.setItem("user", JSON.stringify(data));
+      } catch (error: any) {
+        setError(error.message);
+        setLoading(false);
       }
     }
   };

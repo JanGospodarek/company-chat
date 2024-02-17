@@ -1,20 +1,79 @@
 "use client";
 
 import { PaperPlaneTilt, PushPin } from "@phosphor-icons/react";
+import {
+  FormEvent,
+  FormEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-const TypeBar = () => {
+import { miau } from "../../../../shared/api";
+
+import { Button, ButtonGroup } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
+
+type Props = {
+  chatId: number;
+};
+
+const TypeBar = (props: Props) => {
+  const { chatId } = props;
+
+  const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const getValue = () => {
+    return input;
+  };
+
+  const handleSend = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const i = getValue();
+
+    const message = i;
+
+    if (!message) return;
+
+    miau.sendMessage(message);
+
+    setInput("");
+
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [chatId]);
+
   return (
-    <div className="w-full rounded-[40px] bg-slate-200 p-3 flex justify-between">
-      <input
-        type="text"
-        placeholder="Type Message"
-        className="bg-slate-200 w-full text-sm"
+    <form onSubmit={handleSend}>
+      <Input
+        style={{ fontSize: "1rem", lineHeight: "1rem" }}
+        variant="flat"
+        size="md"
+        value={input}
+        onValueChange={setInput}
+        radius="full"
+        ref={inputRef}
+        endContent={
+          <ButtonGroup>
+            <Button isIconOnly>
+              <PushPin size={20} className="fill-primary" />
+            </Button>
+            <Button type="submit" isIconOnly>
+              <PaperPlaneTilt size={20} className="fill-primary" />
+            </Button>
+          </ButtonGroup>
+        }
       />
-      <div className="flex gap-2 items-center mx-2">
-        <PushPin size={20} className="fill-primary" />
-        <PaperPlaneTilt size={20} className="fill-primary" />
-      </div>
-    </div>
+    </form>
   );
 };
 export default TypeBar;

@@ -8,7 +8,6 @@ import {
 import { getUserByUsername } from "@models/user";
 
 type NewChat = {
-  group: boolean;
   name?: string;
   receipient?: string;
 };
@@ -25,11 +24,11 @@ export async function newChat(user: User, data: NewChat): Promise<number> {
     throw new Error("Missing fields");
   }
 
-  if ((data.group && !data.name) || (!data.group && !data.receipient)) {
+  if (data.name === undefined && data.receipient === undefined) {
     throw new Error("Missing fields");
   }
 
-  if (data.group) {
+  if (data.name) {
     return await createGroupChat(data.name!, user.id);
   } else {
     const receipient = await getUserByUsername(data.receipient!);
@@ -59,7 +58,7 @@ export async function addUsersToChat(
     throw new Error("User not in chat");
   }
 
-  const chat = await getChat(data.chatId);
+  const chat = await getChat(data.chatId, user.id);
 
   if (!chat) {
     throw new Error("Chat not found");

@@ -1,58 +1,95 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+
+import {
+  LeftNavbar,
+  Conversation,
+  GroupModal,
+  MessagesTab,
+} from "@/components/chat";
+import { MobileTabs } from "@/components/chat/types";
+import { miau } from "@shared/api";
+
 import { useDispatch } from "react-redux";
-import { setUsername } from "@/lib/userSlice";
-import { Spinner } from "@nextui-org/react";
+import { setActiveUsers } from "@/lib/activeUsersSlice";
+import { addMessageToChat } from "@/lib/chatsSlice";
 
 export default function Home() {
-  const [logged, setLogged] = useState(false);
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [currentTabMobile, setCurrentTabMobile] =
+    useState<MobileTabs>("messages");
+  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+
+  const { user } = useAuth();
+  const router = useRouter();
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setLoading(true);
-    const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
-    if (token && username) {
-      setLogged(true);
-      setName(username);
-      dispatch(setUsername(username));
+    const u = user;
+
+    if (!u) {
+      router.replace("/login");
+      return;
     }
-    setLoading(false);
+
+    miau.connect();
+
+    miau.onActivity((data) => {
+      dispatch(setActiveUsers(data));
+    });
+
+    miau.connect_error((error) => {
+      console.error(error);
+    });
+
+    miau.onMessage((message) => {
+      console.log("message", message);
+      dispatch(addMessageToChat(message));
+    });
+
+    return () => {
+      miau.get().disconnect();
+    };
   }, []);
 
-  if (loading)
-    return (
-      <div className="flex flex-col justify-center items-center  h-[100vh] w-[100vw] light text-foreground bg-background font-league">
-        <Spinner />
-      </div>
-    );
+  const handleTabChange = (tab: MobileTabs) => setCurrentTabMobile(tab);
+  const handleShowModal = () => setShowCreateGroupModal((state) => !state);
 
   return (
-    <main className="flex flex-col justify-center items-center gap-4 h-[100vh] w-[100vw] light text-foreground bg-background font-league">
-      <div className="text-5xl  font-semibold">Team chat</div>
-      {logged ? (
-        <>
-          <p className="text-slate-400">You are logged in as {name}</p>
-          <Button color="primary" variant="bordered">
-            <Link href="/chat"> Chat app</Link>
-          </Button>
-        </>
-      ) : (
-        <>
-          <p className="text-slate-400">You are not logged in!</p>
-          <Button color="primary" variant="bordered">
-            <Link href="/login"> Log in</Link>
-          </Button>
-          <Button color="primary" variant="bordered">
-            <Link href="/register"> Register</Link>
-          </Button>
-        </>
+    <>
+      {user && (
+        <div className="font-league bg-secondary text-foreground w-[100vw] h-[100vh] flex justify-center items-center">
+          <div className="md:rounded-[50px] h-[100vh] w-[100vw] bg-white md:w-[80%] md:h-[80%] relative flex">
+            <div className="hidden md:flex h-full w-full">
+              <LeftNavbar />
+              <MessagesTab
+                handleTabChange={handleTabChange}
+                handleShowGroupModal={handleShowModal}
+              />
+              <Conversation handleTabChange={handleTabChange} />
+            </div>
+            {/* Mobile view */}
+            {/* <div className=" md:hidden h-full flex justify-center ">
+              {currentTabMobile === "messages" ? (
+                <MessagesTab
+                  handleTabChange={handleTabChange}
+                  handleShowGroupModal={handleShowModal}
+                />
+              ) : (
+                <Conversation handleTabChange={handleTabChange} />
+              )}
+            </div> */}
+            {/* Group creation modal */}
+            {/* {showCreateGroupModal && (
+              <GroupModal handleShowModal={handleShowModal} />
+            )} */}
+          </div>
+        </div>
       )}
-    </main>
+      ;
+    </>
   );
 }

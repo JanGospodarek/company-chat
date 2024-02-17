@@ -2,24 +2,42 @@ import { Badge, Avatar } from "@nextui-org/react";
 import computeFont from "@/components/utils/getComputedFontSize";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+
+import type { User } from "../../../../shared/types";
+
 const ActiveUsers = () => {
   const fontSizeState = useSelector((state: RootState) => state.font);
+  const activeUsers = useSelector((state: RootState) => state.activeUsers);
+
+  if (activeUsers.users.length === 0) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col w-full mt-6">
       <div className="flex justify-between mb-2">
-        <p
+        <h2
           className={`${computeFont(
             "text-lg",
             fontSizeState
           )} font-semibold text-primary`}
         >
           Active Users
-        </p>
-        {/* <button className="text-sm font-semibold "> See All</button> */}
+        </h2>
       </div>
       <div className="flex gap-3 overflow-x-scroll hide-scrollbar">
-        <Badge content="" color="success" shape="circle" className="mt-1">
+        {activeUsers.users.map((user: User) => (
+          <Badge
+            content=""
+            color="success"
+            shape="circle"
+            className="mt-1"
+            key={user.username}
+          >
+            <Avatar radius="full" name={user.username} />
+          </Badge>
+        ))}
+        {/* <Badge content="" color="success" shape="circle" className="mt-1">
           <Avatar
             radius="full"
             src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
@@ -60,7 +78,7 @@ const ActiveUsers = () => {
             radius="full"
             src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
           />
-        </Badge>
+        </Badge> */}
       </div>
     </div>
   );

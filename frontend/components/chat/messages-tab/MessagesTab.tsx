@@ -1,24 +1,52 @@
 "use client";
-import { MagnifyingGlass, UserPlus, XCircle } from "@phosphor-icons/react";
+import {
+  MagnifyingGlass,
+  UserPlus,
+  XCircle,
+  FolderPlus,
+} from "@phosphor-icons/react";
 import ActiveUsers from "./ActiveUsers";
 import ChatsList from "./ChatsList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type handleMobileTabChange } from "../types";
 import UserActionsDropdown from "../navbar/UserActionsDropdown";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Button } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import computeFont from "@/components/utils/getComputedFontSize";
+
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@nextui-org/modal";
+
+import { User } from "@shared/types";
+import { newPrivateChatList, newPrivateChat, getChat } from "@shared/api";
+
+import { useDispatch } from "react-redux";
+import { addChat } from "@/lib/chatsSlice";
+import { useAppDispatch } from "@/lib/hooks";
+
 type Props = {
   handleTabChange: handleMobileTabChange;
   handleShowGroupModal: () => void;
 };
 
 const MessagesTab = (props: Props) => {
+  const [showNewChat, setShowNewChat] = useState(false);
+  const [showGroupModal, setShowGroupModal] = useState(false);
+
+  const [newUsers, setNewUsers] = useState([] as User[]);
+
+  const dispatch = useAppDispatch();
+
   const fontSizeState = useSelector((state: RootState) => state.font);
 
-  const { handleTabChange, handleShowGroupModal } = props;
-  const [showSearchTab, setShowSearchTab] = useState(false);
+  const { handleTabChange } = props;
+  // const [showSearchTab, setShowSearchTab] = useState(false);
   const handleChatSelect = () => {
     if (window.innerWidth < 768) {
       // Open chat tab and fetch chat info
@@ -27,8 +55,25 @@ const MessagesTab = (props: Props) => {
       // fetch chat info directly
     }
   };
+
+  useEffect(() => {
+    if (showNewChat) {
+      newPrivateChatList().then((users) => {
+        setNewUsers(users);
+      });
+    }
+  }, [showNewChat]);
+
+  const handleNewChat = async (user: User) => {
+    const chatID = await newPrivateChat(user.username);
+    const chat = await getChat(chatID);
+
+    dispatch(addChat(chat));
+    setShowNewChat(false);
+  };
+
   return (
-    <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[350px] flex flex-col justify-start md:border-r-2 border-secondary ">
+    <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[300px] flex flex-col justify-start md:border-r-2 border-secondary ">
       <div className=" flex justify-between relative">
         <p
           className={`${computeFont("text-3xl", fontSizeState)} font-semibold`}
@@ -48,10 +93,13 @@ const MessagesTab = (props: Props) => {
             />
           </div>
 
-          <button onClick={handleShowGroupModal}>
+          <button onClick={() => setShowNewChat(true)}>
             <UserPlus size={24} />
           </button>
-          <button
+          <button onClick={() => setShowGroupModal(true)}>
+            <FolderPlus size={24} />
+          </button>
+          {/* <button
             onClick={() => {
               setShowSearchTab((state) => !state);
             }}
@@ -61,32 +109,36 @@ const MessagesTab = (props: Props) => {
             ) : (
               <MagnifyingGlass size={24} />
             )}
-          </button>
-        </div>
-        <div
-          className={`absolute bg-secondary w-0 h-8 top-0 right-[28px] rounded-xl flex justify-center items-center z-20 ${
-            showSearchTab && "animate-open-search"
-          }`}
-        >
-          <input
-            type="text"
-            placeholder="Search user"
-            className={`${computeFont(
-              "text-md",
-              fontSizeState
-            )} bg-secondary w-full  mx-2`}
-          />
+          </button> */}
         </div>
       </div>
       <div className="flex flex-col relative flex-1">
-        <div
-          className={`w-full  rounded-[30px] bg-secondary absolute top-0 left-0 z-20 shadow-xl ${
-            showSearchTab && "animate-open-search-results"
-          }`}
-        ></div>
         <ActiveUsers />
         <ChatsList handleChatSelect={handleChatSelect} />
       </div>
+
+      <Modal isOpen={showNewChat} onClose={() => setShowNewChat(false)}>
+        <ModalContent>
+          <ModalHeader className="text-black">New Chat</ModalHeader>
+          <ModalBody>
+            {newUsers.map((user) => (
+              <Button onClick={() => handleNewChat(user)} key={user.id}>
+                <Avatar
+                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                  size="sm"
+                />
+                {user.username}
+              </Button>
+            ))}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={showGroupModal} onClose={() => setShowGroupModal(false)}>
+        <ModalContent>
+          <ModalHeader className="text-black">Create Group</ModalHeader>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

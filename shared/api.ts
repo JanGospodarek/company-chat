@@ -78,79 +78,9 @@ export const authenticate = async () => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as { user: type.LoggedInUser };
+  const d = (await res.json()) as { user: type.User };
 
   return d.user;
-};
-
-export const createChat = async (receipient: string) => {
-  const chatData = {
-    name: "",
-    group: false,
-    receipient,
-  };
-
-  const res = await fetch(`${apiURL}/chat/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(chatData),
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    chat: type.Chat;
-  };
-
-  if (d.chat.type === "PRIVATE") {
-    return d.chat as type.PrivateChat;
-  } else {
-    return d.chat as type.GroupChat;
-  }
-};
-
-export const createGroupChat = async (chatName: string) => {
-  const chatData = {
-    name: chatName,
-    group: true,
-    receipient: "",
-  };
-
-  const res = await fetch(`${apiURL}/chat/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(chatData),
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    chat: type.Chat;
-  };
-
-  if (d.chat.type === "PRIVATE") {
-    return d.chat as type.PrivateChat;
-  } else {
-    return d.chat as type.GroupChat;
-  }
 };
 
 export const getChats = async () => {
@@ -171,27 +101,137 @@ export const getChats = async () => {
   }
 
   const d = (await res.json()) as {
-    chats: type.Chat[];
+    chats: (type.GroupChat | type.PrivateChat)[];
   };
 
-  const chats = d.chats.map((c) => {
-    if (c.type === "PRIVATE") {
-      return c as type.PrivateChat;
-    } else {
-      return c as type.GroupChat;
-    }
-  });
-
-  return chats;
+  return d.chats;
 };
 
-export const addUsersToChat = async (chatId: number, usernames: string[]) => {
+export const getChat = async (id: number) => {
+  const res = await fetch(`${apiURL}/chat/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    chat: type.GroupChat | type.PrivateChat;
+  };
+
+  return d.chat;
+};
+
+/**
+ * New private chat
+ * @param receipient The username of the receipient
+ * @returns The chat ID
+ */
+export const newPrivateChat = async (receipient: string) => {
+  const res = await fetch(`${apiURL}/chat/new`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ receipient }),
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    chat: number;
+  };
+
+  return d.chat;
+};
+
+/**
+ * New group chat
+ * @param name The name of the chat
+ * @returns The chat ID
+ */
+export const newGroupChat = async (name: string) => {
+  const res = await fetch(`${apiURL}/chat/new`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    chat: number;
+  };
+
+  return d.chat;
+};
+
+/**
+ * Get a list of users that do not have a private chat with the user
+ * @returns A list of users
+ */
+export const newPrivateChatList = async () => {
+  const res = await fetch(`${apiURL}/chat/new`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    newUsers: type.User[];
+  };
+
+  return d.newUsers;
+};
+
+/**
+ * Add users to a group chat
+ * @param chatId The ID of the chat
+ * @param users The IDs of the users to add
+ * @returns The chat ID
+ */
+export const addUsersToChat = async (chatId: number, users: number[]) => {
   const res = await fetch(`${apiURL}/chat/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ chatId, usernames }),
+    body: JSON.stringify({ chatId, users }),
   });
 
   if (res.status === 401) {
@@ -204,62 +244,10 @@ export const addUsersToChat = async (chatId: number, usernames: string[]) => {
   }
 
   const d = (await res.json()) as {
-    chat: type.Chat;
+    chat: number;
   };
 
-  if (d.chat.type === "PRIVATE") {
-    return d.chat as type.PrivateChat;
-  } else {
-    return d.chat as type.GroupChat;
-  }
-};
-
-export const getUsers = async () => {
-  const res = await fetch(`${apiURL}/user`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    users: type.User[];
-  };
-
-  return d.users;
-};
-
-export const getNewUsers = async () => {
-  const res = await fetch(`${apiURL}/user/new`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    users: type.User[];
-  };
-
-  return d.users;
+  return d.chat;
 };
 
 export class Miau {
