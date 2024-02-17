@@ -123,8 +123,6 @@ const Conversation = (props: Props) => {
       });
     }
 
-    console.log(dateGroups);
-
     setMessageGroups(dateGroups);
   }, [conversation?.messages]);
 

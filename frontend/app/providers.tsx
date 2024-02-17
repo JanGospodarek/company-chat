@@ -5,7 +5,7 @@ import { NextUIProvider } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Provider } from "react-redux";
-import { makeStore, AppStore } from "../lib/store";
+import { makeStore, AppStore, store } from "../lib/store";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -18,7 +18,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthProvider>
-      <Provider store={storeRef.current}>
+      <Provider store={store}>
         <NextUIProvider navigate={router.push}>{children}</NextUIProvider>
       </Provider>
     </AuthProvider>

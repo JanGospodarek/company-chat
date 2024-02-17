@@ -1,15 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-import {
-  LeftNavbar,
-  Conversation,
-  GroupModal,
-  MessagesTab,
-} from "@/components/chat";
+import { LeftNavbar, Conversation, MessagesTab } from "@/components/chat";
 import { MobileTabs } from "@/components/chat/types";
 import { miau } from "@shared/api";
 
@@ -17,10 +12,18 @@ import { useDispatch } from "react-redux";
 import { setActiveUsers } from "@/lib/activeUsersSlice";
 import { addMessageToChat } from "@/lib/chatsSlice";
 
+import { RootState, store } from "@/lib/store";
+import { useSelector } from "react-redux";
+
+// @ts-ignore
+import NotificationSound from "@/components/chat/notification_sound.mp3";
+
 export default function Home() {
   const [currentTabMobile, setCurrentTabMobile] =
     useState<MobileTabs>("messages");
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+
+  const audioPlayer = useRef<HTMLAudioElement>(null);
 
   const { user } = useAuth();
   const router = useRouter();
@@ -46,7 +49,12 @@ export default function Home() {
     });
 
     miau.onMessage((message) => {
-      console.log("message", message);
+      const activeChatID = store.getState().chats.activeChatID;
+      
+      if (message.chatId !== activeChatID) {
+        audioPlayer.current?.play();
+      }
+
       dispatch(addMessageToChat(message));
     });
 
@@ -87,6 +95,7 @@ export default function Home() {
               <GroupModal handleShowModal={handleShowModal} />
             )} */}
           </div>
+          <audio id="notification" ref={audioPlayer} src={NotificationSound} />
         </div>
       )}
       ;

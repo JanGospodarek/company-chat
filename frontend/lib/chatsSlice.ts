@@ -30,6 +30,7 @@ export const chatsSlice = createSlice({
     selectChat: (state, action: PayloadAction<number>) => {
       state.activeChatID = action.payload;
     },
+
     addMessageToChat: (state, action: PayloadAction<Message>) => {
       const chat = state.chats[action.payload.chatId];
 
