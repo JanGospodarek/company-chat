@@ -1,3 +1,4 @@
+import { v5 as uuidv5 } from "uuid";
 import {
   createGroupChat,
   createPrivateChat,
@@ -6,6 +7,9 @@ import {
   addUsersToChat as aUsersToChat,
 } from "@models/chat";
 import { getUserByUsername } from "@models/user";
+import fs from "fs";
+
+const CHAT_NAMESPACE = "03e5a08d-295e-4b1d-acab-6a5c657cbaee";
 
 type NewChat = {
   name?: string;
@@ -18,7 +22,10 @@ type AddUsers = {
 };
 
 import type { User } from "@shared/types";
-import { notifyNewChat } from "./message";
+import { notifyMessage, notifyNewChat } from "./message";
+import { addAttachment, createMessage, getMessage } from "@models/message";
+import type formidable from "formidable";
+import { saveMedia } from "@models/media";
 
 export async function newChat(user: User, data: NewChat): Promise<number> {
   if (user === undefined) {
@@ -82,4 +89,43 @@ export async function addUsersToChat(
   notifyNewChat(chat.chatId, data.users);
 
   return chat.chatId;
+}
+
+export async function handleFileUpload(
+  chatId: number,
+  userId: number,
+  content: string | undefined,
+  files: formidable.File[]
+) {
+  if (!userInChat(chatId, userId)) {
+    throw new Error("User not in chat");
+  }
+
+  const messageId = await createMessage(chatId, userId, content || "");
+
+  // Upload files
+  const uuid = uuidv5(messageId.toString(), CHAT_NAMESPACE);
+
+  const filePath = `./uploads/${uuid}`;
+  fs.mkdirSync(filePath, { recursive: true });
+
+  const filesToSave: { path: string; type: string; name: string }[] = [];
+
+  for (const file of files) {
+    const newPath = `${filePath}/${file.originalFilename}`;
+    fs.renameSync(file.filepath, newPath);
+
+    filesToSave.push({
+      path: newPath,
+      type: file.mimetype || "application/octet-stream",
+      name: file.originalFilename || "file",
+    });
+  }
+
+  const storageURL = `/media/${uuid}`;
+
+  await addAttachment(messageId, storageURL);
+  await saveMedia(uuid, filesToSave);
+
+  notifyMessage(messageId);
 }

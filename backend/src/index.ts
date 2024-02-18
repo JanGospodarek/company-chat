@@ -3,10 +3,15 @@ import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 
-import { authRouter, chatRouter, userRouter } from "@routes";
+import { authRouter, chatRouter, mediaRouter, userRouter } from "@routes";
 // import cors from "cors";
 import { wsAuthenticate } from "@services/auth";
-import { connectUser, disconnectUser, receiveMessage, readMessage } from "@services/message";
+import {
+  connectUser,
+  disconnectUser,
+  receiveMessage,
+  readMessage,
+} from "@services/message";
 import { CronJob } from "cron";
 
 // Check if the environment is test
@@ -27,6 +32,7 @@ app.use(cookieParser());
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 app.use("/users", userRouter);
+app.use("/media", mediaRouter);
 
 const server = app.listen(port);
 
@@ -70,5 +76,5 @@ io.on("connection", async (socket) => {
     } catch (error: any) {
       console.error(error);
     }
-  })
+  });
 });

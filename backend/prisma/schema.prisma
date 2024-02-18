@@ -61,3 +61,11 @@ model UserChat {
 
   @@id([userId, chatId])
 }
+
+model Media {
+  id   Int    @id @default(autoincrement())
+  uuid String
+  path String
+  type String
+  name String
+}

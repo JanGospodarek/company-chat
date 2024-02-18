@@ -1,7 +1,8 @@
 import express from "express";
+import formidable from "formidable";
 import { authenticate } from "@services/auth";
 import { getChats, getChat } from "@models/chat";
-import { addUsersToChat, newChat } from "@services/chat";
+import { addUsersToChat, handleFileUpload, newChat } from "@services/chat";
 import { getNewUsers } from "@models/user";
 
 import type { User } from "@shared/types";
@@ -77,6 +78,36 @@ chatRouter.get("/:id/messages", authenticate, async (req, res) => {
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }
+});
+
+chatRouter.post("/:id/messages/new", authenticate, async (req, res) => {
+  const form = formidable({
+    multiples: true,
+    keepExtensions: true,
+    uploadDir: "./temp",
+    maxFileSize: 20 * 1024 * 1024,
+  });
+
+  const user = req.user as User;
+  const id = parseInt(req.params.id);
+
+  form.parse(req, async (err, fields, files) => {
+    try {
+      const content = fields["content"]?.toString();
+
+      const filesArray = files["files"];
+
+      if (!filesArray) {
+        throw new Error("No files uploaded");
+      }
+
+      await handleFileUpload(id, user.id, content, filesArray);
+
+      return res.send({ status: "ok" });
+    } catch (error: any) {
+      return res.status(400).send({ error: error.message });
+    }
+  });
 });
 
 chatRouter.get("/:id", authenticate, async (req, res) => {

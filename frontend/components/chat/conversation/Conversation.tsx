@@ -24,6 +24,7 @@ import { loadMoreMessages } from "@shared/api";
 
 import { loadOlderMessages } from "@/lib/chatsSlice";
 import { useInView } from "framer-motion";
+import { motion, useAnimate } from "framer-motion";
 
 type MessageGroup = {
   messages: IMessage[];
@@ -57,6 +58,8 @@ const Conversation = (props: Props) => {
 
   const [isUserActive, setIsUserActive] = useState(false);
 
+  const [scope, animate] = useAnimate();
+
   useEffect(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -86,8 +89,6 @@ const Conversation = (props: Props) => {
 
   useEffect(() => {
     setTimeout(() => {
-      console.log(scroll);
-
       if (scrollRef.current && scroll) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }
@@ -96,12 +97,23 @@ const Conversation = (props: Props) => {
 
   useEffect(() => {
     if (!conversation) return;
+    // @ts-ignore
+    animate(scrollRef.current, { opacity: 0 }, { duration: 0 });
     setMessageGroups([]);
     setAnimateScroll(false);
+
+    setTimeout(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    }, 100);
+
     setTimeout(() => {
       setAnimateScroll(true);
       setLoading(false);
-    }, 50);
+      // @ts-ignore
+      animate(scrollRef.current, { opacity: 1 }, { duration: 0.2 });
+    }, 250);
   }, [conversation?.chatId]);
 
   useEffect(() => {
@@ -216,7 +228,7 @@ const Conversation = (props: Props) => {
     <div className="flex flex-col m-4 w-full gap-2">
       {conversation?.chatId && (
         <>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 transition-all">
             <button onClick={() => handleTabChange("messages")}>
               <ArrowCircleLeft size={48} className="md:hidden fill-primary" />
             </button>

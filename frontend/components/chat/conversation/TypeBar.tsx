@@ -9,13 +9,12 @@ import {
   useState,
 } from "react";
 
-import { miau } from "../../../../shared/api";
+import { miau, sendMessageWithAttachment } from "@shared/api";
 
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 
 type Props = {
   chatId: number;
@@ -41,6 +40,14 @@ const TypeBar = (props: Props) => {
     const i = getValue();
 
     const message = i;
+
+    if (selectedFiles.length > 0) {
+      sendMessageWithAttachment(chatId, message, selectedFiles);
+      setSelectedFiles([]);
+      setInput("");
+      inputRef.current?.focus();
+      return;
+    }
 
     if (!message) return;
 

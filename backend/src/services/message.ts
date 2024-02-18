@@ -124,3 +124,29 @@ export async function readMessage(data: { messageId: number }, socket: Socket) {
     }
   }
 }
+
+export async function notifyMessage(messageId: number) {
+  const message = await getMessage(messageId);
+
+  if (!message) {
+    throw new Error("Message not found");
+  }
+
+  const chat = await getChat(message.chatId, message.user.id);
+
+  if (!chat) {
+    throw new Error("Chat not found");
+  }
+
+  const users =
+    chat.type === "PRIVATE"
+      ? [(chat as PrivateChat).receipient, message.user]
+      : (chat as GroupChat).users;
+
+  for (let user of users) {
+    const s = socketMap.get(user.id);
+    if (s) {
+      s.emit("message", message);
+    }
+  }
+}

@@ -301,6 +301,58 @@ export const addUsersToChat = async (chatId: number, users: number[]) => {
   return d.chat;
 };
 
+/**
+ * Send a message with an attachment
+ */
+export const sendMessageWithAttachment = async (
+  chatId: number,
+  content: string,
+  files: File[]
+) => {
+  const formData = new FormData();
+
+  formData.append("content", content);
+
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  const res = await fetch(`${apiURL}/chat/${chatId}/messages/new`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+};
+
+export const loadAttachments = async (url: string, messageId: number) => {
+  const res = await fetch(`${apiURL}/${url}?messageId=${messageId}`, {
+    method: "GET",
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    media: type.Attachment[];
+  };
+
+  return d.media;
+};
+
 export class Miau {
   private socket: Socket;
   private activeChat: number | null = null;

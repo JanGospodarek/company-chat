@@ -114,7 +114,11 @@ const Chat = (props: Props) => {
               )}
             </span>
 
-            {chat.messages[chat.messages.length - 1].content}
+            {chat.messages[chat.messages.length - 1].content ? (
+              <>{chat.messages[chat.messages.length - 1].content}</>
+            ) : (
+              <>📎</>
+            )}
           </p>
         )}
       </div>

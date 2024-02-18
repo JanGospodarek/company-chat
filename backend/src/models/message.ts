@@ -90,8 +90,6 @@ export async function getMessages(
     };
   }
 
-  console.log(laterThan);
-
   const rawMessages = await prisma.message.findMany({
     where: {
       chatId: chatID,
@@ -188,6 +186,20 @@ export async function readMessage(messageId: number, userId: number) {
   });
 
   return message;
+}
+
+export async function addAttachment(
+  messageId: number,
+  url: string
+): Promise<void> {
+  await prisma.message.update({
+    where: {
+      messageId,
+    },
+    data: {
+      attachment: url,
+    },
+  });
 }
 
 export const parseMessage = (message: RawMessage): Message => {

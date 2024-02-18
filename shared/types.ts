@@ -29,3 +29,11 @@ export interface Message {
   user: User;
   readBy: User[];
 }
+
+export interface Attachment {
+  id: number;
+  uuid: string;
+  path: string;
+  type: string;
+  name: string;
+}
