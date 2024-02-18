@@ -43,11 +43,23 @@ const ChatsList = (props: Props) => {
         All Messages
       </h2>
       {Object.values(chats)
-        // .sort(
-        //   (a, b) =>
-        //     a.messages[a.messages.length - 1].createdAt -
-        //     b.messages[b.messages.length - 1].createdAt
-        // )
+        .sort((a, b) => {
+          if (a.messages.length === 0) {
+            return 1;
+          }
+
+          if (b.messages.length === 0) {
+            return -1;
+          }
+
+          const lastMessageA = a.messages[a.messages.length - 1];
+          const lastMessageB = b.messages[b.messages.length - 1];
+
+          const dateA = new Date(lastMessageA.createdAt).valueOf();
+          const dateB = new Date(lastMessageB.createdAt).valueOf();
+
+          return dateB - dateA;
+        })
         .map((chat) => (
           <Chat chat={chat} key={chat.chatId} />
         ))}

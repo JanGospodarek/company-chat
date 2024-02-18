@@ -43,11 +43,54 @@ export const chatsSlice = createSlice({
         [action.payload.chatId]: chat,
       };
     },
+
+    updateMessage: (state, action: PayloadAction<Message>) => {
+      const chatId = action.payload.chatId;
+      const messageId = action.payload.messageId;
+
+      const chat = state.chats[chatId];
+
+      if (chat) {
+        chat.messages = chat.messages.map((message) => {
+          if (message.messageId === messageId) {
+            return action.payload;
+          }
+
+          return message;
+        });
+      }
+
+      state.chats = {
+        ...state.chats,
+        [chatId]: chat,
+      };
+    },
+
+    loadOlderMessages: (state, action: PayloadAction<Message[]>) => {
+      const chatId = action.payload[0].chatId;
+
+      const chat = state.chats[chatId];
+
+      if (chat) {
+        chat.messages = [...action.payload, ...chat.messages];
+      }
+
+      state.chats = {
+        ...state.chats,
+        [chatId]: chat,
+      };
+    },
   },
 });
 
-export const { setChats, addChat, selectChat, addMessageToChat } =
-  chatsSlice.actions;
+export const {
+  setChats,
+  addChat,
+  selectChat,
+  addMessageToChat,
+  updateMessage,
+  loadOlderMessages,
+} = chatsSlice.actions;
 export const selectChats = (state: RootState) => state.chats.chats;
 // export const getSelectedChat = (state: RootState) =>
 //   state.chats.chats.filter((chat) => (chat.chatId = state.chats.activeChat))[0];

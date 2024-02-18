@@ -15,13 +15,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import computeFont from "@/components/utils/getComputedFontSize";
 
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@nextui-org/modal";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/modal";
+
+import { Listbox, ListboxItem } from "@nextui-org/listbox";
 
 import { User } from "@shared/types";
 import { newPrivateChatList, newPrivateChat, getChat } from "@shared/api";
@@ -29,6 +25,7 @@ import { newPrivateChatList, newPrivateChat, getChat } from "@shared/api";
 import { useDispatch } from "react-redux";
 import { addChat } from "@/lib/chatsSlice";
 import { useAppDispatch } from "@/lib/hooks";
+import GroupModal from "./GroupModal/GroupModal";
 
 type Props = {
   handleTabChange: handleMobileTabChange;
@@ -65,16 +62,14 @@ const MessagesTab = (props: Props) => {
   }, [showNewChat]);
 
   const handleNewChat = async (user: User) => {
-    const chatID = await newPrivateChat(user.username);
-    const chat = await getChat(chatID);
+    await newPrivateChat(user.username);
 
-    dispatch(addChat(chat));
     setShowNewChat(false);
   };
 
   return (
-    <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[300px] flex flex-col justify-start md:border-r-2 border-secondary ">
-      <div className=" flex justify-between relative">
+    <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[300px] flex flex-col justify-start md:border-r-2 border-secondary  flex-shrink-0">
+      <div className=" flex justify-between relativ">
         <p
           className={`${computeFont("text-3xl", fontSizeState)} font-semibold`}
         >
@@ -117,28 +112,41 @@ const MessagesTab = (props: Props) => {
         <ChatsList handleChatSelect={handleChatSelect} />
       </div>
 
-      <Modal isOpen={showNewChat} onClose={() => setShowNewChat(false)}>
+      <Modal
+        isOpen={showNewChat}
+        onClose={() => setShowNewChat(false)}
+        backdrop="blur"
+        size="xs"
+      >
         <ModalContent>
-          <ModalHeader className="text-black">New Chat</ModalHeader>
+          <ModalHeader className="text-black justify-center">
+            Nowy chat
+          </ModalHeader>
           <ModalBody>
-            {newUsers.map((user) => (
-              <Button onClick={() => handleNewChat(user)} key={user.id}>
-                <Avatar
-                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                  size="sm"
-                />
-                {user.username}
-              </Button>
-            ))}
+            <Listbox>
+              {newUsers.map((user) => (
+                <ListboxItem key={user.id} onClick={() => handleNewChat(user)}>
+                  <div className="flex flex-row items-center gap-4">
+                    <Avatar
+                      src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                      size="sm"
+                    />
+                    <div className="flex flex-col">
+                      <div className="font-semibold">Dawid Komęza</div>
+                      <div className="font-light">@{user.username}</div>
+                    </div>
+                  </div>
+                </ListboxItem>
+              ))}
+            </Listbox>
           </ModalBody>
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={showGroupModal} onClose={() => setShowGroupModal(false)}>
-        <ModalContent>
-          <ModalHeader className="text-black">Create Group</ModalHeader>
-        </ModalContent>
-      </Modal>
+      <GroupModal
+        isOpen={showGroupModal}
+        onClose={() => setShowGroupModal(false)}
+      />
     </div>
   );
 };

@@ -18,6 +18,7 @@ type AddUsers = {
 };
 
 import type { User } from "@shared/types";
+import { notifyNewChat } from "./message";
 
 export async function newChat(user: User, data: NewChat): Promise<number> {
   if (user === undefined) {
@@ -29,7 +30,11 @@ export async function newChat(user: User, data: NewChat): Promise<number> {
   }
 
   if (data.name) {
-    return await createGroupChat(data.name!, user.id);
+    const chatId = await createGroupChat(data.name, user.id);
+
+    notifyNewChat(chatId, [user.id]);
+
+    return chatId;
   } else {
     const receipient = await getUserByUsername(data.receipient!);
 
@@ -41,7 +46,11 @@ export async function newChat(user: User, data: NewChat): Promise<number> {
       throw new Error("You cannot create a chat with yourself");
     }
 
-    return await createPrivateChat(user.id, receipient.id);
+    const chatId = await createPrivateChat(user.id, receipient.id);
+
+    notifyNewChat(chatId, [user.id, receipient.id]);
+
+    return chatId;
   }
 }
 
@@ -69,6 +78,8 @@ export async function addUsersToChat(
   }
 
   await aUsersToChat(chat.chatId, data.users);
+
+  notifyNewChat(chat.chatId, data.users);
 
   return chat.chatId;
 }

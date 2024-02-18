@@ -27,4 +27,5 @@ export interface Message {
   attachment: string | null;
   createdAt: string | Date;
   user: User;
+  readBy: User[];
 }

@@ -1,28 +1,42 @@
 import { Input } from "@nextui-org/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 type Props = {
-  handleStepChange: (step: number) => void;
-  handleGroupNameChange: (name: string) => void;
+  groupName: string;
+  setStep: (step: number) => void;
+  setGroupName: (groupName: string) => void;
 };
 const StepName = (props: Props) => {
-  const { handleStepChange, handleGroupNameChange } = props;
+  const { groupName, setStep, setGroupName } = props;
   const groupNameRef = useRef<HTMLInputElement>(null);
+
+  const [error, setError] = useState("");
+
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-2xl font-semibold">Create Group</p>
       <Input
-        label="Group name"
+        label="Nazwa grupy"
         ref={groupNameRef}
-        className="mb-2 w-48"
+        className="mb-2"
         size="sm"
+        fullWidth
+        isInvalid={!!error}
+        errorMessage={error}
+        value={props.groupName}
+        onChange={(e) => setGroupName(e.target.value)}
       />
       <button
         className="bg-primary text-white p-2 rounded-lg w-full"
         onClick={() => {
-          if (groupNameRef.current?.value) {
-            handleGroupNameChange(groupNameRef.current?.value);
-            handleStepChange(2);
+          if (groupName.trim()) {
+            setStep(2);
+          } else {
+            groupNameRef.current?.focus();
+            setError("Nazwa grupy nie może być pusta");
+
+            setTimeout(() => {
+              setError("");
+            }, 3000);
           }
         }}
       >

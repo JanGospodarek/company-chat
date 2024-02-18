@@ -102,3 +102,20 @@ export async function getNewUsers(userId: number): Promise<User[]> {
 
   return users;
 }
+
+export async function getUsers(userId: number): Promise<User[]> {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+      createdAt: true,
+    },
+    where: {
+      NOT: {
+        id: userId,
+      },
+    },
+  });
+
+  return users;
+}

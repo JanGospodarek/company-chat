@@ -131,6 +131,57 @@ export const getChat = async (id: number) => {
   return d.chat;
 };
 
+export const getUsers = async () => {
+  const res = await fetch(`${apiURL}/users`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    users: type.User[];
+  };
+
+  return d.users;
+};
+
+export const loadMoreMessages = async (chatId: number, lastId: number) => {
+  const res = await fetch(
+    `${apiURL}/chat/${chatId}/messages?lastId=${lastId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = (await res.json()) as {
+    messages: type.Message[];
+  };
+
+  return d.messages;
+};
+
 /**
  * New private chat
  * @param receipient The username of the receipient
@@ -290,6 +341,14 @@ export class Miau {
     this.socket.on("activity", cb);
   }
 
+  onNewChat(cb: (chatId: number) => void) {
+    this.socket.on("newChat", cb);
+  }
+
+  onReadMessage(cb: (message: type.Message) => void) {
+    this.socket.on("read", cb);
+  }
+
   sendMessage(content: string) {
     const chatID = this.activeChat;
 
@@ -306,6 +365,10 @@ export class Miau {
     }
 
     this.socket.emit("message", { chatID, content });
+  }
+
+  markMessageAsRead(messageId: number) {
+    this.socket.emit("read", { messageId });
   }
 
   enterChat(chatID: number) {

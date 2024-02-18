@@ -6,11 +6,11 @@ import { useAuth } from "@/contexts/AuthContext";
 
 import { LeftNavbar, Conversation, MessagesTab } from "@/components/chat";
 import { MobileTabs } from "@/components/chat/types";
-import { miau } from "@shared/api";
+import { getChat, miau } from "@shared/api";
 
 import { useDispatch } from "react-redux";
 import { setActiveUsers } from "@/lib/activeUsersSlice";
-import { addMessageToChat } from "@/lib/chatsSlice";
+import { addChat, addMessageToChat, updateMessage } from "@/lib/chatsSlice";
 
 import { RootState, store } from "@/lib/store";
 import { useSelector } from "react-redux";
@@ -49,13 +49,25 @@ export default function Home() {
     });
 
     miau.onMessage((message) => {
-      const activeChatID = store.getState().chats.activeChatID;
-      
-      if (message.chatId !== activeChatID) {
-        audioPlayer.current?.play();
-      }
-
       dispatch(addMessageToChat(message));
+
+      const activeChatID = store.getState().chats.activeChatID;
+
+      if (message.chatId !== activeChatID) {
+        try {
+          audioPlayer.current?.play();
+        } catch (error) {}
+      }
+    });
+
+    miau.onReadMessage((message) => {
+      dispatch(updateMessage(message));
+    });
+
+    miau.onNewChat(async (chatId) => {
+      const chat = await getChat(chatId);
+
+      dispatch(addChat(chat));
     });
 
     return () => {

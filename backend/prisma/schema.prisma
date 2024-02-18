@@ -13,12 +13,13 @@ enum ChatType {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  username  String     @unique
-  password  String
-  createdAt DateTime   @default(now())
-  UserChat  UserChat[]
-  Message   Message[]
+  id          Int           @id @default(autoincrement())
+  username    String        @unique
+  password    String
+  createdAt   DateTime      @default(now())
+  UserChat    UserChat[]
+  Message     Message[]
+  ReadMessage ReadMessage[]
 }
 
 model Chat {
@@ -31,14 +32,25 @@ model Chat {
 }
 
 model Message {
-  messageId  Int      @id @default(autoincrement())
-  content    String
-  attachment String?
-  createdAt  DateTime @default(now())
-  chatId     Int
-  chat       Chat     @relation(fields: [chatId], references: [chatId])
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
+  messageId   Int           @id @default(autoincrement())
+  content     String
+  attachment  String?
+  createdAt   DateTime      @default(now())
+  chatId      Int
+  chat        Chat          @relation(fields: [chatId], references: [chatId])
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+  ReadMessage ReadMessage[]
+}
+
+model ReadMessage {
+  messageId Int
+  userId    Int
+  readAt    DateTime @default(now())
+  Message   Message  @relation(fields: [messageId], references: [messageId])
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@id([messageId, userId])
 }
 
 model UserChat {

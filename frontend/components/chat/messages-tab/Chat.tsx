@@ -1,4 +1,4 @@
-import { Avatar, Badge, user } from "@nextui-org/react";
+import { Avatar, Badge } from "@nextui-org/react";
 
 import { GroupChat, PrivateChat } from "../../../../shared/types";
 
@@ -11,6 +11,7 @@ import { useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
 
 import { computeDate } from "@/components/utils/computeDate";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Props = {
   chat: GroupChat | PrivateChat;
@@ -18,6 +19,7 @@ type Props = {
 
 const Chat = (props: Props) => {
   const { chat } = props;
+  const { user } = useAuth();
 
   const [isChatActive, setIsChatActive] = useState(false);
   const [date, setDate] = useState("");
@@ -43,6 +45,16 @@ const Chat = (props: Props) => {
       const user = activeUsers.users.find((u) => u.id === receipient.id);
 
       setIsChatActive(!!user);
+    } else {
+      const groupChat = chat as GroupChat;
+
+      const users = groupChat.users;
+
+      const activeUsersIDs = activeUsers.users.map((u) => u.id);
+
+      const isActive = users.some((u) => activeUsersIDs.includes(u.id));
+
+      setIsChatActive(isActive);
     }
   }, [activeUsers, chat]);
 
@@ -59,25 +71,22 @@ const Chat = (props: Props) => {
   return (
     <button className="flex mt-2" onClick={handleChatSelect}>
       <div>
-        {isChatActive && (
-          <Badge content="" color="success" shape="circle" className="mt-1">
-            <Avatar
-              radius="full"
-              size="lg"
-              src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-            />
-          </Badge>
-        )}
-        {!isChatActive && (
+        <Badge
+          content=""
+          color="success"
+          shape="circle"
+          className="mt-1"
+          isInvisible={!isChatActive}
+        >
           <Avatar
             radius="full"
             size="lg"
             src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
           />
-        )}
+        </Badge>
       </div>
-      <div className="flex flex-col ml-2 justify-center">
-        <div className="flex justify-between">
+      <div className="flex flex-col ml-2 justify-center w-px[234]">
+        <div className="flex justify-between w-[170px]">
           <div className="text-md font-semibold">
             {chat.type === "PRIVATE"
               ? (chat as PrivateChat).receipient.username
@@ -88,7 +97,23 @@ const Chat = (props: Props) => {
           )}
         </div>
         {chat.messages.length > 0 && (
-          <p className="font-light text-xs text-left text-nowrap">
+          <p
+            className={`text-xs text-left text-nowrap relative after:absolute after:h-full after:w-[170px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-white after:to-transparent after:from-0% after:to-20% ${
+              chat.messages[chat.messages.length - 1].readBy.some(
+                (u) => u.id === user?.id
+              )
+                ? "font-light"
+                : "font-bold"
+            }`}
+          >
+            <span className="mr-1">
+              {chat.messages[chat.messages.length - 1].user.id === user?.id ? (
+                <>Ja:</>
+              ) : (
+                <>{chat.messages[chat.messages.length - 1].user.username}:</>
+              )}
+            </span>
+
             {chat.messages[chat.messages.length - 1].content}
           </p>
         )}

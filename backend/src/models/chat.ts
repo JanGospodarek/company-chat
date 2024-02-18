@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import prisma from "../config/db";
 import type { PrivateChat, GroupChat } from "@shared/types";
+import { parseMessage } from "./message";
 
 type RawChat = Prisma.ChatGetPayload<{
   include: {
@@ -16,6 +17,17 @@ type RawChat = Prisma.ChatGetPayload<{
             id: true;
             username: true;
             createdAt: true;
+          };
+        };
+        ReadMessage: {
+          select: {
+            User: {
+              select: {
+                id: true;
+                username: true;
+                createdAt: true;
+              };
+            };
           };
         };
       };
@@ -129,6 +141,17 @@ export async function getChats(
               createdAt: true,
             },
           },
+          ReadMessage: {
+            select: {
+              User: {
+                select: {
+                  id: true,
+                  username: true,
+                  createdAt: true,
+                },
+              },
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",
@@ -187,6 +210,17 @@ export async function getChat(
               id: true,
               username: true,
               createdAt: true,
+            },
+          },
+          ReadMessage: {
+            select: {
+              User: {
+                select: {
+                  id: true,
+                  username: true,
+                  createdAt: true,
+                },
+              },
             },
           },
         },
@@ -269,7 +303,7 @@ export async function addUsersToChat(
  * @returns GroupChat | PrivateChat
  */
 function parseChat(c: RawChat, userID?: number): GroupChat | PrivateChat {
-  const messages = c.Message;
+  const messages = c.Message.map((message) => parseMessage(message));
   messages.reverse();
 
   if (c.type === "PRIVATE") {

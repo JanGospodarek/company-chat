@@ -5,6 +5,7 @@ import { addUsersToChat, newChat } from "@services/chat";
 import { getNewUsers } from "@models/user";
 
 import type { User } from "@shared/types";
+import { getMessages } from "@models/message";
 
 const chatRouter = express.Router();
 
@@ -50,6 +51,29 @@ chatRouter.get("/new", authenticate, async (req, res) => {
     const newUsers = await getNewUsers(user.id);
 
     res.send({ newUsers });
+  } catch (error: any) {
+    res.status(400).send({ error: error.message });
+  }
+});
+
+chatRouter.get("/:id/messages", authenticate, async (req, res) => {
+  const { lastId } = req.query;
+
+  const user = req.user as User;
+
+  const id = parseInt(req.params.id);
+  const last = lastId ? parseInt(lastId as string) : undefined;
+
+  try {
+    const chat = await getChat(id, user.id);
+
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
+
+    const messages = await getMessages(chat.chatId, 50, last);
+
+    res.send({ messages });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }

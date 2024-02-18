@@ -3,7 +3,11 @@ import { Socket } from "socket.io";
 // import { getChatByID, getChatNotify, getChatUsers } from "../models/chat";
 import type { GroupChat, PrivateChat, User } from "@shared/types";
 import { getChat } from "@models/chat";
-import { createMessage, getMessage } from "@models/message";
+import {
+  createMessage,
+  getMessage,
+  readMessage as rMessage,
+} from "@models/message";
 
 type Message = {
   chatID: number;
@@ -70,5 +74,53 @@ async function notifyActivity() {
       "activity",
       activeUsers.filter((u) => u.id !== socket.data["user"].id)
     );
+  }
+}
+
+export async function notifyNewChat(chatID: number, users: number[]) {
+  for (let user of users) {
+    const s = socketMap.get(user);
+    if (s) {
+      s.emit("newChat", chatID);
+    }
+  }
+}
+
+export async function readMessage(data: { messageId: number }, socket: Socket) {
+  if (typeof data.messageId !== "number") {
+    throw new Error("Invalid messageID");
+  }
+
+  const user = socket.data["user"] as User;
+  const message = await getMessage(data.messageId);
+
+  if (!message) {
+    throw new Error("Message not found");
+  }
+
+  if (message.readBy.some((u) => u.id === user.id)) {
+    return;
+  }
+
+  await rMessage(data.messageId, user.id);
+
+  const newMessage = await getMessage(data.messageId);
+
+  const chat = await getChat(message.chatId, user.id);
+
+  if (!chat) {
+    throw new Error("Chat not found");
+  }
+
+  const users =
+    chat.type === "PRIVATE"
+      ? [(chat as PrivateChat).receipient, user]
+      : (chat as GroupChat).users;
+
+  for (let user of users) {
+    const s = socketMap.get(user.id);
+    if (s) {
+      s.emit("read", newMessage);
+    }
   }
 }

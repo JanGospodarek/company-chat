@@ -3,10 +3,10 @@ import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 
-import { authRouter, chatRouter } from "@routes";
+import { authRouter, chatRouter, userRouter } from "@routes";
 // import cors from "cors";
 import { wsAuthenticate } from "@services/auth";
-import { connectUser, disconnectUser, receiveMessage } from "@services/message";
+import { connectUser, disconnectUser, receiveMessage, readMessage } from "@services/message";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
@@ -25,6 +25,7 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
+app.use("/users", userRouter);
 
 const server = app.listen(port);
 
@@ -61,4 +62,12 @@ io.on("connection", async (socket) => {
       console.error(error);
     }
   });
+
+  socket.on("read", async (data) => {
+    try {
+      await readMessage(data, socket);
+    } catch (error: any) {
+      console.error(error);
+    }
+  })
 });

@@ -7,9 +7,9 @@ type Props = {
   handleTabChange: handleMobileTabChange;
 };
 
-import { useRef, useState } from "react";
+import { RefObject, use, useRef, useState } from "react";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -20,6 +20,10 @@ import {
   computeLongDate,
   minuteDifference,
 } from "@/components/utils/computeDate";
+import { loadMoreMessages } from "@shared/api";
+
+import { loadOlderMessages } from "@/lib/chatsSlice";
+import { useInView } from "framer-motion";
 
 type MessageGroup = {
   messages: IMessage[];
@@ -35,15 +39,56 @@ const Conversation = (props: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [animateScroll, setAnimateScroll] = useState(false);
   const [messageGroups, setMessageGroups] = useState<DateGroup[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [latestMessageInView, setLatestMessageInView] = useState(true);
+
+  const [scroll, setScroll] = useState(true);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const dispatch = useAppDispatch();
+
+  const activeUsers = useAppSelector((state: RootState) => state.activeUsers);
 
   const { handleTabChange } = props;
   const conversation = useSelector(
     (state: RootState) => state.chats.chats[state.chats.activeChatID]
   );
 
+  const [isUserActive, setIsUserActive] = useState(false);
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    if (latestMessageInView) {
+      setScroll(true);
+    } else {
+      timeoutRef.current = setTimeout(() => {
+        setScroll(false);
+      }, 100);
+    }
+  }, [latestMessageInView]);
+
+  useEffect(() => {
+    if (!conversation) return;
+    if (conversation.type === "PRIVATE") {
+      const privateChat = conversation as PrivateChat;
+
+      const receipient = privateChat.receipient;
+
+      const user = activeUsers.users.find((u) => u.id === receipient.id);
+
+      setIsUserActive(!!user);
+    }
+  }, [activeUsers, conversation]);
+
   useEffect(() => {
     setTimeout(() => {
-      if (scrollRef.current) {
+      console.log(scroll);
+
+      if (scrollRef.current && scroll) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }
     }, 1);
@@ -51,14 +96,19 @@ const Conversation = (props: Props) => {
 
   useEffect(() => {
     if (!conversation) return;
+    setMessageGroups([]);
     setAnimateScroll(false);
     setTimeout(() => {
       setAnimateScroll(true);
-    }, 10);
+      setLoading(false);
+    }, 50);
   }, [conversation?.chatId]);
 
   useEffect(() => {
     if (!conversation) return;
+
+    if (conversation.messages.length === 0) return;
+    setMessageGroups([]);
 
     const groups: { date: string; messages: IMessage[] }[] = [];
 
@@ -126,6 +176,42 @@ const Conversation = (props: Props) => {
     setMessageGroups(dateGroups);
   }, [conversation?.messages]);
 
+  const loadMore = (messageId: number) => {
+    if (!conversation) return;
+    if (loading) return;
+
+    setLoading(true);
+    loadMoreMessages(conversation.chatId, messageId).then((messages) => {
+      if (messages.length === 0) return;
+
+      const newMessages = messages.reverse();
+
+      dispatch(loadOlderMessages(newMessages));
+
+      setAnimateScroll(false);
+
+      setTimeout(() => {
+        const ref = document.getElementById(messageId.toString());
+
+        if (ref) {
+          const top = ref.offsetTop + ref.clientHeight;
+          scrollRef.current?.scrollTo(0, top);
+        }
+      }, 1);
+
+      setTimeout(() => {
+        setAnimateScroll(true);
+        setLoading(false);
+      }, 50);
+    });
+  };
+
+  const handleScrollButton = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  };
+
   return (
     <div className="flex flex-col m-4 w-full gap-2">
       {conversation?.chatId && (
@@ -134,14 +220,20 @@ const Conversation = (props: Props) => {
             <button onClick={() => handleTabChange("messages")}>
               <ArrowCircleLeft size={48} className="md:hidden fill-primary" />
             </button>
-
-            <Badge content="" color="success" shape="circle" className="mt-1">
+            <Badge
+              content=""
+              color="success"
+              shape="circle"
+              className="mt-1"
+              isInvisible={!isUserActive}
+            >
               <Avatar
                 radius="full"
                 size="lg"
                 src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
               />
             </Badge>
+
             <div className="flex flex-col ml-2 justify-center w-full">
               <div className="text-xl font-semibold">
                 {conversation.type === "GROUP"
@@ -162,13 +254,12 @@ const Conversation = (props: Props) => {
             offset={2}
             hideScrollBar
             ref={scrollRef}
-            // className={animateScroll ? "scroll-smooth" : ""}
             className={`flex-grow flex flex-col mb-2 ${
               animateScroll ? "scroll-smooth" : ""
             }`}
           >
             <div className="h-full"></div>
-            {messageGroups.map((group) => (
+            {messageGroups.map((group, index) => (
               <div key={group.date} className="flex flex-col gap-2">
                 <div className="text-center text-xs text-primary font-semibold">
                   {computeLongDate(new Date(group.date))}
@@ -182,26 +273,41 @@ const Conversation = (props: Props) => {
                         : "items-start"
                     }`}
                   >
-                    {mGroup.messages.map((m, i) => (
+                    {mGroup.messages.map((m, j) => (
                       <Message
                         message={m}
                         key={m.messageId}
-                        isFirst={i === 0}
-                        isLast={i === mGroup.messages.length - 1}
+                        isFirst={j === 0}
+                        isLast={j === mGroup.messages.length - 1}
+                        loadMore={
+                          j === 0 && i === 0 && index === 0
+                            ? loadMore
+                            : undefined
+                        }
+                        setInView={
+                          j === mGroup.messages.length - 1 &&
+                          i === group.messages.length - 1 &&
+                          index === messageGroups.length - 1
+                            ? setLatestMessageInView
+                            : undefined
+                        }
                       />
                     ))}
-                    <p className="font-light">
-                      {mGroup.messages[0].user.username}
-                    </p>
+                    {mGroup.messages[0].user.id !== user?.id && (
+                      <p className="font-light">
+                        {mGroup.messages[0].user.username}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
             ))}
-            {/* {conversation.messages.map((m) => (
-              <Message message={m} key={m.messageId} />
-            ))} */}
           </ScrollShadow>
-          <TypeBar chatId={conversation.chatId} />
+          <TypeBar
+            chatId={conversation.chatId}
+            buttonVisible={!scroll}
+            handleButtonClick={handleScrollButton}
+          />
         </>
       )}
     </div>

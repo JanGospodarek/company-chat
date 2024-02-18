@@ -1,5 +1,34 @@
+import type { Prisma } from "@prisma/client";
 import prisma from "../config/db";
 import type { Message } from "@shared/types";
+
+type RawMessage = Prisma.MessageGetPayload<{
+  select: {
+    messageId: true;
+    content: true;
+    createdAt: true;
+    chatId: true;
+    attachment: true;
+    user: {
+      select: {
+        id: true;
+        username: true;
+        createdAt: true;
+      };
+    };
+    ReadMessage: {
+      select: {
+        User: {
+          select: {
+            id: true;
+            username: true;
+            createdAt: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 
 /**
  * Create a new message in the database
@@ -21,22 +50,52 @@ export async function createMessage(
     },
   });
 
+  // Add the sender to the list of users who read the message
+  await prisma.readMessage.create({
+    data: {
+      messageId: message.messageId,
+      userId: senderID,
+    },
+  });
+
   return message.messageId;
 }
 
 /**
  * Get the last n messages from a chat
  * @param chatID
- * @param n default is 25
+ * @param n default is 50
  * @returns array of Messages
  */
 export async function getMessages(
   chatID: number,
-  n: number = 25
+  n: number = 50,
+  lastId?: number
 ): Promise<Message[]> {
-  const messages = await prisma.message.findMany({
+  let laterThan: Prisma.MessageWhereUniqueInput | undefined;
+
+  if (lastId) {
+    const lastMessage = await prisma.message.findUnique({
+      where: {
+        messageId: lastId,
+      },
+    });
+
+    if (!lastMessage) {
+      throw new Error("Message not found");
+    }
+
+    laterThan = {
+      messageId: lastId,
+    };
+  }
+
+  console.log(laterThan);
+
+  const rawMessages = await prisma.message.findMany({
     where: {
       chatId: chatID,
+      messageId: laterThan ? { lt: laterThan.messageId } : undefined,
     },
     take: n,
     orderBy: {
@@ -55,8 +114,21 @@ export async function getMessages(
           createdAt: true,
         },
       },
+      ReadMessage: {
+        select: {
+          User: {
+            select: {
+              id: true,
+              username: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
     },
   });
+
+  const messages = rawMessages.map((message) => parseMessage(message));
 
   return messages;
 }
@@ -67,7 +139,7 @@ export async function getMessages(
  * @returns Message
  */
 export async function getMessage(messageId: number): Promise<Message> {
-  const message = await prisma.message.findUnique({
+  const message: RawMessage | null = await prisma.message.findUnique({
     where: {
       messageId,
     },
@@ -84,6 +156,17 @@ export async function getMessage(messageId: number): Promise<Message> {
           createdAt: true,
         },
       },
+      ReadMessage: {
+        select: {
+          User: {
+            select: {
+              id: true,
+              username: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -91,5 +174,38 @@ export async function getMessage(messageId: number): Promise<Message> {
     throw new Error("Message not found");
   }
 
+  return parseMessage(message);
+}
+
+export async function readMessage(messageId: number, userId: number) {
+  const message = await getMessage(messageId);
+
+  await prisma.readMessage.create({
+    data: {
+      messageId,
+      userId,
+    },
+  });
+
   return message;
 }
+
+export const parseMessage = (message: RawMessage): Message => {
+  return {
+    messageId: message.messageId,
+    content: message.content,
+    createdAt: message.createdAt,
+    chatId: message.chatId,
+    attachment: message.attachment,
+    user: {
+      id: message.user.id,
+      username: message.user.username,
+      createdAt: message.user.createdAt,
+    },
+    readBy: message.ReadMessage.map((r) => ({
+      id: r.User.id,
+      username: r.User.username,
+      createdAt: r.User.createdAt,
+    })),
+  };
+};
