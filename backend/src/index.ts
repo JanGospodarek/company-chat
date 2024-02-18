@@ -7,6 +7,7 @@ import { authRouter, chatRouter, userRouter } from "@routes";
 // import cors from "cors";
 import { wsAuthenticate } from "@services/auth";
 import { connectUser, disconnectUser, receiveMessage, readMessage } from "@services/message";
+import { CronJob } from "cron";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
