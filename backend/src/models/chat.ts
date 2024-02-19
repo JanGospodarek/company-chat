@@ -60,6 +60,7 @@ export async function createPrivateChat(
   const exists = await prisma.chat.findFirst({
     where: {
       AND: [
+        { type: "PRIVATE" },
         { UserChat: { some: { userId } } },
         { UserChat: { some: { userId: receipientId } } },
       ],
