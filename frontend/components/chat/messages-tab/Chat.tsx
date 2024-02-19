@@ -15,10 +15,11 @@ import { useAuth } from "@/contexts/AuthContext";
 
 type Props = {
   chat: GroupChat | PrivateChat;
+  handleTabChange: () => void;
 };
 
 const Chat = (props: Props) => {
-  const { chat } = props;
+  const { chat, handleTabChange } = props;
   const { user } = useAuth();
 
   const [isChatActive, setIsChatActive] = useState(false);
@@ -34,6 +35,7 @@ const Chat = (props: Props) => {
     miau.enterChat(id);
 
     dispatch(selectChat(id));
+    handleTabChange();
   };
 
   useEffect(() => {

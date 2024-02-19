@@ -83,7 +83,7 @@ export default function Home() {
     <>
       {user && (
         <div className="font-league bg-secondary text-foreground w-[100vw] h-[100vh] flex justify-center items-center">
-          <div className="md:rounded-[50px] h-[100vh] w-[100vw] bg-white md:w-[80%] md:h-[80%] relative flex">
+          <div className="md:rounded-[50px] h-[100vh] w-[100vw] bg-white md:w-[80%] md:h-[80%] relative flex justify-center">
             <div className="hidden md:flex h-full w-full">
               <LeftNavbar />
               <MessagesTab
@@ -93,8 +93,8 @@ export default function Home() {
               <Conversation handleTabChange={handleTabChange} />
             </div>
             {/* Mobile view */}
-            <div className=" md:hidden h-full w-full flex justify-center">
-              {activeChatID === -1 ? (
+            <div className=" md:hidden h-full flex justify-center ">
+              {currentTabMobile === "messages" ? (
                 <MessagesTab
                   handleTabChange={handleTabChange}
                   handleShowGroupModal={handleShowModal}
@@ -103,6 +103,10 @@ export default function Home() {
                 <Conversation handleTabChange={handleTabChange} />
               )}
             </div>
+            {/* Group creation modal */}
+            {/* {showCreateGroupModal && (
+              <GroupModal handleShowModal={handleShowModal} />
+            )} */}
           </div>
           <audio id="notification" ref={audioPlayer} src={NotificationSound} />
         </div>
