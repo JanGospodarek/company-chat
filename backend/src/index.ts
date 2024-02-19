@@ -12,7 +12,8 @@ import {
   receiveMessage,
   readMessage,
 } from "@services/message";
-import { CronJob } from "cron";
+
+import { decryptData } from "@services/crypto";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
@@ -63,7 +64,9 @@ io.on("connection", async (socket) => {
 
   socket.on("message", async (data) => {
     try {
-      await receiveMessage(data, socket);
+      const decrypted = decryptData(data);
+
+      await receiveMessage(decrypted, socket);
     } catch (error: any) {
       // socket.emit("error", { message: error.message });
       console.error(error);

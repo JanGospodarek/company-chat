@@ -1,11 +1,32 @@
 import * as type from "./types";
 import { Socket, io } from "socket.io-client";
+import JSEncrypt from "jsencrypt";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
 const apiURL = test ? "http://localhost:5138" : "/api";
 const socketURL = test ? "http://localhost:5138" : "";
 const socketPath = test ? "" : "/ws";
+
+const encrypt = new JSEncrypt();
+encrypt.setPublicKey(process.env.NEXT_PUBLIC_PUBLIC_KEY || "");
+
+const decrypt = new JSEncrypt();
+decrypt.setPrivateKey(process.env.PRIVATE_KEY || "");
+
+export const encryptData = (data: any) => {
+  return encrypt.encrypt(JSON.stringify(data));
+};
+
+export const decryptData = (data: string) => {
+  const decrypted = decrypt.decrypt(data);
+
+  if (decrypted === false) {
+    return null;
+  }
+
+  return JSON.parse(decrypted);
+};
 
 export const register = async (username: string, password: string) => {
   const res = await fetch(`${apiURL}/auth/register`, {
@@ -404,19 +425,22 @@ export class Miau {
   sendMessage(content: string) {
     const chatID = this.activeChat;
 
+    const data = { chatID, content };
+    const encrypted = encrypt.encrypt(JSON.stringify(data));
+
     if (chatID === null) {
       throw new Error("No active chat");
     }
 
     if (!this.socket.connected) {
       this.socket.once("connect", () => {
-        this.socket.emit("message", { chatID, content });
+        this.socket.emit("message", encrypted);
       });
 
       return;
     }
 
-    this.socket.emit("message", { chatID, content });
+    this.socket.emit("message", encrypted);
   }
 
   markMessageAsRead(messageId: number) {

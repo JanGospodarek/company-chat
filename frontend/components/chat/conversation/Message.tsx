@@ -5,7 +5,7 @@ import { File } from "@phosphor-icons/react";
 import { loadAttachments, miau } from "@shared/api";
 import { Attachment, Message } from "@shared/types";
 import { useInView } from "framer-motion";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   message: Message;

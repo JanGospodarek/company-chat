@@ -12,16 +12,17 @@ import { useDispatch } from "react-redux";
 import { setActiveUsers } from "@/lib/activeUsersSlice";
 import { addChat, addMessageToChat, updateMessage } from "@/lib/chatsSlice";
 
-import { RootState, store } from "@/lib/store";
-import { useSelector } from "react-redux";
+import { store } from "@/lib/store";
 
 // @ts-ignore
 import NotificationSound from "@/components/chat/notification_sound.mp3";
+import { useAppSelector } from "@/lib/hooks";
 
 export default function Home() {
   const [currentTabMobile, setCurrentTabMobile] =
     useState<MobileTabs>("messages");
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  const activeChatID = useAppSelector((state) => state.chats.activeChatID);
 
   const audioPlayer = useRef<HTMLAudioElement>(null);
 
