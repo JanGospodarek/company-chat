@@ -22,9 +22,8 @@ import {
 } from "@/components/utils/computeDate";
 import { loadMoreMessages } from "@shared/api";
 
-import { loadOlderMessages } from "@/lib/chatsSlice";
-import { useInView } from "framer-motion";
-import { motion, useAnimate } from "framer-motion";
+import { loadOlderMessages, selectChat } from "@/lib/chatsSlice";
+import { useAnimate } from "framer-motion";
 
 type MessageGroup = {
   messages: IMessage[];
@@ -224,12 +223,16 @@ const Conversation = (props: Props) => {
     }
   };
 
+  const handleBackButton = () => {
+    dispatch(selectChat(-1));
+  };
+
   return (
     <div className="flex flex-col m-4 w-full gap-2">
       {conversation?.chatId && (
         <>
           <div className="flex items-center gap-4 transition-all">
-            <button onClick={() => handleTabChange("messages")}>
+            <button onClick={handleBackButton}>
               <ArrowCircleLeft size={48} className="md:hidden fill-primary" />
             </button>
             <Badge

@@ -117,12 +117,18 @@ const MessagesTab = (props: Props) => {
         onClose={() => setShowNewChat(false)}
         backdrop="blur"
         size="xs"
+        className=""
+        classNames={{
+          body: "margin-0",
+          wrapper: "margin-0",
+          base: "w-full md:w-[300px] max-w-full m-0 rounded-b-none md:rounded-b-large max-h-[80vh]",
+        }}
       >
         <ModalContent>
           <ModalHeader className="text-black justify-center">
             Nowy chat
           </ModalHeader>
-          <ModalBody>
+          <ModalBody className="overflow-scroll scrollbar-hide">
             <Listbox>
               {newUsers.map((user) => (
                 <ListboxItem key={user.id} onClick={() => handleNewChat(user)}>
