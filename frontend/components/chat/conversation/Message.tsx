@@ -69,7 +69,7 @@ const Message = (props: Props) => {
         ${isLast ? "rounded-b-2xl" : ""}`}
         >
           {message.attachment && (
-            <div className="flex gap-2 flex-wrap justify-between p-2 bg-secondary-200 bg-opacity-30 rounded-2xl">
+            <div className="flex gap-2 flex-wrap justify-between p-2 bg-secondary-200 bg-opacity-30 rounded-2xl mt-2 mb-2">
               {attachments.map((attachment) => (
                 <>
                   {attachment.type.startsWith("image/") ? (
@@ -86,7 +86,7 @@ const Message = (props: Props) => {
                       download
                       className={`${
                         attachments.length > 1 ? "w-[48%]" : "w-[200px]"
-                      } bg-black bg-opacity-0 rounded-xl text-white hover:bg-opacity-10 hover:p-2 transition-all`}
+                      } bg-black bg-opacity-0 rounded-xl text-white hover:bg-opacity-10 transition-all`}
                     >
                       <div className="flex flex-col h-full items-center">
                         <div className="bg-slate-300 w-full h-full rounded-xl flex items-center justify-center">
