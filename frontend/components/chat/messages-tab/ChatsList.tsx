@@ -14,7 +14,7 @@ import { setChats } from "@/lib/chatsSlice";
 
 const ChatsList = (props: Props) => {
   const dispatch = useDispatch();
-
+  const { handleChatSelect } = props;
   const chats = useSelector((state: RootState) => state.chats.chats);
   const fontSizeState = useSelector((state: RootState) => state.font);
 
@@ -61,7 +61,11 @@ const ChatsList = (props: Props) => {
           return dateB - dateA;
         })
         .map((chat) => (
-          <Chat chat={chat} key={chat.chatId} />
+          <Chat
+            chat={chat}
+            key={chat.chatId}
+            handleTabChange={handleChatSelect}
+          />
         ))}
     </div>
   );
