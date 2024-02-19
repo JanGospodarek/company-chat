@@ -60,3 +60,12 @@
 //     // </ThemeProvider>
 //   );
 // }
+import { Slot } from "expo-router";
+import { AuthProvider } from "../contexts/AuthContext";
+export default function Wrapper() {
+  return (
+    <AuthProvider>
+      <Slot />
+    </AuthProvider>
+  );
+}

@@ -3,7 +3,7 @@ import JSEncrypt from "node-jsencrypt";
 import type { Request, Response, NextFunction } from "express";
 
 const decrypt = new JSEncrypt();
-decrypt.setPrivateKey(process.env.PRIVATE_KEY || "");
+decrypt.setPrivateKey(process.env.RSA_PRIVATE_KEY || "");
 
 export const decryptData = (data: string) => {
   const decrypted = decrypt.decrypt(data);

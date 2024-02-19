@@ -4,11 +4,11 @@ import { authenticate, login } from "@services/auth";
 import { register, validatePassword } from "../services/auth";
 import type { User } from "@shared/types";
 import { decryptMiddleware } from "@services/crypto";
-
+import cors from "cors";
 const authRouter = express.Router();
 
 authRouter.use(decryptMiddleware);
-
+authRouter.use(cors());
 authRouter.post("/login", async (req, res) => {
   console.log(req.body);
 
@@ -29,7 +29,7 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/register", async (req, res) => {
   const { username, password } = req.body;
   const mobile = false;
-
+  console.log(req.body, "test mobile");
   try {
     await register(username, password);
 

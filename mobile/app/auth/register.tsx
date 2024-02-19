@@ -1,60 +1,101 @@
+import { register } from "../../shared/api";
 import { Link } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Button, TextInput } from "react-native-paper";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Alert from "@/components/Alert";
+import { useRouter } from "expo-router";
 const LoginScreen = () => {
-  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
   const [surname, setSurname] = React.useState("");
+  const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<false | string>(false);
+  const [succeded, setSucceded] = React.useState<boolean>(false);
 
+  const handleRegister = async () => {
+    if (email && password) {
+      setLoading(true);
+      try {
+        const data = await register(email, password);
+        setLoading(false);
+        setError(false);
+        setSucceded(true);
+        // router.push("/chat/messages/");
+        await AsyncStorage.clear();
+        await AsyncStorage.setItem("user", JSON.stringify(data));
+        setLoading(false);
+      } catch (error: any) {
+        setError(error.message);
+      }
+    }
+  };
+  React.useEffect(() => {
+    if (error || succeded) {
+      setLoading(false);
+    }
+  }, [error, succeded]);
   return (
-    <View style={styles.container}>
-      <View style={styles.heading}>
-        <Text style={{ fontSize: 32, fontWeight: "bold" }}>Register</Text>
-      </View>
-      <View style={styles.content}>
-        <TextInput
-          label="Name"
-          value={name}
-          style={{ width: 200 }}
-          mode="outlined"
-          onChangeText={(text) => setName(text)}
-        />
-        <TextInput
-          label="Surname"
-          value={surname}
-          style={{ width: 200 }}
-          mode="outlined"
-          onChangeText={(text) => setSurname(text)}
-        />
-        <TextInput
-          label="Username"
-          value={username}
-          style={{ width: 200 }}
-          mode="outlined"
-          onChangeText={(text) => setUsername(text)}
-        />
-        <TextInput
-          label="Password"
-          value={password}
-          style={{ width: 200 }}
-          mode="outlined"
-          onChangeText={(text) => setPassword(text)}
-        />
-        <View style={styles.btnContainer}>
-          <Link href="/" asChild>
-            <Button mode="outlined" onPress={() => console.log("Pressed")}>
-              <Text>Back </Text>
+    <>
+      <View style={styles.container}>
+        <View style={styles.heading}>
+          <Text style={{ fontSize: 32, fontWeight: "bold" }}>Register</Text>
+        </View>
+        <View style={styles.content}>
+          <TextInput
+            label="Name"
+            value={name}
+            style={{ width: 200 }}
+            mode="outlined"
+            onChangeText={(text) => setName(text)}
+          />
+          <TextInput
+            label="Surname"
+            value={surname}
+            style={{ width: 200 }}
+            mode="outlined"
+            onChangeText={(text) => setSurname(text)}
+          />
+          <TextInput
+            label="Username"
+            value={email}
+            style={{ width: 200 }}
+            mode="outlined"
+            onChangeText={(text) => setEmail(text)}
+          />
+          <TextInput
+            label="Password"
+            value={password}
+            style={{ width: 200 }}
+            mode="outlined"
+            onChangeText={(text) => setPassword(text)}
+          />
+          <View style={styles.btnContainer}>
+            <Link href="/" asChild>
+              <Button mode="outlined" onPress={() => console.log("Pressed")}>
+                <Text>Back </Text>
+              </Button>
+            </Link>
+            <Button
+              mode="contained"
+              onPress={() => handleRegister()}
+              loading={loading}
+            >
+              <Text>Register </Text>
             </Button>
-          </Link>
-          <Button mode="contained" onPress={() => console.log("Pressed")}>
-            <Text>Register </Text>
-          </Button>
+          </View>
         </View>
       </View>
-    </View>
+
+      <Alert
+        type={succeded ? "success" : error ? "error" : "none"}
+        message={succeded ? "Created account successfully" : error ? error : ""}
+        isVisible={succeded || (error as boolean)}
+      />
+    </>
   );
 };
 

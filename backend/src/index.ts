@@ -2,7 +2,7 @@ import express from "express";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import passport from "passport";
-
+import cors from "cors";
 import { authRouter, chatRouter, mediaRouter, userRouter } from "@routes";
 // import cors from "cors";
 import { wsAuthenticate } from "@services/auth";
@@ -23,7 +23,7 @@ const port = test ? 5138 : process.env.PORT || 5000;
 const app = express();
 
 // Middlewares
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
@@ -41,6 +41,10 @@ const server = app.listen(port, () => {
 
 app.get("/status", async (req, res) => {
   res.send({ status: "ok" });
+});
+
+app.get("/test", async (req, res) => {
+  res.send({ data: "tested" });
 });
 
 const io = new Server(server, {

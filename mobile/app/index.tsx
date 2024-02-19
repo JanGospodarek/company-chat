@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const StartScreen = () => {
   const [fontsLoaded, fontError] = useFonts({
@@ -38,62 +39,60 @@ const StartScreen = () => {
     return null;
   }
   return (
-    <PaperProvider theme={primaryTheme}>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-        }}
-        onLayout={onLayoutRootView}
-      >
-        <Text
+    <AuthProvider>
+      <PaperProvider theme={primaryTheme}>
+        <View
           style={{
-            fontSize: 32,
-            fontWeight: "bold",
-            fontFamily: "League-Spartan",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
           }}
+          onLayout={onLayoutRootView}
         >
-          Company chat
-        </Text>
+          <Text
+            style={{
+              fontSize: 32,
+              fontWeight: "bold",
+              fontFamily: "League-Spartan",
+            }}
+          >
+            Company chat
+          </Text>
 
-        <Link href="/auth/login" asChild>
-          <Button
-            mode="contained"
-            style={{ width: "50%" }}
-            onPress={() => console.log("Pressed")}
-          >
-            <Text style={{ fontFamily: "League-Spartan" }}>Login</Text>
-          </Button>
-        </Link>
+          <Link href="/auth/login" asChild>
+            <Button mode="contained" style={{ width: "50%" }}>
+              <Text style={{ fontFamily: "League-Spartan" }}>Login</Text>
+            </Button>
+          </Link>
 
-        <Link href="/auth/register" asChild>
-          <Button
-            mode="outlined"
-            style={{ width: "50%" }}
-            onPress={() => console.log("register")}
+          <Link href="/auth/register" asChild>
+            <Button
+              mode="outlined"
+              style={{ width: "50%" }}
+              onPress={() => console.log("register")}
+            >
+              <Text style={{ fontFamily: "League-Spartan" }}>Register</Text>
+            </Button>
+          </Link>
+          <Link
+            href={{
+              pathname: "/chat/messages/[id]",
+              params: { id: "bacon" },
+            }}
+            asChild
           >
-            <Text style={{ fontFamily: "League-Spartan" }}>Register</Text>
-          </Button>
-        </Link>
-        <Link
-          href={{
-            pathname: "/chat/messages/[id]",
-            params: { id: "bacon" },
-          }}
-          asChild
-        >
-          <Button
-            mode="outlined"
-            style={{ width: "50%" }}
-            onPress={() => console.log("register")}
-          >
-            <Text>Chat</Text>
-          </Button>
-        </Link>
-      </View>
-    </PaperProvider>
+            <Button
+              mode="outlined"
+              style={{ width: "50%" }}
+              onPress={() => console.log("register")}
+            >
+              <Text>Chat</Text>
+            </Button>
+          </Link>
+        </View>
+      </PaperProvider>
+    </AuthProvider>
   );
 };
 export default StartScreen;
