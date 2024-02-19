@@ -3,10 +3,15 @@ import express from "express";
 import { authenticate, login } from "@services/auth";
 import { register, validatePassword } from "../services/auth";
 import type { User } from "@shared/types";
+import { decryptMiddleware } from "@services/crypto";
 
 const authRouter = express.Router();
 
+authRouter.use(decryptMiddleware);
+
 authRouter.post("/login", async (req, res) => {
+  console.log(req.body);
+
   const { username, password } = req.body;
   try {
     const { user, token } = await login(username, password);

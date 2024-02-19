@@ -15,7 +15,15 @@ const decrypt = new JSEncrypt();
 decrypt.setPrivateKey(process.env.PRIVATE_KEY || "");
 
 export const encryptData = (data: any) => {
-  return encrypt.encrypt(JSON.stringify(data));
+  const encrypted = encrypt.encrypt(JSON.stringify(data));
+
+  if (!encrypted) {
+    throw new Error("Encryption failed");
+  }
+
+  const dataToSend = JSON.stringify({ data: encrypted });
+
+  return dataToSend;
 };
 
 export const decryptData = (data: string) => {
@@ -29,12 +37,15 @@ export const decryptData = (data: string) => {
 };
 
 export const register = async (username: string, password: string) => {
+  const data = { username, password };
+  const encrypted = encryptData(data);
+
   const res = await fetch(`${apiURL}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ username, password }),
+    body: encrypted,
   });
 
   if (res.status !== 200) {
@@ -48,12 +59,17 @@ export const register = async (username: string, password: string) => {
 };
 
 export const login = async (username: string, password: string) => {
+  const data = { username, password };
+  const encrypted = encryptData(data);
+
+  console.log(encrypted);
+
   const res = await fetch(`${apiURL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ username, password }),
+    body: encrypted,
   });
 
   if (res.status !== 200) {
@@ -209,12 +225,15 @@ export const loadMoreMessages = async (chatId: number, lastId: number) => {
  * @returns The chat ID
  */
 export const newPrivateChat = async (receipient: string) => {
+  const data = { receipient };
+  const encrypted = encryptData(data);
+
   const res = await fetch(`${apiURL}/chat/new`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ receipient }),
+    body: encrypted,
   });
 
   if (res.status === 401) {
@@ -239,12 +258,15 @@ export const newPrivateChat = async (receipient: string) => {
  * @returns The chat ID
  */
 export const newGroupChat = async (name: string) => {
+  const data = { name };
+  const encrypted = encryptData(data);
+
   const res = await fetch(`${apiURL}/chat/new`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name }),
+    body: encrypted,
   });
 
   if (res.status === 401) {
@@ -298,12 +320,15 @@ export const newPrivateChatList = async () => {
  * @returns The chat ID
  */
 export const addUsersToChat = async (chatId: number, users: number[]) => {
+  const data = { chatId, users };
+  const encrypted = encryptData(data);
+
   const res = await fetch(`${apiURL}/chat/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ chatId, users }),
+    body: encrypted,
   });
 
   if (res.status === 401) {

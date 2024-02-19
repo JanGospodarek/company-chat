@@ -35,7 +35,9 @@ app.use("/chat", chatRouter);
 app.use("/users", userRouter);
 app.use("/media", mediaRouter);
 
-const server = app.listen(port);
+const server = app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 app.get("/status", async (req, res) => {
   res.send({ status: "ok" });

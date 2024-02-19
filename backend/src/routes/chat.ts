@@ -7,8 +7,11 @@ import { getNewUsers } from "@models/user";
 
 import type { User } from "@shared/types";
 import { getMessages } from "@models/message";
+import { decryptMiddleware } from "@services/crypto";
 
 const chatRouter = express.Router();
+
+chatRouter.use(decryptMiddleware);
 
 chatRouter.get("/", authenticate, async (req, res) => {
   const user = req.user as User;
