@@ -17,8 +17,9 @@ const ActionsModal = (props: Props) => {
     setLoading(true);
     await logOut();
     AsyncStorage.clear();
-    setLoading(false);
     router.push("/");
+
+    setLoading(false);
   };
   return (
     <Modal

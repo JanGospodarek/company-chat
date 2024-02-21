@@ -7,9 +7,11 @@ import JSEncrypt from "jsencrypt";
 // const apiURL = test ? "http://localhost:5000" : "/api";
 // const socketURL = test ? "http://localhost:5000" : "";
 // const socketPath = test ? "" : "/ws";
-const apiURL = "http://192.168.50.165/api";
-const socketURL = "http://192.168.50.165";
+console.log(process.env.EXPO_PUBLIC_SERVER_IP);
+const apiURL = `http://${process.env.EXPO_PUBLIC_SERVER_IP}/api`;
+const socketURL = `http://${process.env.EXPO_PUBLIC_SERVER_IP}`;
 const socketPath = "/ws";
+
 const encrypt = new JSEncrypt();
 encrypt.setPublicKey(process.env.EXPO_PUBLIC_PUBLIC_KEY || "");
 

@@ -17,7 +17,7 @@ const LoginScreen = () => {
 
   React.useEffect(() => {
     if (user) {
-      router.push("/");
+      router.push("/chat/messages/");
     }
   }, []);
 

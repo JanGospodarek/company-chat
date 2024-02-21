@@ -170,7 +170,12 @@ const Conversation = (props: Props) => {
         const lastSender = lastMessage.user.id;
 
         if (sender === lastSender) {
-          lastGroup.messages.push(message);
+          if (
+            lastGroup.messages.findIndex(
+              (el) => el.messageId === message.messageId
+            ) === -1
+          )
+            lastGroup.messages.push(message);
         } else {
           mGroups.push({
             messages: [message],

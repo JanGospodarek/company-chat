@@ -1,8 +1,13 @@
 import { useRouter } from "expo-router";
 import { View, StyleSheet, Text } from "react-native";
 import { Avatar, Badge, IconButton, useTheme } from "react-native-paper";
-
-const Heading = () => {
+interface Props {
+  handleGoBack: () => void;
+  isActive: boolean;
+  title: string;
+}
+const Heading = (props: Props) => {
+  const { handleGoBack, title, isActive } = props;
   const theme = useTheme();
   const router = useRouter();
   return (
@@ -13,6 +18,7 @@ const Heading = () => {
         iconColor={theme.colors.primary}
         style={{ margin: 0, padding: 0 }}
         onPress={() => {
+          handleGoBack();
           router.push("/chat/messages/");
         }}
       />
@@ -21,10 +27,10 @@ const Heading = () => {
           size={60}
           source={require("../../assets/images/avatar.jpeg")}
         />
-        <Badge style={styles.badge} size={15}></Badge>
+        {isActive && <Badge style={styles.badge} size={15}></Badge>}
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>Monika Kowalska</Text>
+        <Text style={styles.text}>{title}</Text>
         <Text style={{ color: "#737373", fontFamily: "League-Spartan" }}>
           monika.kowlska@ms.com
         </Text>
