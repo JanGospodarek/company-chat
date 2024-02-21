@@ -49,6 +49,7 @@ app.get("/test", async (req, res) => {
 
 const io = new Server(server, {
   path: "/ws",
+  cors: { origin: "*" },
 });
 
 io.use(async (socket, next) => {
@@ -61,7 +62,12 @@ io.use(async (socket, next) => {
   }
 });
 
+io.on("connection_error", (err) => {
+  console.log(err.context);
+});
+
 io.on("connection", async (socket) => {
+  console.log("Connected");
   await connectUser(socket);
 
   socket.on("disconnect", async () => {

@@ -62,10 +62,14 @@
 // }
 import { Slot } from "expo-router";
 import { AuthProvider } from "../contexts/AuthContext";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
 export default function Wrapper() {
   return (
     <AuthProvider>
-      <Slot />
+      <Provider store={store}>
+        <Slot />
+      </Provider>
     </AuthProvider>
   );
 }

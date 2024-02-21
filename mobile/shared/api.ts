@@ -8,8 +8,8 @@ import JSEncrypt from "jsencrypt";
 // const socketURL = test ? "http://localhost:5000" : "";
 // const socketPath = test ? "" : "/ws";
 const apiURL = "http://192.168.50.165/api";
-const socketURL = "http://192.168.50.165/api";
-const socketPath = "";
+const socketURL = "http://192.168.50.165";
+const socketPath = "/ws";
 const encrypt = new JSEncrypt();
 encrypt.setPublicKey(process.env.EXPO_PUBLIC_PUBLIC_KEY || "");
 
@@ -407,10 +407,11 @@ export class Miau {
   private activeChat: number | null = null;
 
   constructor() {
-    this.socket = io("/", {
+    this.socket = io(socketURL, {
       withCredentials: true,
       path: socketPath,
       autoConnect: false,
+      transports: ["websocket"],
     });
   }
 
