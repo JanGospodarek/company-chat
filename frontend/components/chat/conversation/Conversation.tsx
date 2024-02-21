@@ -255,14 +255,16 @@ const Conversation = (props: Props) => {
                   ? conversation.name
                   : (conversation as PrivateChat).receipient.username}
               </div>
-              <button
-                className="font-light text-sm text-primary underline text-left"
-                onClick={() => {
-                  navigator.clipboard.writeText("mateusz@kowalski.co.pl");
-                }}
-              >
-                mateusz@kowalski.co.pl
-              </button>
+              {conversation.type === "PRIVATE" && (
+                <button
+                  className="font-light text-sm text-primary underline text-left"
+                  onClick={() => {
+                    navigator.clipboard.writeText("mateusz@kowalski.co.pl");
+                  }}
+                >
+                  mateusz@kowalski.co.pl
+                </button>
+              )}
             </div>
           </div>
           <ScrollShadow
