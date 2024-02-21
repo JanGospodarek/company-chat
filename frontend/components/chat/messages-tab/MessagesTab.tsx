@@ -107,7 +107,7 @@ const MessagesTab = (props: Props) => {
           </button> */}
         </div>
       </div>
-      <div className="flex flex-col relative flex-1">
+      <div className="flex flex-col overflow-y-scroll hide-scrollbar">
         <ActiveUsers />
         <ChatsList handleChatSelect={handleChatSelect} />
       </div>
