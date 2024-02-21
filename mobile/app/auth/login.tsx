@@ -31,6 +31,7 @@ const LoginScreen = () => {
         setLoading(false);
         setError(false);
         setSucceded(true);
+        router.push("/chat/messages/");
       } catch (error: any) {
         setError(error.message);
         setLoading(false);
@@ -46,7 +47,14 @@ const LoginScreen = () => {
     <>
       <View style={styles.container}>
         <View style={styles.heading}>
-          <Text style={{ fontSize: 32, fontWeight: "bold" }}>Login</Text>
+          <Text
+            style={{
+              fontSize: 48,
+              fontFamily: "League-Spartan-Bold",
+            }}
+          >
+            Login
+          </Text>
         </View>
         <View style={styles.content}>
           <TextInput
@@ -69,7 +77,11 @@ const LoginScreen = () => {
                 <Text>Back </Text>
               </Button>
             </Link>
-            <Button mode="contained" onPress={() => handleLogin()}>
+            <Button
+              mode="contained"
+              onPress={() => handleLogin()}
+              loading={loading}
+            >
               <Text>Log in </Text>
             </Button>
           </View>
@@ -77,7 +89,7 @@ const LoginScreen = () => {
       </View>
       <Alert
         type={succeded ? "success" : error ? "error" : "none"}
-        message={succeded ? "Created account successfully" : error ? error : ""}
+        message={succeded ? "Logged in successfully" : error ? error : ""}
         isVisible={succeded || (error as boolean)}
       />
     </>
@@ -90,6 +102,11 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
+    position: "absolute",
+    top: 100,
+    left: 0,
+    right: 0,
+    marginHorizontal: "auto",
   },
   content: {
     display: "flex",

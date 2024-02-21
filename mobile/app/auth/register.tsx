@@ -28,6 +28,7 @@ const LoginScreen = () => {
         await AsyncStorage.clear();
         await AsyncStorage.setItem("user", JSON.stringify(data));
         setLoading(false);
+        router.push("/chat/messages/");
       } catch (error: any) {
         setError(error.message);
       }

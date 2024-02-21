@@ -1,12 +1,25 @@
 import { Button, Modal } from "react-native-paper";
 import { StyleSheet, Text } from "react-native";
+import { useAuth } from "@/contexts/AuthContext";
+import React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 interface Props {
   isVisible: boolean;
   closeModal: () => void;
 }
 
-const GroupModal = (props: Props) => {
+const ActionsModal = (props: Props) => {
   const { isVisible, closeModal } = props;
+  const { logOut } = useAuth();
+  const [loading, setLoading] = React.useState(false);
+  const handleLogout = async () => {
+    setLoading(true);
+    await logOut();
+    AsyncStorage.clear();
+    setLoading(false);
+    router.push("/");
+  };
   return (
     <Modal
       visible={isVisible}
@@ -22,7 +35,12 @@ const GroupModal = (props: Props) => {
       >
         Actions
       </Text>
-      <Button mode="outlined" style={{ marginTop: 15, marginHorizontal: 50 }}>
+      <Button
+        mode="outlined"
+        style={{ marginTop: 15, marginHorizontal: 50 }}
+        onPress={handleLogout}
+        loading={loading}
+      >
         Log out
       </Button>
     </Modal>
@@ -38,4 +56,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GroupModal;
+export default ActionsModal;

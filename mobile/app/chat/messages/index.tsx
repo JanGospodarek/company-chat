@@ -5,7 +5,7 @@ import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import globalStyles from "@/app/globalStyles";
-import Modal from "@/components/messages/Modal";
+import ActionsModal from "@/components/messages/ActionsModal";
 import { useTheme } from "react-native-paper";
 const Messages = () => {
   const { id } = useLocalSearchParams();
@@ -24,7 +24,7 @@ const Messages = () => {
     >
       <Heading showModal={showModal} />
       <ChatList />
-      <Modal isVisible={visible} closeModal={hideModal} />
+      <ActionsModal isVisible={visible} closeModal={hideModal} />
     </LinearGradient>
   );
 };

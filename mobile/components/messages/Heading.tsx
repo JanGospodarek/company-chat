@@ -1,3 +1,4 @@
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
 import { View, Text, StyleSheet } from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
@@ -9,11 +10,12 @@ interface Props {
 const Heading = (props: Props) => {
   const theme = useTheme();
   const router = useRouter();
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Messages</Text>
       <View style={styles.btnContainer}>
-        <IconButton
+        {/* <IconButton
           icon="home-outline"
           size={30}
           iconColor={theme.colors.primary}
@@ -23,7 +25,7 @@ const Heading = (props: Props) => {
               pathname: "/",
             });
           }}
-        />
+        /> */}
         <IconButton
           icon="cog-outline"
           size={30}

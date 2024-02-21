@@ -1,5 +1,5 @@
 import { useFonts } from "expo-font";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { View, Text, Pressable } from "react-native";
 import {
   Button,
@@ -10,9 +10,13 @@ import {
 import { useCallback, useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 const StartScreen = () => {
+  const { user } = useAuth();
+  const [isLogged, setIsLogged] = React.useState(false);
+  const router = useRouter();
+  // useEffect(() => {}, [user]);
   const [fontsLoaded, fontError] = useFonts({
     "League-Spartan": require("../assets/fonts/LeagueSpartan-Regular.ttf"),
     "League-Spartan-Bold": require("../assets/fonts/LeagueSpartan-Bold.ttf"),
@@ -33,7 +37,10 @@ const StartScreen = () => {
     if (fontsLoaded || fontError) {
       await SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+    if (user) {
+      router.push("/chat/messages/");
+    }
+  }, [fontsLoaded, fontError, user]);
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -75,9 +82,9 @@ const StartScreen = () => {
               <Text style={{ fontFamily: "League-Spartan" }}>Register</Text>
             </Button>
           </Link>
-          <Link
+          {/* <Link
             href={{
-              pathname: "/chat/messages/[id]",
+              pathname: "/chat/messages/",
               params: { id: "bacon" },
             }}
             asChild
@@ -89,7 +96,7 @@ const StartScreen = () => {
             >
               <Text>Chat</Text>
             </Button>
-          </Link>
+          </Link> */}
         </View>
       </PaperProvider>
     </AuthProvider>

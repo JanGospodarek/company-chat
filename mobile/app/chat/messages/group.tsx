@@ -21,10 +21,7 @@ const Search = () => {
         iconColor={theme.colors.primary}
         style={styles.backIcon}
         onPress={() => {
-          router.replace({
-            pathname: "/chat/messages/[id]",
-            params: { id: "bacon" },
-          });
+          router.push("/chat/messages/");
         }}
       />
       <Text style={styles.headingText}>Create group</Text>
@@ -62,7 +59,7 @@ const Search = () => {
 const styles = StyleSheet.create({
   backIcon: {
     position: "absolute",
-    top: 10,
+    top: 30,
     left: 10,
   },
   headingText: {
