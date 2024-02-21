@@ -53,7 +53,7 @@ const LoginScreen = () => {
               fontFamily: "League-Spartan-Bold",
             }}
           >
-            Login
+            Logowanie
           </Text>
         </View>
         <View style={styles.content}>
@@ -65,7 +65,7 @@ const LoginScreen = () => {
             onChangeText={(text) => setEmail(text)}
           />
           <TextInput
-            label="Password"
+            label="Hasło"
             value={password}
             style={{ width: 200 }}
             mode="outlined"
@@ -74,7 +74,7 @@ const LoginScreen = () => {
           <View style={styles.btnContainer}>
             <Link href="/" asChild>
               <Button mode="outlined" onPress={() => console.log("Pressed")}>
-                <Text>Back </Text>
+                <Text>Cofnij </Text>
               </Button>
             </Link>
             <Button
@@ -82,14 +82,14 @@ const LoginScreen = () => {
               onPress={() => handleLogin()}
               loading={loading}
             >
-              <Text>Log in </Text>
+              <Text>{loading ? "Logowanie" : "Zaloguj"} </Text>
             </Button>
           </View>
         </View>
       </View>
       <Alert
         type={succeded ? "success" : error ? "error" : "none"}
-        message={succeded ? "Logged in successfully" : error ? error : ""}
+        message={succeded ? "Zalogowano pomyślnie" : error ? error : ""}
         isVisible={succeded || (error as boolean)}
       />
     </>

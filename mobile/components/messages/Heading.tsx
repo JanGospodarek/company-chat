@@ -13,7 +13,7 @@ const Heading = (props: Props) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Messages</Text>
+      <Text style={styles.text}>Wiadomości</Text>
       <View style={styles.btnContainer}>
         {/* <IconButton
           icon="home-outline"

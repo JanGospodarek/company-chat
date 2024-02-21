@@ -13,10 +13,7 @@ const Heading = () => {
         iconColor={theme.colors.primary}
         style={{ margin: 0, padding: 0 }}
         onPress={() => {
-          router.replace({
-            pathname: "/chat/messages/[id]",
-            params: { id: "bacon" },
-          });
+          router.push("/chat/messages/");
         }}
       />
       <View>

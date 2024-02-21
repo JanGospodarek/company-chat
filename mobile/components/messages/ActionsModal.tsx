@@ -33,7 +33,7 @@ const ActionsModal = (props: Props) => {
           textAlign: "center",
         }}
       >
-        Actions
+        Akcje
       </Text>
       <Button
         mode="outlined"
@@ -41,7 +41,7 @@ const ActionsModal = (props: Props) => {
         onPress={handleLogout}
         loading={loading}
       >
-        Log out
+        Wyloguj się
       </Button>
     </Modal>
   );

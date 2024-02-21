@@ -69,7 +69,7 @@ const StartScreen = () => {
 
           <Link href="/auth/login" asChild>
             <Button mode="contained" style={{ width: "50%" }}>
-              <Text style={{ fontFamily: "League-Spartan" }}>Login</Text>
+              <Text style={{ fontFamily: "League-Spartan" }}>Zaloguj się</Text>
             </Button>
           </Link>
 
@@ -79,7 +79,9 @@ const StartScreen = () => {
               style={{ width: "50%" }}
               onPress={() => console.log("register")}
             >
-              <Text style={{ fontFamily: "League-Spartan" }}>Register</Text>
+              <Text style={{ fontFamily: "League-Spartan" }}>
+                Zarejestruj się
+              </Text>
             </Button>
           </Link>
           {/* <Link
