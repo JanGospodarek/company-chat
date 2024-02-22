@@ -18,6 +18,7 @@ import {
 import { loadMoreMessages } from "../../../shared/api";
 import { loadOlderMessages, selectChat } from "@/store/chatsSlice";
 import SocketWrapper from "@/components/SocketWrapper";
+import { IOScrollView } from "react-native-intersection-observer";
 type MessageGroup = {
   messages: IMessage[];
 };
@@ -247,12 +248,11 @@ const Conversation = () => {
           width: "100%",
         }}
       >
-        <ScrollView
-          onScroll={(e) => {
-            setH(e.nativeEvent.layoutMeasurement.height);
-            setY(e.nativeEvent.contentOffset.y);
-            console.log(e.nativeEvent.contentOffset.y);
-          }}
+        <IOScrollView
+          // onScroll={(e) => {
+          //   setH(e.nativeEvent.layoutMeasurement.height);
+          //   setY(e.nativeEvent.contentOffset.y);
+          // }}
           ref={scrollRef}
         >
           {messageGroups.map((group, index) => (
@@ -317,7 +317,7 @@ const Conversation = () => {
               ))}
             </View>
           ))}
-        </ScrollView>
+        </IOScrollView>
       </View>
 
       <TypeBar chatId={conversation.chatId} />

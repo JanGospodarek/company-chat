@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import React, { forwardRef, useEffect } from "react";
 import { loadAttachments, miau } from "@/shared/api";
 import { computeLongDate } from "../utils/computeDate";
+import { InView } from "react-native-intersection-observer";
 
 type Props = {
   message: Message;
@@ -27,41 +28,24 @@ const Ms = forwardRef((props: Props, ref) => {
   const theme = useTheme();
   const { user } = useAuth();
   const [isInView, setIsElementInView] = React.useState(false);
-  const elementRef = React.useRef<View>(null);
 
   const [attachments, setAttachments] = React.useState<Attachment[]>([]);
-  // useEffect(() => {
-  //   if (elementRef.current && h && y) {
-  //     const yP = y;
 
-  //     elementRef.current.measure((x, y, width, height, pageX, pageY) => {
-  //       const elementTop = pageY;
-  //       const elementBottom = pageY + height;
-  //       const viewportTop = yP;
-  //       const viewportBottom = viewportTop + h;
-  //       if (elementBottom > viewportTop && elementTop < viewportBottom) {
-  //         setIsElementInView(true);
-  //         console.log("in view, ", message.content);
-  //       } else {
-  //         setIsElementInView(false);
-  //         console.log("not in view", message.content);
-  //       }
-  //       console.log("el:", pageY);
-  //     });
-  //   }
-  // }, [ y, h]);
-
-  React.useEffect(() => {
-    if (message.readBy.every((u) => u.id !== user?.id)) {
-      miau.markMessageAsRead(message.messageId);
+  useEffect(() => {
+    if (isInView) {
+      if (message.readBy.every((u) => u.id !== user?.id)) {
+        miau.markMessageAsRead(message.messageId);
+      }
     }
 
-    if (loadMore) {
+    if (isInView && loadMore) {
       loadMore(message.messageId);
     }
-  }, [message.messageId]);
 
-  React.useEffect(() => {
+    setInView?.(isInView);
+  }, [isInView]);
+
+  useEffect(() => {
     if (message.attachment) {
       loadAttachments(message.attachment, message.messageId).then((media) => {
         setAttachments(media);
@@ -71,13 +55,17 @@ const Ms = forwardRef((props: Props, ref) => {
 
   const isMine = message.user.id === user?.id;
   return (
-    <View
+    <InView
+      triggerOnce={!loadMore && !setInView}
       style={{
         display: "flex",
         justifyContent: isMine ? "flex-end" : "flex-start",
         flexDirection: "row",
       }}
-      ref={elementRef}
+      // ref={elementRef}
+      onChange={(inView) => {
+        setIsElementInView(inView);
+      }}
     >
       <View style={styles.message}>
         <View>
@@ -127,7 +115,7 @@ const Ms = forwardRef((props: Props, ref) => {
           )}
         </View>
       </View>
-    </View>
+    </InView>
   );
 });
 const styles = StyleSheet.create({
