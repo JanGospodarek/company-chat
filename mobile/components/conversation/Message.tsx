@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, Button, Pressable } from "react-native";
 import { useTheme } from "react-native-paper";
 import { Attachment, Message } from "@/shared/types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,7 +8,8 @@ import { computeLongDate } from "../utils/computeDate";
 import { InView } from "react-native-intersection-observer";
 import { authenticate } from "@/shared/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
 type Props = {
   message: Message;
 
@@ -103,6 +104,32 @@ const Ms = forwardRef((props: Props, ref) => {
     }
   }, [attachments]);
   const isMine = message.user.id === user?.id;
+  const downloadFile = async (url: string, name: string) => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need media library permissions to make this work!");
+        return;
+      }
+
+      // const response = await fetch(url);
+
+      // const blob = await response.blob();
+      // const reader = new FileReader();
+      // reader.onloadend = async function () {
+      //   const base64 = (reader.result as string).split(",")[1];
+
+      const path = FileSystem.documentDirectory + name;
+
+      const result = await FileSystem.downloadAsync(url, path);
+
+      console.log("File downloaded toddd:", result.uri);
+      // };
+      // reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error("Download file error:", error);
+    }
+  };
   return (
     <InView
       triggerOnce={!loadMore && !setInView}
@@ -152,17 +179,16 @@ const Ms = forwardRef((props: Props, ref) => {
             >
               {attachments.map((attachment) => {
                 const imageData = images.find((i) => i.id === attachment.id);
+                const path = attachment.path
+                  .split("")
+                  .slice(1, attachment.path.split("").length)
+                  .join("");
+
                 return attachment.type.startsWith("image/") ? (
                   <View
                     key={attachment.path}
                     // style={{ width: attachments.length > 1 ? "48%" : 0 }}
-                    style={{
-                      backgroundColor: "rgba(115, 91, 178,0.7)",
-                      padding: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      borderRadius: 20,
-                    }}
+                    style={styles.attachmentContainer}
                   >
                     <Image
                       source={{
@@ -177,9 +203,26 @@ const Ms = forwardRef((props: Props, ref) => {
                     />
                   </View>
                 ) : (
-                  <View key={attachment.id}>
-                    <Text>File</Text>
-                  </View>
+                  <Pressable
+                    key={attachment.id}
+                    onPress={() => {
+                      downloadFile(
+                        `http://192.168.50.165/api/media${path}`,
+                        attachment.name
+                      );
+                    }}
+                  >
+                    <View style={styles.attachmentContainer}>
+                      <Text
+                        style={{
+                          fontFamily: "League-Spartan-Bold",
+                          fontSize: 16,
+                        }}
+                      >
+                        {attachment.name}
+                      </Text>
+                    </View>
+                  </Pressable>
                 );
               })}
             </View>
@@ -193,6 +236,13 @@ const styles = StyleSheet.create({
   message: {
     display: "flex",
     maxWidth: 250,
+  },
+  attachmentContainer: {
+    backgroundColor: "rgba(255, 255, 255,0.4)",
+    padding: 10,
+    display: "flex",
+    alignItems: "center",
+    borderRadius: 20,
   },
 });
 export default Ms;

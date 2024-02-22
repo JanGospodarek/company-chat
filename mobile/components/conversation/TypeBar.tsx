@@ -1,16 +1,22 @@
 import { miau, sendMessageWithAttachment } from "@/shared/api";
 import React from "react";
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import { View, StyleSheet, Text, TextInput, Image } from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { Buffer } from "buffer";
+import * as ImageManipulator from "expo-image-manipulator";
+
 interface Props {
   chatId: number;
 }
 const TypeBar = (props: Props) => {
   const theme = useTheme();
   const { chatId } = props;
-  const [selectedFiles, setSelectedFiles] = React.useState<File[]>(
-    [] as File[]
-  );
+  const [selectedFiles, setSelectedFiles] = React.useState<
+    { base: string; name: string; type: string }[]
+  >([]);
+
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [input, setInput] = React.useState("");
@@ -18,17 +24,27 @@ const TypeBar = (props: Props) => {
   // React.useEffect(() => {
   //   console.log(input);
   // }, [input]);
-  const handleSend = () => {
+  const handleSend = async () => {
     // if (input.trim() === "") return;
     const message = input.trim();
 
-    // if (selectedFiles.length > 0) {
-    //   sendMessageWithAttachment(chatId, message, selectedFiles);
-    //   setSelectedFiles([]);
-    //   setInput("");
-    //   inputRef.current?.focus();
-    //   return;
-    // }
+    if (selectedFiles.length > 0) {
+      // for (const file of selectedFiles) {
+      //   const manipResult = await ImageManipulator.manipulateAsync(
+      //     file.uri,
+      //     [],
+      //     { compress: 0.5 } // zmniejsz jakość do 50%
+      //   );
+
+      //   file.uri = manipResult.uri;
+      // }
+
+      sendMessageWithAttachment(chatId, message, selectedFiles);
+      setSelectedFiles([]);
+      setInput("");
+      inputRef.current?.focus();
+      return;
+    }
     if (!message) return;
     miau.sendMessage(message);
 
@@ -44,33 +60,83 @@ const TypeBar = (props: Props) => {
       inputRef.current.focus();
     }
   }, [chatId]);
+  const selectFile = async () => {
+    let permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+    if (!pickerResult.canceled && pickerResult.assets.length > 0) {
+      const base64 = await FileSystem.readAsStringAsync(
+        pickerResult.assets[0].uri,
+        {
+          encoding: FileSystem.EncodingType.Base64,
+        }
+      );
+      setSelectedFiles((prevImages) => [
+        ...prevImages,
+        {
+          base: `data:${pickerResult.assets![0].mimeType};base64,${base64}`,
+          name: pickerResult.assets![0].fileName as string,
+          type: pickerResult.assets![0].mimeType as string,
+        },
+      ]);
+    }
+  };
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Type a message"
-        ref={inputRef}
-        onChangeText={(t) => setInput(t)}
-        value={input}
-      />
-      <View style={styles.btnContainer}>
-        <IconButton
-          icon="pin"
-          size={28}
-          iconColor={theme.colors.primary}
-          style={{ margin: 0, padding: 0 }}
-          onPress={() => {}}
+    <>
+      {selectedFiles.length > 0 && (
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            backgroundColor: theme.colors.primaryContainer,
+            padding: 10,
+            width: "100%",
+            gap: 10,
+          }}
+        >
+          {selectedFiles.map((image, index) => (
+            <Image
+              key={index}
+              source={{ uri: image.base }}
+              style={{ width: 100, height: 100, borderRadius: 10 }}
+            />
+          ))}
+        </View>
+      )}
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          placeholder="Type a message"
+          ref={inputRef}
+          onChangeText={(t) => setInput(t)}
+          value={input}
         />
-        <IconButton
-          icon="send"
-          size={28}
-          iconColor={theme.colors.primary}
-          style={{ margin: 0, padding: 0 }}
-          onPress={handleSend}
-        />
+        <View style={styles.btnContainer}>
+          <IconButton
+            icon="pin"
+            size={28}
+            iconColor={theme.colors.primary}
+            style={{ margin: 0, padding: 0 }}
+            onPress={() => {
+              selectFile();
+            }}
+          />
+          <IconButton
+            icon="send"
+            size={28}
+            iconColor={theme.colors.primary}
+            style={{ margin: 0, padding: 0 }}
+            onPress={handleSend}
+          />
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 const styles = StyleSheet.create({

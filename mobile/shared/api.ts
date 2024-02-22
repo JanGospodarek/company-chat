@@ -353,28 +353,26 @@ export const addUsersToChat = async (chatId: number, users: number[]) => {
 export const sendMessageWithAttachment = async (
   chatId: number,
   content: string,
-  files: File[]
+  files: { base: string; name: string; type: string }[]
 ) => {
-  const formData = new FormData();
+  try {
+    const res = await fetch(`${apiURL}/chat/${chatId}/messages/new`, {
+      method: "POST",
+      body: JSON.stringify({ content, files, mobile: true }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    }
 
-  formData.append("content", content);
-
-  files.forEach((file) => {
-    formData.append("files", file);
-  });
-
-  const res = await fetch(`${apiURL}/chat/${chatId}/messages/new`, {
-    method: "POST",
-    body: formData,
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
+    if (res.status !== 200) {
+      const data = (await res.json()) as { error: string };
+      throw new Error(data.error);
+    }
+  } catch (error) {
+    console.error("SEND MESSAGE WITH ATTACHMENT ERROR", error);
   }
 };
 

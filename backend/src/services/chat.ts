@@ -100,7 +100,7 @@ export async function handleFileUpload(
   if (!userInChat(chatId, userId)) {
     throw new Error("User not in chat");
   }
-
+  console.log("files", files);
   const messageId = await createMessage(chatId, userId, content || "");
 
   // Upload files
@@ -112,13 +112,54 @@ export async function handleFileUpload(
   const filesToSave: { path: string; type: string; name: string }[] = [];
 
   for (const file of files) {
+    console.log("in handle", file);
     const newPath = `${filePath}/${file.originalFilename}`;
     fs.renameSync(file.filepath, newPath);
-
+    console.log(file.mimetype, file.originalFilename, file.filepath, newPath);
     filesToSave.push({
       path: newPath,
       type: file.mimetype || "application/octet-stream",
       name: file.originalFilename || "file",
+    });
+  }
+
+  const storageURL = `/media/${uuid}`;
+
+  await addAttachment(messageId, storageURL);
+  await saveMedia(uuid, filesToSave);
+
+  notifyMessage(messageId);
+}
+export async function handleBaseFileUpload(
+  chatId: number,
+  userId: number,
+  content: string | undefined,
+  files: { base: string; name: string; type: string }[]
+) {
+  if (!userInChat(chatId, userId)) {
+    throw new Error("User not in chat");
+  }
+  console.log("files", files);
+  const messageId = await createMessage(chatId, userId, content || "");
+
+  // Upload files
+  const uuid = uuidv5(messageId.toString(), CHAT_NAMESPACE);
+
+  const filePath = `./uploads/${uuid}`;
+  fs.mkdirSync(filePath, { recursive: true });
+
+  const filesToSave: { path: string; type: string; name: string }[] = [];
+
+  for (const file of files) {
+    let base64Image = file.base.split(";base64,").pop();
+
+    console.log("in handle", file);
+    const newPath = `${filePath}/${file.name}`;
+    fs.writeFileSync(newPath, base64Image as string, { encoding: "base64" });
+    filesToSave.push({
+      path: newPath,
+      type: file.type || "application/octet-stream",
+      name: file.name || "file",
     });
   }
 

@@ -42,6 +42,7 @@ const TypeBar = (props: Props) => {
     const message = i;
 
     if (selectedFiles.length > 0) {
+      console.log(selectedFiles);
       sendMessageWithAttachment(chatId, message, selectedFiles);
       setSelectedFiles([]);
       setInput("");
