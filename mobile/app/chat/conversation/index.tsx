@@ -79,11 +79,11 @@ const Conversation = () => {
   }, [activeUsers, conversation]);
 
   React.useEffect(() => {
-    setTimeout(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollToEnd({ animated: false });
-      }
-    }, 1);
+    console.log("scrolling");
+    console.log(conversation?.messages.length);
+    if (scrollRef.current) {
+      scrollRef.current.scrollToEnd({ animated: false });
+    }
   }, [conversation?.messages.length]);
 
   React.useEffect(() => {
@@ -94,7 +94,7 @@ const Conversation = () => {
 
     setTimeout(() => {
       if (scrollRef.current) {
-        scrollRef.current.scrollToEnd({ animated: true });
+        scrollRef.current.scrollToEnd({ animated: false });
       }
     }, 100);
 
@@ -196,14 +196,14 @@ const Conversation = () => {
 
       dispatch(loadOlderMessages(newMessages));
 
-      setTimeout(() => {
-        const ref = document.getElementById(messageId.toString());
+      // setTimeout(() => {
+      //   const ref = document.getElementById(messageId.toString());
 
-        if (ref) {
-          const top = ref.offsetTop + ref.clientHeight;
-          scrollRef.current?.scrollTo(0, top);
-        }
-      }, 1);
+      //   if (ref) {
+      //     const top = ref.offsetTop + ref.clientHeight;
+      //     scrollRef.current?.scrollTo(0, top);
+      //   }
+      // }, 1);
 
       setTimeout(() => {
         setLoading(false);

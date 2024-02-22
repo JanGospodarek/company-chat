@@ -12,6 +12,10 @@ export const makeStore = () => {
       activeUsers: activeUsersReducer,
       chats: chatsSlice,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
   });
 };
 

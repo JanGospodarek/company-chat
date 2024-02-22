@@ -18,7 +18,7 @@ mediaRouter.get("/uploads/*", authenticate, async (req, res) => {
   }
 
   const filePath = `uploads/${url}`;
-
+  console.log(filePath, "ooodododod");
   res.sendFile(filePath, { root: "." });
 });
 
@@ -26,6 +26,7 @@ mediaRouter.get("/:url", authenticate, async (req, res) => {
   const user = req.user as User;
 
   const url = req.params.url;
+  console.log(url);
   const messageId = parseInt(req.query.messageId as string);
 
   if (!url) {
@@ -50,7 +51,7 @@ mediaRouter.get("/:url", authenticate, async (req, res) => {
     if (!media) {
       throw new Error("Media not found");
     }
-
+    console.log(media);
     res.send({ media });
   } catch (error: any) {
     res.status(400).send({ error: error.message });

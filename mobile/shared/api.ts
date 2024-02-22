@@ -1,13 +1,13 @@
 import * as type from "./types";
 import { Socket, io } from "socket.io-client";
 import JSEncrypt from "jsencrypt";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Check if the environment is test
 // const test = process.env.NODE_ENV === "test";
 // const apiURL = test ? "http://localhost:5000" : "/api";
 // const socketURL = test ? "http://localhost:5000" : "";
 // const socketPath = test ? "" : "/ws";
-console.log(process.env.EXPO_PUBLIC_SERVER_IP);
 const apiURL = `http://${process.env.EXPO_PUBLIC_SERVER_IP}/api`;
 const socketURL = `http://${process.env.EXPO_PUBLIC_SERVER_IP}`;
 const socketPath = "/ws";
@@ -42,7 +42,6 @@ export const decryptData = (data: string) => {
 
 export const register = async (username: string, password: string) => {
   const data = { username, password };
-  console.log(data);
   const encrypted = encryptData(data);
   const res = await fetch(`${apiURL}/auth/register`, {
     method: "POST",
@@ -51,10 +50,8 @@ export const register = async (username: string, password: string) => {
     },
     body: encrypted,
   });
-  console.log(res);
   if (res.status !== 200) {
     const e = (await res.json()) as { error: string };
-    console.log(e);
     throw new Error(e.error);
   }
 
@@ -66,8 +63,6 @@ export const register = async (username: string, password: string) => {
 export const login = async (username: string, password: string) => {
   const data = { username, password };
   const encrypted = encryptData(data);
-
-  console.log(encrypted);
 
   const res = await fetch(`${apiURL}/auth/login`, {
     method: "POST",
@@ -81,7 +76,7 @@ export const login = async (username: string, password: string) => {
     const data = (await res.json()) as { error: string };
     throw new Error(data.error);
   }
-
+  await AsyncStorage.setItem("cookie", res.headers.get("set-cookie") || "");
   const d = (await res.json()) as { user: type.User };
 
   return d.user;

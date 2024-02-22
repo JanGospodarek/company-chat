@@ -36,4 +36,5 @@ export interface Attachment {
   path: string;
   type: string;
   name: string;
+  base64: string;
 }
