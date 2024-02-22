@@ -221,8 +221,6 @@ const Conversation = () => {
     dispatch(selectChat(-1));
   };
 
-  const [y, setY] = React.useState<null | number>(null);
-  const [h, setH] = React.useState<null | number>(null);
   return (
     <View
       style={{
@@ -248,13 +246,7 @@ const Conversation = () => {
           width: "100%",
         }}
       >
-        <IOScrollView
-          // onScroll={(e) => {
-          //   setH(e.nativeEvent.layoutMeasurement.height);
-          //   setY(e.nativeEvent.contentOffset.y);
-          // }}
-          ref={scrollRef}
-        >
+        <IOScrollView ref={scrollRef}>
           {messageGroups.map((group, index) => (
             <View
               key={group.date}
@@ -292,8 +284,6 @@ const Conversation = () => {
                     <Message
                       message={m}
                       key={m.messageId}
-                      isFirst={j === 0}
-                      isLast={j === mGroup.messages.length - 1}
                       loadMore={
                         j === 0 && i === 0 && index === 0 ? loadMore : undefined
                       }
@@ -304,8 +294,6 @@ const Conversation = () => {
                           ? setLatestMessageInView
                           : undefined
                       }
-                      h={h}
-                      y={y}
                     />
                   ))}
                   {mGroup.messages[0].user.id !== user?.id && (

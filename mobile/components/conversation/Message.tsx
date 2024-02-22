@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { useTheme } from "react-native-paper";
 import { Attachment, Message } from "../../../shared/types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,15 +9,12 @@ import { InView } from "react-native-intersection-observer";
 
 type Props = {
   message: Message;
-  isFirst: boolean;
-  isLast: boolean;
+
   loadMore: ((messageId: number) => void) | undefined;
   setInView: ((inView: boolean) => void) | undefined;
-  h: number | null;
-  y: number | null;
 };
 const Ms = forwardRef((props: Props, ref) => {
-  const { message, isFirst, isLast, loadMore, setInView, h, y } = props;
+  const { message, loadMore, setInView } = props;
   const theme = useTheme();
   const { user } = useAuth();
   const [isInView, setIsElementInView] = React.useState(false);
@@ -62,7 +52,6 @@ const Ms = forwardRef((props: Props, ref) => {
         justifyContent: isMine ? "flex-end" : "flex-start",
         flexDirection: "row",
       }}
-      // ref={elementRef}
       onChange={(inView) => {
         setIsElementInView(inView);
       }}
