@@ -10,6 +10,7 @@ import { authenticate } from "@/shared/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
+import { useAppTheme } from "../ThemeProvider";
 type Props = {
   message: Message;
 
@@ -19,7 +20,7 @@ type Props = {
 const Ms = forwardRef((props: Props, ref) => {
   const { message, loadMore, setInView } = props;
 
-  const theme = useTheme();
+  const theme = useAppTheme();
   const { user } = useAuth();
   const [isInView, setIsElementInView] = React.useState(false);
 
@@ -148,7 +149,7 @@ const Ms = forwardRef((props: Props, ref) => {
             style={{
               textAlign: "right",
               fontFamily: "League-Spartan",
-              color: "#737373",
+              color: theme.colors.primary,
             }}
           >
             {computeLongDate(new Date(message.createdAt))}
@@ -157,8 +158,8 @@ const Ms = forwardRef((props: Props, ref) => {
         <View
           style={{
             backgroundColor: isMine
-              ? "rgba(115, 91, 178,0.7)"
-              : theme.colors.primaryContainer,
+              ? theme.colors.primary
+              : theme.colors.secondary,
             padding: 10,
             borderRadius: 20,
             borderTopLeftRadius: isMine ? 20 : 0,

@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import FontReducer from "./fontSlice";
+import uiReducer from "./uiSlice";
 import UserReducer from "./userSlice";
 import activeUsersReducer from "./activeUsersSlice";
 import chatsSlice from "./chatsSlice";
@@ -7,7 +7,7 @@ import chatsSlice from "./chatsSlice";
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      font: FontReducer,
+      ui: uiReducer,
       user: UserReducer,
       activeUsers: activeUsersReducer,
       chats: chatsSlice,

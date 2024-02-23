@@ -19,6 +19,7 @@ import { loadMoreMessages } from "../../../shared/api";
 import { loadOlderMessages, selectChat } from "@/store/chatsSlice";
 import SocketWrapper from "@/components/SocketWrapper";
 import { IOScrollView } from "react-native-intersection-observer";
+import { useAppTheme } from "@/components/ThemeProvider";
 type MessageGroup = {
   messages: IMessage[];
 };
@@ -28,7 +29,7 @@ type DateGroup = {
   messages: MessageGroup[];
 };
 const Conversation = () => {
-  const theme = useTheme();
+  const theme = useAppTheme();
   const { user } = useAuth();
   const scrollRef = React.useRef<ScrollView | null>(null);
   const [messageGroups, setMessageGroups] = React.useState<DateGroup[]>([]);
@@ -79,11 +80,12 @@ const Conversation = () => {
   }, [activeUsers, conversation]);
 
   React.useEffect(() => {
-    console.log("scrolling");
-    console.log(conversation?.messages.length);
-    if (scrollRef.current) {
-      scrollRef.current.scrollToEnd({ animated: false });
-    }
+    setTimeout(() => {
+      console.log("scrolling to end");
+      if (scrollRef.current) {
+        scrollRef.current.scrollToEnd({ animated: false });
+      }
+    }, 1);
   }, [conversation?.messages.length]);
 
   React.useEffect(() => {
@@ -180,7 +182,6 @@ const Conversation = () => {
       });
     }
 
-    console.log(dateGroups);
     setMessageGroups(dateGroups);
   }, [conversation?.messages]);
 
@@ -228,6 +229,7 @@ const Conversation = () => {
         padding: 10,
         alignItems: "center",
         width: "100%",
+        backgroundColor: theme.colors.background,
       }}
     >
       <Heading
@@ -297,7 +299,12 @@ const Conversation = () => {
                     />
                   ))}
                   {mGroup.messages[0].user.id !== user?.id && (
-                    <Text style={{ fontFamily: "League-Spartan" }}>
+                    <Text
+                      style={{
+                        fontFamily: "League-Spartan-SemiBold",
+                        color: theme.colors.primary,
+                      }}
+                    >
                       {mGroup.messages[0].user.username}
                     </Text>
                   )}

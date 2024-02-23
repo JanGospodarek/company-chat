@@ -1,22 +1,30 @@
 import { miau, sendMessageWithAttachment } from "@/shared/api";
 import React from "react";
-import { View, StyleSheet, Text, TextInput, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  Image,
+  Button,
+  Pressable,
+} from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { Buffer } from "buffer";
 import * as ImageManipulator from "expo-image-manipulator";
+import { useAppTheme } from "../ThemeProvider";
 
 interface Props {
   chatId: number;
 }
+type File = { base: string; name: string; type: string };
 const TypeBar = (props: Props) => {
-  const theme = useTheme();
+  const theme = useAppTheme();
   const { chatId } = props;
-  const [selectedFiles, setSelectedFiles] = React.useState<
-    { base: string; name: string; type: string }[]
-  >([]);
-
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [input, setInput] = React.useState("");
@@ -26,29 +34,23 @@ const TypeBar = (props: Props) => {
   // }, [input]);
   const handleSend = async () => {
     // if (input.trim() === "") return;
+    setIsLoading(true);
     const message = input.trim();
 
     if (selectedFiles.length > 0) {
-      // for (const file of selectedFiles) {
-      //   const manipResult = await ImageManipulator.manipulateAsync(
-      //     file.uri,
-      //     [],
-      //     { compress: 0.5 } // zmniejsz jakość do 50%
-      //   );
-
-      //   file.uri = manipResult.uri;
-      // }
-
       sendMessageWithAttachment(chatId, message, selectedFiles);
       setSelectedFiles([]);
       setInput("");
       inputRef.current?.focus();
+      setIsLoading(false);
+
       return;
     }
     if (!message) return;
     miau.sendMessage(message);
 
     setInput("");
+    setIsLoading(false);
 
     if (inputRef.current) {
       inputRef.current.focus();
@@ -87,6 +89,14 @@ const TypeBar = (props: Props) => {
       ]);
     }
   };
+  const removeFile = (file: File) => {
+    setSelectedFiles((prev) => {
+      const newFiles = prev.filter((f) => f !== file);
+
+      return newFiles;
+    });
+  };
+
   return (
     <>
       {selectedFiles.length > 0 && (
@@ -94,25 +104,39 @@ const TypeBar = (props: Props) => {
           style={{
             display: "flex",
             flexDirection: "row",
-            backgroundColor: theme.colors.primaryContainer,
+            backgroundColor: theme.colors.backgroundSecondary,
             padding: 10,
             width: "100%",
             gap: 10,
           }}
         >
           {selectedFiles.map((image, index) => (
-            <Image
-              key={index}
-              source={{ uri: image.base }}
-              style={{ width: 100, height: 100, borderRadius: 10 }}
-            />
+            <View style={{ position: "relative" }} key={index}>
+              <Image
+                source={{ uri: image.base }}
+                style={{ width: 100, height: 100, borderRadius: 10 }}
+              />
+              <Pressable style={styles.badge} onPress={() => removeFile(image)}>
+                <Text
+                  style={{ fontFamily: "League-Spartan-Bold", color: "white" }}
+                >
+                  X
+                </Text>
+              </Pressable>
+            </View>
           ))}
         </View>
       )}
-      <View style={styles.container}>
+      <View
+        style={{
+          ...styles.container,
+          backgroundColor: theme.colors.backgroundSecondary,
+        }}
+      >
         <TextInput
-          style={styles.input}
+          style={{ ...styles.input, color: theme.colors.primaryFont }}
           placeholder="Type a message"
+          placeholderTextColor={theme.colors.primary}
           ref={inputRef}
           onChangeText={(t) => setInput(t)}
           value={input}
@@ -133,6 +157,7 @@ const TypeBar = (props: Props) => {
             iconColor={theme.colors.primary}
             style={{ margin: 0, padding: 0 }}
             onPress={handleSend}
+            loading={isLoading}
           />
         </View>
       </View>
@@ -143,7 +168,6 @@ const styles = StyleSheet.create({
   container: {
     width: "90%",
     height: 50,
-    backgroundColor: "rgba(115, 115, 115,0.3)",
 
     borderRadius: 25,
     display: "flex",
@@ -162,6 +186,19 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     paddingRight: 10,
+  },
+  badge: {
+    backgroundColor: "red",
+    position: "absolute",
+    top: 0,
+    right: -4,
+    padding: 5,
+    width: 30,
+    height: 30,
+    borderRadius: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 export default TypeBar;

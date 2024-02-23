@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { miau } from "@/shared/api";
 import { computeDate } from "../utils/computeDate";
 import { RootState } from "@/store/store";
+import { useAppTheme } from "../ThemeProvider";
 type Props = {
   chat: GroupChat | PrivateChat;
 };
@@ -16,7 +17,7 @@ const Chat = (props: Props) => {
   const router = useRouter();
   const { chat } = props;
   const { user } = useAuth();
-
+  const theme = useAppTheme();
   const [isChatActive, setIsChatActive] = useState(false);
   const [date, setDate] = useState("");
 
@@ -65,7 +66,13 @@ const Chat = (props: Props) => {
     }
   }, [chat]);
   return (
-    <TouchableOpacity style={styles.container} onPress={handleChatSelect}>
+    <TouchableOpacity
+      style={{
+        ...styles.container,
+        borderColor: theme.colors.optionalBorderColor,
+      }}
+      onPress={handleChatSelect}
+    >
       <View>
         <Avatar.Image
           size={56}
@@ -86,6 +93,8 @@ const Chat = (props: Props) => {
             style={{
               fontSize: 18,
               fontFamily: "League-Spartan-Bold",
+
+              color: theme.colors.primaryFont,
             }}
           >
             {chat.type === "PRIVATE"
@@ -95,8 +104,8 @@ const Chat = (props: Props) => {
           {chat.messages.length > 0 && (
             <Text
               style={{
-                color: "#737373",
                 fontFamily: "League-Spartan",
+                color: theme.colors.primary,
               }}
             >
               {date}
@@ -119,14 +128,17 @@ const Chat = (props: Props) => {
             numberOfLines={1}
           >
             {chat.messages[chat.messages.length - 1].user.id === user?.id ? (
-              <Text>Ja:</Text>
+              <Text style={{ color: theme.colors.secondaryFont }}>Ja:</Text>
             ) : (
-              <Text>
+              <Text style={{ color: theme.colors.secondaryFont }}>
                 {chat.messages[chat.messages.length - 1].user.username}:
               </Text>
             )}
             {chat.messages[chat.messages.length - 1].content ? (
-              <Text style={{ flex: 1 }} numberOfLines={1}>
+              <Text
+                style={{ flex: 1, color: theme.colors.secondaryFont }}
+                numberOfLines={1}
+              >
                 {chat.messages[chat.messages.length - 1].content}
               </Text>
             ) : (
@@ -143,8 +155,11 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     gap: 10,
-    marginVertical: 6,
+    padding: 6,
+    marginVertical: 3,
     justifyContent: "flex-start",
+    borderWidth: 2,
+    borderRadius: 10,
   },
 
   heading: {

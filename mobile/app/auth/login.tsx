@@ -5,11 +5,13 @@ import { Button, TextInput } from "react-native-paper";
 import { AuthProvider, useAuth } from "../../contexts/AuthContext";
 import { useRouter } from "expo-router";
 import Alert from "@/components/Alert";
+import { useAppTheme } from "@/components/ThemeProvider";
 const LoginScreen = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const { logIn, user } = useAuth();
   const router = useRouter();
+  const theme = useAppTheme();
 
   const [succeded, setSucceded] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState(false);
@@ -45,12 +47,18 @@ const LoginScreen = () => {
   }, [error, succeded]);
   return (
     <>
-      <View style={styles.container}>
+      <View
+        style={{
+          ...styles.container,
+          backgroundColor: theme.colors.background,
+        }}
+      >
         <View style={styles.heading}>
           <Text
             style={{
               fontSize: 48,
               fontFamily: "League-Spartan-Bold",
+              color: theme.colors.primaryFont,
             }}
           >
             Logowanie
@@ -63,6 +71,7 @@ const LoginScreen = () => {
             style={{ width: 200 }}
             mode="outlined"
             onChangeText={(text) => setEmail(text)}
+            textColor={theme.colors.primaryFont}
           />
           <TextInput
             label="Hasło"
@@ -70,6 +79,7 @@ const LoginScreen = () => {
             style={{ width: 200 }}
             mode="outlined"
             onChangeText={(text) => setPassword(text)}
+            textColor={theme.colors.primaryFont}
           />
           <View style={styles.btnContainer}>
             <Link href="/" asChild>

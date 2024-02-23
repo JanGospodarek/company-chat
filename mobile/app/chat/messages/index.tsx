@@ -16,25 +16,27 @@ import { setActiveUsers } from "@/store/activeUsersSlice";
 import { addChat, addMessageToChat, updateMessage } from "@/store/chatsSlice";
 import { store } from "@/store/store";
 import SocketWrapper from "@/components/SocketWrapper";
+import ActiveUsers from "@/components/messages/ActiveUsers";
+import { useAppTheme } from "@/components/ThemeProvider";
 const Messages = () => {
   const [visible, setVisible] = React.useState(false);
-  const theme = useTheme();
+  const theme = useAppTheme();
   console.log(theme.colors.primary);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
   return (
-    <LinearGradient
-      colors={[theme.colors.primaryContainer, theme.colors.background]}
-      start={{ x: 0, y: 2 }}
-      end={{ x: 0, y: 0 }}
-      style={globalStyles.container}
-      locations={[0.5, 0.6]}
+    <View
+      style={{
+        ...globalStyles.container,
+        backgroundColor: theme.colors.background,
+      }}
     >
       <Heading showModal={showModal} />
+      <ActiveUsers />
       <ChatList />
       <ActionsModal isVisible={visible} closeModal={hideModal} />
-    </LinearGradient>
+    </View>
   );
 };
 

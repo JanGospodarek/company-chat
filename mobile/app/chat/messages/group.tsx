@@ -7,8 +7,9 @@ import Person from "@/components/createGroup/Person";
 import React from "react";
 import { addUsersToChat, getUsers, newGroupChat } from "@/shared/api";
 import { User } from "../../../../shared/types";
+import { useAppTheme } from "@/components/ThemeProvider";
 const Group = () => {
-  const theme = useTheme();
+  const theme = useAppTheme();
   const router = useRouter();
   const [groupName, setGroupName] = React.useState("");
   const [groupMembers, setGroupMembers] = React.useState([] as string[]);
@@ -39,12 +40,12 @@ const Group = () => {
     console.log(groupMembers);
   }, [groupMembers]);
   return (
-    <LinearGradient
-      colors={["rgba(137, 128, 189,0.8)", "transparent"]}
-      style={{ ...globalStyles.container, alignItems: "center" }}
-      start={{ x: 0, y: 2 }}
-      end={{ x: 0, y: 0 }}
-      locations={[0.5, 0.6]}
+    <View
+      style={{
+        ...globalStyles.container,
+        alignItems: "center",
+        backgroundColor: theme.colors.background,
+      }}
     >
       <IconButton
         icon="arrow-left-thin-circle-outline"
@@ -55,11 +56,19 @@ const Group = () => {
           router.push("/chat/messages/");
         }}
       />
-      <Text style={styles.headingText}>Utwórz grupę</Text>
-      <View style={styles.inputContainer}>
+      <Text style={{ ...styles.headingText, color: theme.colors.primaryFont }}>
+        Utwórz grupę
+      </Text>
+      <View
+        style={{
+          ...styles.inputContainer,
+          backgroundColor: theme.colors.backgroundSecondary,
+        }}
+      >
         <TextInput
-          style={styles.input}
+          style={{ ...styles.input, color: theme.colors.primaryFont }}
           placeholder="Nazwa grupy"
+          placeholderTextColor={theme.colors.primary}
           onChangeText={(text) => setGroupName(text)}
           value={groupName}
         />
@@ -84,12 +93,18 @@ const Group = () => {
           style={{ padding: 6, marginTop: 10 }}
           onPress={handleSubmit}
         >
-          <Text style={{ fontFamily: "League-Spartan-SemiBold", fontSize: 18 }}>
+          <Text
+            style={{
+              fontFamily: "League-Spartan-Bold",
+              fontSize: 18,
+              color: "black",
+            }}
+          >
             Utwórz
           </Text>
         </Button>
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 const styles = StyleSheet.create({
@@ -112,7 +127,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "80%",
-    backgroundColor: "rgba(115, 115, 115,0.2)",
+    // backgroundColor: "rgba(115, 115, 115,0.2)",
     marginVertical: 10,
     borderRadius: 25,
     display: "flex",

@@ -6,6 +6,7 @@ import { Button, TextInput } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Alert from "@/components/Alert";
 import { useRouter } from "expo-router";
+import { useAppTheme } from "@/components/ThemeProvider";
 const LoginScreen = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -15,6 +16,7 @@ const LoginScreen = () => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<false | string>(false);
   const [succeded, setSucceded] = React.useState<boolean>(false);
+  const theme = useAppTheme();
 
   const handleRegister = async () => {
     if (email && password) {
@@ -41,17 +43,31 @@ const LoginScreen = () => {
   }, [error, succeded]);
   return (
     <>
-      <View style={styles.container}>
+      <View
+        style={{
+          ...styles.container,
+          backgroundColor: theme.colors.background,
+        }}
+      >
         <View style={styles.heading}>
-          <Text style={{ fontSize: 32, fontWeight: "bold" }}>Register</Text>
+          <Text
+            style={{
+              fontSize: 48,
+              fontFamily: "League-Spartan-Bold",
+              color: theme.colors.primaryFont,
+            }}
+          >
+            Register
+          </Text>
         </View>
         <View style={styles.content}>
-          <TextInput
+          {/* <TextInput
             label="Name"
             value={name}
             style={{ width: 200 }}
             mode="outlined"
             onChangeText={(text) => setName(text)}
+            textColor={theme.colors.primaryFont}
           />
           <TextInput
             label="Surname"
@@ -59,25 +75,28 @@ const LoginScreen = () => {
             style={{ width: 200 }}
             mode="outlined"
             onChangeText={(text) => setSurname(text)}
-          />
+            textColor={theme.colors.primaryFont}
+          /> */}
           <TextInput
-            label="Username"
+            label="Email"
             value={email}
             style={{ width: 200 }}
             mode="outlined"
             onChangeText={(text) => setEmail(text)}
+            textColor={theme.colors.primaryFont}
           />
           <TextInput
-            label="Password"
+            label="Hasło"
             value={password}
             style={{ width: 200 }}
             mode="outlined"
             onChangeText={(text) => setPassword(text)}
+            textColor={theme.colors.primaryFont}
           />
           <View style={styles.btnContainer}>
             <Link href="/" asChild>
               <Button mode="outlined" onPress={() => console.log("Pressed")}>
-                <Text>Back </Text>
+                <Text>Cofnij </Text>
               </Button>
             </Link>
             <Button
@@ -85,7 +104,7 @@ const LoginScreen = () => {
               onPress={() => handleRegister()}
               loading={loading}
             >
-              <Text>Register </Text>
+              <Text>Zarejestruj </Text>
             </Button>
           </View>
         </View>
@@ -106,6 +125,10 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
+    position: "absolute",
+    top: 100,
+    left: 0,
+    right: 0,
   },
   content: {
     display: "flex",

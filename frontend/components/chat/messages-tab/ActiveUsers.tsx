@@ -37,48 +37,6 @@ const ActiveUsers = () => {
             <Avatar radius="full" name={user.username} />
           </Badge>
         ))}
-        {/* <Badge content="" color="success" shape="circle" className="mt-1">
-          <Avatar
-            radius="full"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-        </Badge>
-        <Badge content="" color="success" shape="circle" className="mt-1">
-          <Avatar
-            radius="full"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-        </Badge>
-        <Badge content="" color="success" shape="circle" className="mt-1">
-          <Avatar
-            radius="full"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-        </Badge>
-        <Badge content="" color="success" shape="circle" className="mt-1">
-          <Avatar
-            radius="full"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-        </Badge>
-        <Badge content="" color="success" shape="circle" className="mt-1">
-          <Avatar
-            radius="full"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-        </Badge>
-        <Badge content="" color="success" shape="circle" className="mt-1">
-          <Avatar
-            radius="full"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-        </Badge>
-        <Badge content="" color="success" shape="circle" className="mt-1">
-          <Avatar
-            radius="full"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-        </Badge> */}
       </div>
     </div>
   );
