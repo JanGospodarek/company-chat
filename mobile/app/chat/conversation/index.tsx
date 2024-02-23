@@ -305,7 +305,7 @@ const Conversation = () => {
                     <ScalableText
                       style={{
                         fontFamily: "League-Spartan-SemiBold",
-                        color: theme.colors.primary,
+                        color: theme.colors.secondaryFont,
                         fontSize: 13,
                       }}
                     >

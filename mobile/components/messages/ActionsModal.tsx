@@ -43,7 +43,7 @@ const ActionsModal = (props: Props) => {
     >
       <ScalableText
         style={{
-          fontFamily: "League-Spartan",
+          fontFamily: "League-Spartan-SemiBold",
           fontSize: 26,
           textAlign: "center",
           color: theme.colors.primaryFont,

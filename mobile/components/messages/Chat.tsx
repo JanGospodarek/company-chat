@@ -109,7 +109,7 @@ const Chat = (props: Props) => {
             <ScalableText
               style={{
                 fontFamily: "League-Spartan",
-                color: theme.colors.primary,
+                color: theme.colors.secondaryFont,
                 fontSize: 14,
               }}
             >

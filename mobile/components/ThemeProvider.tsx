@@ -35,7 +35,7 @@ const highContrastTheme = {
     background: "#000000",
     backgroundSecondary: "#363636",
     primaryFont: "#FFFFFF",
-    secondaryFont: "#e8e8e8",
+    secondaryFont: "#00d7fc",
     secondaryFontDarker: "#8f8f8f",
     optionalBorderColor: "#fcba03",
   },

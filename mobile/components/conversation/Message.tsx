@@ -151,7 +151,7 @@ const Ms = forwardRef((props: Props, ref) => {
             style={{
               textAlign: "right",
               fontFamily: "League-Spartan",
-              color: theme.colors.primary,
+              color: theme.colors.secondaryFont,
               fontSize: 15,
             }}
           >

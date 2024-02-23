@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "League-Spartan-SemiBold",
 
-    fontSize: 34,
+    fontSize: 32,
   },
 });
 
