@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, ScalableText } from "react-native";
 
 interface Props {
   type: "error" | "success" | "none";
@@ -13,11 +13,11 @@ const Alert = (props: Props) =>
         backgroundColor: props.type === "success" ? "green" : "red",
       }}
     >
-      <Text
+      <ScalableText
         style={{ fontFamily: "League-Spartan", fontSize: 18, color: "white" }}
       >
         {props.message}
-      </Text>
+      </ScalableText>
     </View>
   );
 

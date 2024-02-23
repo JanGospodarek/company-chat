@@ -1,5 +1,7 @@
-import { View, StyleSheet, Text, TextInput, ScrollView } from "react-native";
+import { View, StyleSheet, TextInput, ScrollView } from "react-native";
 import globalStyles from "@/app/globalStyles";
+import { ScalableText } from "../../../components/ThemeProvider";
+
 import { LinearGradient } from "expo-linear-gradient";
 import { Button, Icon, IconButton, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
@@ -56,9 +58,11 @@ const Group = () => {
           router.push("/chat/messages/");
         }}
       />
-      <Text style={{ ...styles.headingText, color: theme.colors.primaryFont }}>
+      <ScalableText
+        style={{ ...styles.headingText, color: theme.colors.primaryFont }}
+      >
         Utwórz grupę
-      </Text>
+      </ScalableText>
       <View
         style={{
           ...styles.inputContainer,
@@ -93,7 +97,7 @@ const Group = () => {
           style={{ padding: 6, marginTop: 10 }}
           onPress={handleSubmit}
         >
-          <Text
+          <ScalableText
             style={{
               fontFamily: "League-Spartan-Bold",
               fontSize: 18,
@@ -101,7 +105,7 @@ const Group = () => {
             }}
           >
             Utwórz
-          </Text>
+          </ScalableText>
         </Button>
       </View>
     </View>

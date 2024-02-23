@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import Chat from "./Chat";
 import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +6,7 @@ import { RootState } from "@/store/store";
 import React from "react";
 import { getChats } from "@/shared/api";
 import { setChats } from "@/store/chatsSlice";
-
+import { ScalableText } from "../ThemeProvider";
 const ChatList = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const ChatList = () => {
   }, []);
   return (
     <ScrollView>
-      <Text
+      <ScalableText
         style={{
           color: theme.colors.primary,
           fontFamily: "League-Spartan-SemiBold",
@@ -36,7 +36,7 @@ const ChatList = () => {
         }}
       >
         Wszystkie wiadomości
-      </Text>
+      </ScalableText>
       {Object.values(chats)
         .sort((a, b) => {
           if (a.messages.length === 0) {

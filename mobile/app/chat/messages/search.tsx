@@ -1,11 +1,12 @@
 import {
   View,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { ScalableText } from "../../../components/ThemeProvider";
+
 import globalStyles from "@/app/globalStyles";
 import { LinearGradient } from "expo-linear-gradient";
 import { Avatar, Icon, IconButton, useTheme } from "react-native-paper";
@@ -60,9 +61,11 @@ const Search = () => {
           router.push("/chat/messages/");
         }}
       />
-      <Text style={{ ...styles.headingText, color: theme.colors.primaryFont }}>
+      <ScalableText
+        style={{ ...styles.headingText, color: theme.colors.primaryFont }}
+      >
         Nowy chat
-      </Text>
+      </ScalableText>
       <View
         style={{
           ...styles.inputContainer,
@@ -95,14 +98,14 @@ const Search = () => {
               source={require("../../../assets/images/avatar.jpeg")}
               style={{ margin: 0, padding: 0 }}
             />
-            <Text
+            <ScalableText
               style={{
                 ...styles.text,
                 color: theme.colors.primaryFont,
               }}
             >
               {user.username}
-            </Text>
+            </ScalableText>
           </TouchableOpacity>
         ))}
       </ScrollView>

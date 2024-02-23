@@ -1,8 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { IconButton } from "react-native-paper";
-import { useAppTheme } from "../ThemeProvider";
+import { ScalableText, useAppTheme } from "../ThemeProvider";
 
 interface Props {
   showModal: () => void;
@@ -14,9 +14,9 @@ const Heading = (props: Props) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ ...styles.text, color: theme.colors.primaryFont }}>
+      <ScalableText style={{ ...styles.text, color: theme.colors.primaryFont }}>
         Wiadomości
-      </Text>
+      </ScalableText>
       <View style={styles.btnContainer}>
         <IconButton
           icon="cog-outline"

@@ -1,12 +1,14 @@
 import { useFonts } from "expo-font";
 import { Link, useRouter } from "expo-router";
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import {
   Button,
   PaperProvider,
   DefaultTheme,
   useTheme,
 } from "react-native-paper";
+import { ScalableText } from "../components/ThemeProvider";
+
 import { useCallback, useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
@@ -49,7 +51,7 @@ const StartScreen = () => {
       }}
       onLayout={onLayoutRootView}
     >
-      <Text
+      <ScalableText
         style={{
           fontSize: 32,
           fontWeight: "bold",
@@ -58,11 +60,13 @@ const StartScreen = () => {
         }}
       >
         Company chat
-      </Text>
+      </ScalableText>
 
       <Link href="/auth/login" asChild>
         <Button mode="contained" style={{ width: "50%" }}>
-          <Text style={{ fontFamily: "League-Spartan" }}>Zaloguj się</Text>
+          <ScalableText style={{ fontFamily: "League-Spartan" }}>
+            Zaloguj się
+          </ScalableText>
         </Button>
       </Link>
 
@@ -72,7 +76,9 @@ const StartScreen = () => {
           style={{ width: "50%" }}
           onPress={() => console.log("register")}
         >
-          <Text style={{ fontFamily: "League-Spartan" }}>Zarejestruj się</Text>
+          <ScalableText style={{ fontFamily: "League-Spartan" }}>
+            Zarejestruj się
+          </ScalableText>
         </Button>
       </Link>
     </View>

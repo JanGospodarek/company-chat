@@ -4,7 +4,9 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import globalStyles from "@/app/globalStyles";
 import { useTheme } from "react-native-paper";
-import { StyleSheet, View, Text, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { ScalableText } from "../../../components/ThemeProvider";
+
 import Message from "@/components/conversation/Message";
 import { useAuth } from "@/contexts/AuthContext";
 import React from "react";
@@ -258,7 +260,7 @@ const Conversation = () => {
                 gap: 10,
               }}
             >
-              <Text
+              <ScalableText
                 style={{
                   fontFamily: "League-Spartan-Bold",
                   textAlign: "center",
@@ -267,7 +269,7 @@ const Conversation = () => {
                 }}
               >
                 {computeLongDate(new Date(group.date))}
-              </Text>
+              </ScalableText>
               {group.messages.map((mGroup, i) => (
                 <View
                   key={i}
@@ -299,14 +301,14 @@ const Conversation = () => {
                     />
                   ))}
                   {mGroup.messages[0].user.id !== user?.id && (
-                    <Text
+                    <ScalableText
                       style={{
                         fontFamily: "League-Spartan-SemiBold",
                         color: theme.colors.primary,
                       }}
                     >
                       {mGroup.messages[0].user.username}
-                    </Text>
+                    </ScalableText>
                   )}
                 </View>
               ))}

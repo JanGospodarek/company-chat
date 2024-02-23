@@ -1,6 +1,8 @@
 import { Link } from "expo-router";
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import { ScalableText } from "../../components/ThemeProvider";
+
 import { Button, TextInput } from "react-native-paper";
 import { AuthProvider, useAuth } from "../../contexts/AuthContext";
 import { useRouter } from "expo-router";
@@ -54,7 +56,7 @@ const LoginScreen = () => {
         }}
       >
         <View style={styles.heading}>
-          <Text
+          <ScalableText
             style={{
               fontSize: 48,
               fontFamily: "League-Spartan-Bold",
@@ -62,7 +64,7 @@ const LoginScreen = () => {
             }}
           >
             Logowanie
-          </Text>
+          </ScalableText>
         </View>
         <View style={styles.content}>
           <TextInput

@@ -1,5 +1,7 @@
 import { Link, useRouter } from "expo-router";
-import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Button, TouchableOpacity, Text } from "react-native";
+import { ScalableText } from "../ThemeProvider";
+
 import { Avatar, Badge, useTheme } from "react-native-paper";
 import { GroupChat, PrivateChat } from "../../../shared/types";
 import React, { useState } from "react";
@@ -89,7 +91,7 @@ const Chat = (props: Props) => {
         }}
       >
         <View style={styles.heading}>
-          <Text
+          <ScalableText
             style={{
               fontSize: 18,
               fontFamily: "League-Spartan-Bold",
@@ -100,23 +102,21 @@ const Chat = (props: Props) => {
             {chat.type === "PRIVATE"
               ? (chat as PrivateChat).receipient.username
               : chat.name}
-          </Text>
+          </ScalableText>
           {chat.messages.length > 0 && (
-            <Text
+            <ScalableText
               style={{
                 fontFamily: "League-Spartan",
                 color: theme.colors.primary,
               }}
             >
               {date}
-            </Text>
+            </ScalableText>
           )}
         </View>
         {chat.messages.length > 0 && (
-          <Text
+          <ScalableText
             style={{
-              fontWeight: "400",
-              color: "#737373",
               fontFamily: chat.messages[chat.messages.length - 1].readBy.some(
                 (u) => u.id === user?.id
               )
@@ -125,26 +125,28 @@ const Chat = (props: Props) => {
               textAlign: "left",
               flex: 1,
             }}
-            numberOfLines={1}
+            // numberOfLines={1}
           >
             {chat.messages[chat.messages.length - 1].user.id === user?.id ? (
-              <Text style={{ color: theme.colors.secondaryFont }}>Ja:</Text>
+              <ScalableText style={{ color: theme.colors.secondaryFont }}>
+                Ja:
+              </ScalableText>
             ) : (
-              <Text style={{ color: theme.colors.secondaryFont }}>
+              <ScalableText style={{ color: theme.colors.secondaryFont }}>
                 {chat.messages[chat.messages.length - 1].user.username}:
-              </Text>
+              </ScalableText>
             )}
             {chat.messages[chat.messages.length - 1].content ? (
-              <Text
+              <ScalableText
                 style={{ flex: 1, color: theme.colors.secondaryFont }}
-                numberOfLines={1}
+                // numberOfLines={1}
               >
                 {chat.messages[chat.messages.length - 1].content}
-              </Text>
+              </ScalableText>
             ) : (
               <Text>📎</Text>
             )}
-          </Text>
+          </ScalableText>
         )}
       </View>
     </TouchableOpacity>

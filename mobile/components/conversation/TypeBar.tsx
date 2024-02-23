@@ -3,12 +3,13 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  Text,
   TextInput,
   Image,
   Button,
   Pressable,
 } from "react-native";
+import { ScalableText } from "../ThemeProvider";
+
 import { IconButton, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -117,11 +118,11 @@ const TypeBar = (props: Props) => {
                 style={{ width: 100, height: 100, borderRadius: 10 }}
               />
               <Pressable style={styles.badge} onPress={() => removeFile(image)}>
-                <Text
+                <ScalableText
                   style={{ fontFamily: "League-Spartan-Bold", color: "white" }}
                 >
                   X
-                </Text>
+                </ScalableText>
               </Pressable>
             </View>
           ))}

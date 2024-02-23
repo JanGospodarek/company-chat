@@ -1,4 +1,6 @@
-import { View, Text, StyleSheet, Image, Button, Pressable } from "react-native";
+import { View, StyleSheet, Image, Button, Pressable } from "react-native";
+import { ScalableText } from "../ThemeProvider";
+
 import { useTheme } from "react-native-paper";
 import { Attachment, Message } from "@/shared/types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -145,7 +147,7 @@ const Ms = forwardRef((props: Props, ref) => {
     >
       <View style={styles.message}>
         <View>
-          <Text
+          <ScalableText
             style={{
               textAlign: "right",
               fontFamily: "League-Spartan",
@@ -153,7 +155,7 @@ const Ms = forwardRef((props: Props, ref) => {
             }}
           >
             {computeLongDate(new Date(message.createdAt))}
-          </Text>
+          </ScalableText>
         </View>
         <View
           style={{
@@ -168,9 +170,11 @@ const Ms = forwardRef((props: Props, ref) => {
             justifyContent: "center",
           }}
         >
-          <Text style={{ fontFamily: "League-Spartan-SemiBold", fontSize: 16 }}>
+          <ScalableText
+            style={{ fontFamily: "League-Spartan-SemiBold", fontSize: 16 }}
+          >
             {message.content}
-          </Text>
+          </ScalableText>
           {message.attachment && (
             <View
               style={{
@@ -214,14 +218,14 @@ const Ms = forwardRef((props: Props, ref) => {
                     }}
                   >
                     <View style={styles.attachmentContainer}>
-                      <Text
+                      <ScalableText
                         style={{
                           fontFamily: "League-Spartan-Bold",
                           fontSize: 16,
                         }}
                       >
                         {attachment.name}
-                      </Text>
+                      </ScalableText>
                     </View>
                   </Pressable>
                 );

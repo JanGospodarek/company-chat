@@ -1,7 +1,9 @@
 import { register } from "../../shared/api";
 import { Link } from "expo-router";
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
+import { ScalableText } from "../../components/ThemeProvider";
+
 import { Button, TextInput } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Alert from "@/components/Alert";
@@ -50,7 +52,7 @@ const LoginScreen = () => {
         }}
       >
         <View style={styles.heading}>
-          <Text
+          <ScalableText
             style={{
               fontSize: 48,
               fontFamily: "League-Spartan-Bold",
@@ -58,7 +60,7 @@ const LoginScreen = () => {
             }}
           >
             Register
-          </Text>
+          </ScalableText>
         </View>
         <View style={styles.content}>
           {/* <TextInput

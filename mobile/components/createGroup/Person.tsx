@@ -1,8 +1,10 @@
 import { User } from "@/shared/types";
 import React, { Dispatch, SetStateAction } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Avatar, Button, useTheme } from "react-native-paper";
 import { useAppTheme } from "../ThemeProvider";
+import { ScalableText } from "../ThemeProvider";
+
 interface Props {
   updateGroupMembers: Dispatch<SetStateAction<string[]>>;
   user: User;
@@ -34,14 +36,14 @@ const Person = (props: Props) => {
         source={require("../../assets/images/avatar.jpeg")}
         style={{ margin: 0, padding: 0 }}
       />
-      <Text
+      <ScalableText
         style={{
           ...styles.text,
           color: checked ? "black" : theme.colors.primaryFont,
         }}
       >
         {user.username}
-      </Text>
+      </ScalableText>
     </TouchableOpacity>
   );
 };

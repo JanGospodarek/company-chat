@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Avatar, Badge, IconButton, useTheme } from "react-native-paper";
 import { useAppTheme } from "../ThemeProvider";
 interface Props {
@@ -7,6 +7,8 @@ interface Props {
   isActive: boolean;
   title: string;
 }
+import { ScalableText } from "../ThemeProvider";
+
 const Heading = (props: Props) => {
   const { handleGoBack, title, isActive } = props;
   const theme = useAppTheme();
@@ -31,17 +33,19 @@ const Heading = (props: Props) => {
         {isActive && <Badge style={styles.badge} size={15}></Badge>}
       </View>
       <View style={styles.textContainer}>
-        <Text style={{ ...styles.text, color: theme.colors.primaryFont }}>
+        <ScalableText
+          style={{ ...styles.text, color: theme.colors.primaryFont }}
+        >
           {title}
-        </Text>
-        <Text
+        </ScalableText>
+        <ScalableText
           style={{
             color: theme.colors.secondaryFont,
             fontFamily: "League-Spartan",
           }}
         >
           monika.kowlska@ms.com
-        </Text>
+        </ScalableText>
       </View>
     </View>
   );

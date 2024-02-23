@@ -2,10 +2,11 @@ import ChatList from "@/components/messages/ChatList";
 import Heading from "@/components/messages/Heading";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import globalStyles from "@/app/globalStyles";
 import ActionsModal from "@/components/messages/ActionsModal";
 import { useTheme } from "react-native-paper";
+import { ScalableText } from "../../../components/ThemeProvider";
 
 import { useRouter } from "expo-router";
 import { useEffect } from "react";

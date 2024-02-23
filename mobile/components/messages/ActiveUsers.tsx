@@ -1,7 +1,8 @@
 import { useAppSelector } from "@/store/hooks";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useTheme } from "react-native-paper";
 import { useAppTheme } from "../ThemeProvider";
+import { ScalableText } from "../ThemeProvider";
 
 const ActiveUsers = () => {
   //   const fontSizeState = useAppSelector((state) => state.font);
@@ -12,7 +13,7 @@ const ActiveUsers = () => {
   }
   return (
     <View>
-      <Text
+      <ScalableText
         style={{
           color: theme.colors.primary,
           fontFamily: "League-Spartan-SemiBold",
@@ -21,7 +22,7 @@ const ActiveUsers = () => {
         }}
       >
         Aktywni użytkownicy
-      </Text>
+      </ScalableText>
       {activeUsers.users.map((user) => {
         return (
           <View
@@ -37,9 +38,11 @@ const ActiveUsers = () => {
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 14, fontFamily: "League-Spartan-Bold" }}>
+            <ScalableText
+              style={{ fontSize: 14, fontFamily: "League-Spartan-Bold" }}
+            >
               {user.username.split("").slice(0, 3).join("")}
-            </Text>
+            </ScalableText>
           </View>
         );
       })}
