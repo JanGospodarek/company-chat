@@ -70,7 +70,11 @@ const Group = () => {
         }}
       >
         <TextInput
-          style={{ ...styles.input, color: theme.colors.primaryFont }}
+          style={{
+            ...styles.input,
+            color: theme.colors.primaryFont,
+            fontSize: 20,
+          }}
           placeholder="Nazwa grupy"
           placeholderTextColor={theme.colors.primary}
           onChangeText={(text) => setGroupName(text)}

@@ -74,8 +74,12 @@ const Search = () => {
       >
         <Icon source="magnify" color={theme.colors.primary} size={30} />
         <TextInput
-          style={{ ...styles.input, color: theme.colors.primaryFont }}
-          placeholder="Type user's name"
+          style={{
+            ...styles.input,
+            color: theme.colors.primaryFont,
+            fontSize: 20,
+          }}
+          placeholder="Wpisz nazwę"
           placeholderTextColor={theme.colors.primary}
           value={keyword}
           onChangeText={(val) => setKeyword(val)}

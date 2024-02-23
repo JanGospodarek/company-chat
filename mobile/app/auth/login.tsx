@@ -86,7 +86,7 @@ const LoginScreen = () => {
           <View style={styles.btnContainer}>
             <Link href="/" asChild>
               <Button mode="outlined" onPress={() => console.log("Pressed")}>
-                <Text>Cofnij </Text>
+                <ScalableText style={{ fontSize: 14 }}>Cofnij </ScalableText>
               </Button>
             </Link>
             <Button
@@ -94,7 +94,9 @@ const LoginScreen = () => {
               onPress={() => handleLogin()}
               loading={loading}
             >
-              <Text>{loading ? "Logowanie" : "Zaloguj"} </Text>
+              <ScalableText style={{ fontSize: 14 }}>
+                {loading ? "Logowanie" : "Zaloguj"}{" "}
+              </ScalableText>
             </Button>
           </View>
         </View>

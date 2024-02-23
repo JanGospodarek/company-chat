@@ -266,6 +266,7 @@ const Conversation = () => {
                   textAlign: "center",
                   color: theme.colors.primary,
                   paddingVertical: 3,
+                  fontSize: 15,
                 }}
               >
                 {computeLongDate(new Date(group.date))}
@@ -305,6 +306,7 @@ const Conversation = () => {
                       style={{
                         fontFamily: "League-Spartan-SemiBold",
                         color: theme.colors.primary,
+                        fontSize: 13,
                       }}
                     >
                       {mGroup.messages[0].user.username}

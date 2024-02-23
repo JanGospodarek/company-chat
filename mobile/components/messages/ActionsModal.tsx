@@ -1,5 +1,5 @@
 import { Button, Modal, ToggleButton, RadioButton } from "react-native-paper";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import React, { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -57,13 +57,14 @@ const ActionsModal = (props: Props) => {
         onPress={handleLogout}
         loading={loading}
       >
-        Wyloguj się
+        <ScalableText style={{ fontSize: 14 }}>Wyloguj się</ScalableText>
       </Button>
       <View style={{ marginTop: 10 }}>
         <ScalableText
           style={{
             fontFamily: "League-Spartan-SemiBold",
             color: theme.colors.primaryFont,
+            fontSize: 16,
           }}
         >
           Motyw
@@ -93,6 +94,7 @@ const ActionsModal = (props: Props) => {
             style={{
               fontFamily: "League-Spartan-SemiBold",
               color: theme.colors.primaryFont,
+              fontSize: 16,
             }}
           >
             Rozmiar czcionki
@@ -105,7 +107,7 @@ const ActionsModal = (props: Props) => {
           >
             <View style={styles.radioBtnGroup}>
               <View style={styles.radioBtn}>
-                <ScalableText
+                <Text
                   style={{
                     fontFamily: "League-Spartan-SemiBold",
                     fontSize: 16,
@@ -113,11 +115,11 @@ const ActionsModal = (props: Props) => {
                   }}
                 >
                   Normalny
-                </ScalableText>
+                </Text>
                 <RadioButton value="1" />
               </View>
               <View style={styles.radioBtn}>
-                <ScalableText
+                <Text
                   style={{
                     fontFamily: "League-Spartan-SemiBold",
                     fontSize: 18,
@@ -125,11 +127,11 @@ const ActionsModal = (props: Props) => {
                   }}
                 >
                   Średni
-                </ScalableText>
+                </Text>
                 <RadioButton value="1.2" />
               </View>
               <View style={styles.radioBtn}>
-                <ScalableText
+                <Text
                   style={{
                     fontFamily: "League-Spartan-SemiBold",
                     fontSize: 22,
@@ -137,7 +139,7 @@ const ActionsModal = (props: Props) => {
                   }}
                 >
                   Duży
-                </ScalableText>
+                </Text>
                 <RadioButton value="1.4" />
               </View>
             </View>

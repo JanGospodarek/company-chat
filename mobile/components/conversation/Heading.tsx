@@ -36,12 +36,14 @@ const Heading = (props: Props) => {
         <ScalableText
           style={{ ...styles.text, color: theme.colors.primaryFont }}
         >
+          {/* {title.length > 18 ? title.slice(0, 18) + "..." : title} */}
           {title}
         </ScalableText>
         <ScalableText
           style={{
             color: theme.colors.secondaryFont,
             fontFamily: "League-Spartan",
+            fontSize: 14,
           }}
         >
           monika.kowlska@ms.com
@@ -56,6 +58,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     gap: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   badge: {
     backgroundColor: "#17C964",

@@ -91,23 +91,26 @@ const Chat = (props: Props) => {
         }}
       >
         <View style={styles.heading}>
-          <ScalableText
-            style={{
-              fontSize: 18,
-              fontFamily: "League-Spartan-Bold",
+          <View style={{ width: 200 }}>
+            <ScalableText
+              style={{
+                fontSize: 18,
+                fontFamily: "League-Spartan-Bold",
+                color: theme.colors.primaryFont,
+              }}
+            >
+              {chat.type === "PRIVATE"
+                ? (chat as PrivateChat).receipient.username
+                : chat.name}
+            </ScalableText>
+          </View>
 
-              color: theme.colors.primaryFont,
-            }}
-          >
-            {chat.type === "PRIVATE"
-              ? (chat as PrivateChat).receipient.username
-              : chat.name}
-          </ScalableText>
           {chat.messages.length > 0 && (
             <ScalableText
               style={{
                 fontFamily: "League-Spartan",
                 color: theme.colors.primary,
+                fontSize: 14,
               }}
             >
               {date}
@@ -128,17 +131,25 @@ const Chat = (props: Props) => {
             // numberOfLines={1}
           >
             {chat.messages[chat.messages.length - 1].user.id === user?.id ? (
-              <ScalableText style={{ color: theme.colors.secondaryFont }}>
+              <ScalableText
+                style={{ color: theme.colors.secondaryFont, fontSize: 14 }}
+              >
                 Ja:
               </ScalableText>
             ) : (
-              <ScalableText style={{ color: theme.colors.secondaryFont }}>
+              <ScalableText
+                style={{ color: theme.colors.secondaryFont, fontSize: 14 }}
+              >
                 {chat.messages[chat.messages.length - 1].user.username}:
               </ScalableText>
             )}
             {chat.messages[chat.messages.length - 1].content ? (
               <ScalableText
-                style={{ flex: 1, color: theme.colors.secondaryFont }}
+                style={{
+                  flex: 1,
+                  color: theme.colors.secondaryFont,
+                  fontSize: 14,
+                }}
                 // numberOfLines={1}
               >
                 {chat.messages[chat.messages.length - 1].content}

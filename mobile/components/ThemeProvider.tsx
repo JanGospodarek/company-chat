@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setTheme } from "@/store/uiSlice";
+import { setFontSize, setTheme } from "@/store/uiSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ReactNode, useEffect } from "react";
 import { TextStyle } from "react-native";
@@ -80,6 +80,22 @@ interface ScalableTextProps {
 export const ScalableText = ({ style, children }: ScalableTextProps) => {
   // const scale = useContext(TextScaleContext);
   const sc = useAppSelector((state) => state.ui.fontSize);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    const readFromStorage = async () => {
+      const font = await AsyncStorage.getItem("fontSize");
+      if (font) dispatch(setFontSize(Number(font) as 1 | 1.2 | 1.4));
+    };
+    readFromStorage();
+  }, []);
+
+  useEffect(() => {
+    const writeToStorage = async () => {
+      await AsyncStorage.removeItem("fontSize");
+      await AsyncStorage.setItem("fontSize", sc.toString());
+    };
+    writeToStorage();
+  }, [sc]);
   return (
     <Text
       style={[

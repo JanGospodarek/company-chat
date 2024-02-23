@@ -152,6 +152,7 @@ const Ms = forwardRef((props: Props, ref) => {
               textAlign: "right",
               fontFamily: "League-Spartan",
               color: theme.colors.primary,
+              fontSize: 15,
             }}
           >
             {computeLongDate(new Date(message.createdAt))}

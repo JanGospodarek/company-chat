@@ -1,5 +1,5 @@
-import { StyleSheet, View, ScalableText } from "react-native";
-
+import { StyleSheet, View } from "react-native";
+import { ScalableText } from "./ThemeProvider";
 interface Props {
   type: "error" | "success" | "none";
   message: string;

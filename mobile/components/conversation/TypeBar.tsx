@@ -135,7 +135,11 @@ const TypeBar = (props: Props) => {
         }}
       >
         <TextInput
-          style={{ ...styles.input, color: theme.colors.primaryFont }}
+          style={{
+            ...styles.input,
+            color: theme.colors.primaryFont,
+            fontSize: 20,
+          }}
           placeholder="Type a message"
           placeholderTextColor={theme.colors.primary}
           ref={inputRef}
