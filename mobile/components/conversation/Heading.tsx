@@ -1,9 +1,17 @@
 import { useRouter } from "expo-router";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Avatar, Badge, IconButton, useTheme } from "react-native-paper";
+import { useAppTheme } from "../ThemeProvider";
+interface Props {
+  handleGoBack: () => void;
+  isActive: boolean;
+  title: string;
+}
+import { ScalableText } from "../ThemeProvider";
 
-const Heading = () => {
-  const theme = useTheme();
+const Heading = (props: Props) => {
+  const { handleGoBack, title, isActive } = props;
+  const theme = useAppTheme();
   const router = useRouter();
   return (
     <View style={styles.container}>
@@ -13,10 +21,8 @@ const Heading = () => {
         iconColor={theme.colors.primary}
         style={{ margin: 0, padding: 0 }}
         onPress={() => {
-          router.replace({
-            pathname: "/chat/messages/[id]",
-            params: { id: "bacon" },
-          });
+          handleGoBack();
+          router.push("/chat/messages/");
         }}
       />
       <View>
@@ -24,13 +30,24 @@ const Heading = () => {
           size={60}
           source={require("../../assets/images/avatar.jpeg")}
         />
-        <Badge style={styles.badge} size={15}></Badge>
+        {isActive && <Badge style={styles.badge} size={15}></Badge>}
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>Monika Kowalska</Text>
-        <Text style={{ color: "#737373", fontFamily: "League-Spartan" }}>
+        <ScalableText
+          style={{ ...styles.text, color: theme.colors.primaryFont }}
+        >
+          {/* {title.length > 18 ? title.slice(0, 18) + "..." : title} */}
+          {title}
+        </ScalableText>
+        <ScalableText
+          style={{
+            color: theme.colors.secondaryFont,
+            fontFamily: "League-Spartan",
+            fontSize: 14,
+          }}
+        >
           monika.kowlska@ms.com
-        </Text>
+        </ScalableText>
       </View>
     </View>
   );
@@ -41,6 +58,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     gap: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   badge: {
     backgroundColor: "#17C964",

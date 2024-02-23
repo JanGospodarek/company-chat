@@ -62,8 +62,6 @@ export const login = async (username: string, password: string) => {
   const data = { username, password };
   const encrypted = encryptData(data);
 
-  console.log(encrypted);
-
   const res = await fetch(`${apiURL}/auth/login`, {
     method: "POST",
     headers: {

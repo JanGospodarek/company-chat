@@ -33,7 +33,7 @@ const ChatsList = (props: Props) => {
   }, []);
 
   return (
-    <div className="w-full flex flex-col mt-2 overflow-y-scroll h-full hide-scrollbar">
+    <div className="w-full flex flex-col mt-2 overflow-y-scroll h-full hide-scrollbar ">
       <h2
         className={`${computeFont(
           "text-lg",

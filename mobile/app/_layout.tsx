@@ -60,3 +60,20 @@
 //     // </ThemeProvider>
 //   );
 // }
+import { Slot } from "expo-router";
+import { AuthProvider } from "../contexts/AuthContext";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
+import SocketWrapper from "@/components/SocketWrapper";
+import ThemeProvider from "@/components/ThemeProvider";
+export default function Wrapper() {
+  return (
+    <AuthProvider>
+      <Provider store={store}>
+        <ThemeProvider>
+          <Slot />
+        </ThemeProvider>
+      </Provider>
+    </AuthProvider>
+  );
+}
