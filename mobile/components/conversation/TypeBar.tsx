@@ -80,12 +80,15 @@ const TypeBar = (props: Props) => {
           encoding: FileSystem.EncodingType.Base64,
         }
       );
+      const l = base64.length;
+      const sizeInBytes = 4 * Math.ceil(l / 3) * 0.5624896334383812;
       setSelectedFiles((prevImages) => [
         ...prevImages,
         {
           base: `data:${pickerResult.assets![0].mimeType};base64,${base64}`,
           name: pickerResult.assets![0].fileName as string,
           type: pickerResult.assets![0].mimeType as string,
+          size: sizeInBytes,
         },
       ]);
     }

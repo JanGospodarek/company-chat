@@ -1,6 +1,6 @@
 import { useFonts } from "expo-font";
 import { Link, useRouter } from "expo-router";
-import { View, Pressable, LogBox } from "react-native";
+import { View, Image, LogBox } from "react-native";
 import {
   Button,
   PaperProvider,
@@ -55,17 +55,10 @@ const StartScreen = () => {
       }}
       onLayout={onLayoutRootView}
     >
-      <ScalableText
-        style={{
-          fontSize: 32,
-          fontWeight: "bold",
-          fontFamily: "League-Spartan",
-          color: theme.colors.primaryFont,
-        }}
-      >
-        Company chat
-      </ScalableText>
-
+      <Image
+        source={require("@/assets/logo.png")}
+        style={{ width: 350, height: 230 }}
+      />
       <Link href="/auth/login" asChild>
         <Button mode="contained" style={{ width: "50%" }}>
           <ScalableText style={{ fontFamily: "League-Spartan", fontSize: 14 }}>
