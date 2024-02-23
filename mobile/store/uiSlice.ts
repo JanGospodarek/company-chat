@@ -1,14 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface initialStateType {
-  fontSize: "normal" | "large";
-  isInitial: boolean;
+  fontSize: 1 | 1.2 | 1.4;
   theme: "normal" | "highContrast";
 }
 
 const initialState: initialStateType = {
-  fontSize: "normal",
-  isInitial: true,
+  fontSize: 1,
   theme: "normal",
 };
 
@@ -18,7 +16,6 @@ const uiSlice = createSlice({
   reducers: {
     setFontSize: (state, action) => {
       state.fontSize = action.payload;
-      state.isInitial = false;
     },
     setTheme: (state, action) => {
       action.payload === "normal"

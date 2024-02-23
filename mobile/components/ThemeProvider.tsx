@@ -1,8 +1,15 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setTheme } from "@/store/uiSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react";
-import { DefaultTheme, PaperProvider, useTheme } from "react-native-paper";
+import { ReactNode, useEffect } from "react";
+import { TextStyle } from "react-native";
+import {
+  DefaultTheme,
+  PaperProvider,
+  configureFonts,
+  useTheme,
+} from "react-native-paper";
+import { Text } from "react-native";
 const primaryTheme = {
   ...DefaultTheme,
   custom: "property",
@@ -43,6 +50,7 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     };
     readFromStorage();
   }, []);
+
   useEffect(() => {
     const writeToStorage = async () => {
       await AsyncStorage.removeItem("theme");
@@ -63,3 +71,23 @@ export default ThemeProvider;
 export type AppTheme = typeof primaryTheme;
 
 export const useAppTheme = () => useTheme<AppTheme>();
+
+interface ScalableTextProps {
+  style: TextStyle;
+  children: ReactNode;
+}
+
+export const ScalableText = ({ style, children }: ScalableTextProps) => {
+  // const scale = useContext(TextScaleContext);
+  const sc = useAppSelector((state) => state.ui.fontSize);
+  return (
+    <Text
+      style={[
+        style,
+        { fontSize: style.fontSize ? style.fontSize * sc : undefined },
+      ]}
+    >
+      {children}
+    </Text>
+  );
+};
