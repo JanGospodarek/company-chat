@@ -1,4 +1,6 @@
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setTheme } from "@/store/uiSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 import { DefaultTheme, PaperProvider, useTheme } from "react-native-paper";
 const primaryTheme = {
@@ -33,7 +35,21 @@ const highContrastTheme = {
 };
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const selectedTheme = useAppSelector((state) => state.ui.theme);
-
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    const readFromStorage = async () => {
+      const theme = await AsyncStorage.getItem("theme");
+      if (theme) dispatch(setTheme(theme as "normal" | "highContrast"));
+    };
+    readFromStorage();
+  }, []);
+  useEffect(() => {
+    const writeToStorage = async () => {
+      await AsyncStorage.removeItem("theme");
+      await AsyncStorage.setItem("theme", selectedTheme);
+    };
+    writeToStorage();
+  }, [selectedTheme]);
   return (
     <PaperProvider
       theme={selectedTheme === "normal" ? primaryTheme : highContrastTheme}
