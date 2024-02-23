@@ -25,6 +25,7 @@ const Ms = forwardRef((props: Props, ref) => {
   const theme = useAppTheme();
   const { user } = useAuth();
   const [isInView, setIsElementInView] = React.useState(false);
+  const [isDownloaded, setIsDownloaded] = React.useState(false);
 
   const [attachments, setAttachments] = React.useState<Attachment[]>([]);
   const [images, setImages] = React.useState<
@@ -127,6 +128,10 @@ const Ms = forwardRef((props: Props, ref) => {
       const result = await FileSystem.downloadAsync(url, path);
 
       console.log("File downloaded toddd:", result.uri);
+      setIsDownloaded(true);
+      setTimeout(() => {
+        setIsDownloaded(false);
+      }, 5000);
       // };
       // reader.readAsDataURL(blob);
     } catch (error) {
@@ -206,6 +211,7 @@ const Ms = forwardRef((props: Props, ref) => {
                         borderRadius: 10,
                       }}
                       alt="attachment"
+                      loadingIndicatorSource={require("../../assets/loading.gif")}
                     />
                   </View>
                 ) : (
@@ -225,7 +231,7 @@ const Ms = forwardRef((props: Props, ref) => {
                           fontSize: 16,
                         }}
                       >
-                        {attachment.name}
+                        {isDownloaded ? "Pobrano" : attachment.name}
                       </ScalableText>
                     </View>
                   </Pressable>
