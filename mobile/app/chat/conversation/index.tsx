@@ -81,12 +81,16 @@ const Conversation = () => {
     }
   }, [activeUsers, conversation]);
 
+  const [runOnce, setRunOnce] = React.useState(true);
   React.useEffect(() => {
-    setTimeout(() => {
+    if (scrollRef.current && runOnce) {
       console.log("scrolling to end");
-      if (scrollRef.current) {
-        scrollRef.current.scrollToEnd({ animated: false });
-      }
+
+      scrollRef.current.scrollToEnd({ animated: false });
+      setRunOnce(false);
+    }
+    setTimeout(() => {
+      setRunOnce(true);
     }, 1);
   }, [conversation?.messages.length]);
 

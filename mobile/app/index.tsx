@@ -1,6 +1,6 @@
 import { useFonts } from "expo-font";
 import { Link, useRouter } from "expo-router";
-import { View, Pressable } from "react-native";
+import { View, Pressable, LogBox } from "react-native";
 import {
   Button,
   PaperProvider,
@@ -21,6 +21,10 @@ const StartScreen = () => {
   const router = useRouter();
   const theme = useAppTheme();
   // useEffect(() => {}, [user]);
+  LogBox.ignoreLogs([
+    "new NativeEventEmitter",
+    "Maximum update depth exceeded",
+  ]);
   const [fontsLoaded, fontError] = useFonts({
     "League-Spartan": require("../assets/fonts/LeagueSpartan-Regular.ttf"),
     "League-Spartan-Bold": require("../assets/fonts/LeagueSpartan-Bold.ttf"),
