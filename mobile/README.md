@@ -11,7 +11,7 @@
 
 In `mobile` directory:
 
-- `yarn add`
+- `npm i`
 - `yarn start`
 
 ### ANDROID STUDIO
