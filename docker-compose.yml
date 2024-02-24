@@ -61,6 +61,20 @@ services:
 
     restart: always
 
+  backup:
+    container_name: backup
+    build: ./backup
+
+    volumes:
+      - ./backup:/backup
+      - ./db:/db
+      - ./backend/uploads:/uploads
+
+    networks:
+      - backend
+
+    restart: always
+
 networks:
   proxy:
     driver: bridge
