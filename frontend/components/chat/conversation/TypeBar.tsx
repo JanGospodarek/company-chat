@@ -15,7 +15,8 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 
 import { AnimatePresence, motion } from "framer-motion";
-
+import { useAppSelector } from "@/lib/hooks";
+import computeFont from "@/components/utils/getComputedFontSize";
 type Props = {
   chatId: number;
   buttonVisible: boolean;
@@ -26,7 +27,7 @@ const TypeBar = (props: Props) => {
   const { chatId, buttonVisible, handleButtonClick } = props;
   const [selectedFiles, setSelectedFiles] = useState<File[]>([] as File[]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const fontSizeState = useAppSelector((state) => state.font);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -158,12 +159,12 @@ const TypeBar = (props: Props) => {
       </AnimatePresence>
       <Input
         style={{
-          fontSize: "1rem",
+          fontSize: fontSizeState.fontSize === "normal" ? "1rem" : "1.3rem",
           lineHeight: "1rem",
         }}
         className={`${
           selectedFiles.length > 0 ? "pt-[9rem]" : ""
-        } transition-all`}
+        } transition-all `}
         variant="flat"
         size="md"
         value={input}

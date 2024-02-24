@@ -24,6 +24,7 @@ import { loadMoreMessages } from "@shared/api";
 
 import { loadOlderMessages, selectChat } from "@/lib/chatsSlice";
 import { useAnimate } from "framer-motion";
+import Text from "@/components/reuseable/Text";
 
 type MessageGroup = {
   messages: IMessage[];
@@ -255,11 +256,11 @@ const Conversation = (props: Props) => {
             </Badge>
 
             <div className="flex flex-col ml-2 justify-center w-full">
-              <div className="text-xl font-semibold">
+              <Text className="text-xl font-semibold">
                 {conversation.type === "GROUP"
                   ? conversation.name
                   : (conversation as PrivateChat).receipient.username}
-              </div>
+              </Text>
               {conversation.type === "PRIVATE" && (
                 <button
                   className="font-light text-sm text-primary underline text-left"
@@ -267,7 +268,7 @@ const Conversation = (props: Props) => {
                     navigator.clipboard.writeText("mateusz@kowalski.co.pl");
                   }}
                 >
-                  mateusz@kowalski.co.pl
+                  <Text className="text-md">mateusz@kowalski.co.pl</Text>
                 </button>
               )}
             </div>
@@ -283,9 +284,9 @@ const Conversation = (props: Props) => {
             <div className="h-full"></div>
             {messageGroups.map((group, index) => (
               <div key={group.date} className="flex flex-col gap-2">
-                <div className="text-center text-xs text-primary font-semibold">
+                <Text className="text-center text-xs text-primary font-semibold">
                   {computeLongDate(new Date(group.date))}
-                </div>
+                </Text>
                 {group.messages.map((mGroup, i) => (
                   <div
                     key={i}
@@ -316,9 +317,9 @@ const Conversation = (props: Props) => {
                       />
                     ))}
                     {mGroup.messages[0].user.id !== user?.id && (
-                      <p className="font-light">
+                      <Text className="font-light text-sm">
                         {mGroup.messages[0].user.username}
-                      </p>
+                      </Text>
                     )}
                   </div>
                 ))}

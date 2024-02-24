@@ -4,7 +4,7 @@ import StepMembers from "./StepMembers";
 
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/modal";
 import { addUsersToChat, newGroupChat } from "@shared/api";
-
+import Text from "@/components/reuseable/Text";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
@@ -32,7 +32,7 @@ const GroupModal = (props: Props) => {
     <Modal isOpen={isOpen} onClose={onClose} size="xs">
       <ModalContent>
         <ModalHeader className="text-black justify-center">
-          Nowa Grupa
+          <Text className="text-xl">Nowa Grupa</Text>
         </ModalHeader>
         <ModalBody>
           {step === 1 && (
