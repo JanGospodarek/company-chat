@@ -53,9 +53,11 @@ const Ms = forwardRef((props: Props, ref) => {
     }
   }, []);
   useEffect(() => {
-    const fetchCookie = async (path: string, id: number) => {
+    const f = async (path: string, id: number) => {
       try {
-        const res = await fetch(`http://192.168.50.165/api/media${path}`);
+        const res = await fetch(
+          `http://${process.env.EXPO_PUBLIC_SERVER_IP}/api/media${path}`
+        );
         const blob = await res.blob();
         const reader = new FileReader();
         reader.onloadend = function () {
@@ -102,7 +104,7 @@ const Ms = forwardRef((props: Props, ref) => {
             .split("")
             .slice(1, attachment.path.split("").length)
             .join("");
-          fetchCookie(path, attachment.id);
+          f(path, attachment.id);
         }
       });
     }
@@ -219,7 +221,7 @@ const Ms = forwardRef((props: Props, ref) => {
                     key={attachment.id}
                     onPress={() => {
                       downloadFile(
-                        `http://192.168.50.165/api/media${path}`,
+                        `http://${process.env.EXPO_PUBLIC_SERVER_IP}/api/media${path}`,
                         attachment.name
                       );
                     }}
