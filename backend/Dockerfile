@@ -19,5 +19,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - &&\
 
 RUN npm install -g prisma
 RUN prisma generate
+RUN prisma db push
 
 CMD ["bun", "start"]
