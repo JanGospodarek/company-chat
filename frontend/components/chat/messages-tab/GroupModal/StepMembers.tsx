@@ -2,7 +2,7 @@ import { Avatar, Checkbox, CheckboxGroup, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { getUsers } from "@shared/api";
 import { User } from "@shared/types";
-
+import Text from "@/components/reuseable/Text";
 type Props = {
   groupMembers: string[];
   setGroupMembers: (members: string[]) => void;
@@ -24,9 +24,9 @@ const StepMembers = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-lg font-semibold justify-center flex">
+      <Text className="text-lg font-semibold justify-center flex">
         Dodaj użytkowników
-      </p>
+      </Text>
       {/* <div className="flex flex-col">
         <Input label="Search users" className="mb-2 w-48 " size="sm" />
       </div> */}
@@ -41,7 +41,7 @@ const StepMembers = (props: Props) => {
                   size="sm"
                   src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
                 />
-                <p>{user.username}</p>
+                <Text className="text-md">{user.username}</Text>
               </div>
             </Checkbox>
           ))}
@@ -52,13 +52,13 @@ const StepMembers = (props: Props) => {
           className="bg-primary text-white p-2 rounded-lg w-full"
           onClick={() => setStep(1)}
         >
-          Back
+          <Text className="text-md">Back</Text>
         </button>
         <button
           className="bg-primary text-white p-2 rounded-lg w-full"
           onClick={submit}
         >
-          Create
+          <Text className="text-md">Create</Text>
         </button>
       </div>
     </div>

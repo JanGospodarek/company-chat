@@ -26,6 +26,7 @@ import { useDispatch } from "react-redux";
 import { addChat } from "@/lib/chatsSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import GroupModal from "./GroupModal/GroupModal";
+import Text from "@/components/reuseable/Text";
 
 type Props = {
   handleTabChange: handleMobileTabChange;
@@ -70,11 +71,7 @@ const MessagesTab = (props: Props) => {
   return (
     <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[300px] flex flex-col justify-start md:border-r-2 border-secondary  flex-shrink-0">
       <div className=" flex justify-between relativ">
-        <p
-          className={`${computeFont("text-3xl", fontSizeState)} font-semibold`}
-        >
-          Messages
-        </p>
+        <Text className="text-3xl font-semibold">Messages</Text>
         <div className="flex gap-3 items-center">
           <div className="md:hidden">
             <UserActionsDropdown
@@ -126,7 +123,7 @@ const MessagesTab = (props: Props) => {
       >
         <ModalContent>
           <ModalHeader className="text-black justify-center">
-            Nowy chat
+            <Text className="text-xl">Nowy chat</Text>
           </ModalHeader>
           <ModalBody className="overflow-scroll scrollbar-hide">
             <Listbox>
@@ -138,8 +135,12 @@ const MessagesTab = (props: Props) => {
                       size="sm"
                     />
                     <div className="flex flex-col">
-                      <div className="font-semibold">Dawid Komęza</div>
-                      <div className="font-light">@{user.username}</div>
+                      <Text className="font-semibold text-sm">
+                        Dawid Komęza
+                      </Text>
+                      <Text className="font-light text-sm">
+                        @{user.username}
+                      </Text>
                     </div>
                   </div>
                 </ListboxItem>

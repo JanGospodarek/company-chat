@@ -4,11 +4,22 @@ import { setActiveUsers } from "@/store/activeUsersSlice";
 import { addChat, addMessageToChat, updateMessage } from "@/store/chatsSlice";
 import { store } from "@/store/store";
 import { Slot, useRouter } from "expo-router";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { View } from "react-native";
 import { useDispatch } from "react-redux";
 import { Audio } from "expo-av";
-import { LogBox } from "react-native";
+import { LogBox, Platform } from "react-native";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: false,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const SocketWrapper = (props: any) => {
   const { user } = useAuth();
@@ -16,46 +27,44 @@ const SocketWrapper = (props: any) => {
   const dispatch = useDispatch();
   const soundObject = new Audio.Sound();
   const [isLoaded, setIsLoaded] = React.useState(false);
-  React.useEffect(() => {
-    loadSound();
-    return () => {
-      unloadSound();
-    };
-  }, []);
+  // React.useEffect(() => {
+  //   loadSound();
+  //   return () => {
+  //     unloadSound();
+  //   };
+  // }, []);
   LogBox.ignoreLogs([
     "new NativeEventEmitter",
     "Maximum update depth exceeded",
   ]);
-  const loadSound = async () => {
-    try {
-      await Audio.setAudioModeAsync({
-        staysActiveInBackground: true, // pozwól na odtwarzanie dźwięku w tle
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  React.useEffect(() => {
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token as string)
+    );
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
       });
-      await soundObject.loadAsync(require("../assets/notification_sound.mp3"));
-      setIsLoaded(true);
-    } catch (error) {
-      console.error("Error loading sound:", error);
-    }
-  };
 
-  const unloadSound = async () => {
-    try {
-      await soundObject.unloadAsync();
-      setIsLoaded(false);
-    } catch (error) {
-      console.error("Error unloading sound:", error);
-    }
-  };
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
 
-  const playSound = async () => {
-    if (isLoaded) {
-      try {
-        await soundObject.playAsync();
-      } catch (error) {
-        console.error("Error playing sound:", error);
-      }
-    }
-  };
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
   React.useEffect(() => {
     const u = user;
 
@@ -75,14 +84,21 @@ const SocketWrapper = (props: any) => {
     });
 
     miau.onMessage((message) => {
+      console.log("Received message:", message);
       dispatch(addMessageToChat(message));
 
       const activeChatID = store.getState().chats.activeChatID;
 
       if (message.chatId !== activeChatID) {
         try {
+          console.log("Playing sound");
+          const playSound = async () =>
+            await schedulePushNotification(expoPushToken);
+
           playSound();
-        } catch (error) {}
+        } catch (error) {
+          console.log("Error playing sound:", error);
+        }
       }
     });
 
@@ -103,3 +119,53 @@ const SocketWrapper = (props: any) => {
   return <View>{props.children}</View>;
 };
 export default SocketWrapper;
+
+async function schedulePushNotification() {
+  console.log("Scheduling notification");
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "You've got mail! 📬",
+    },
+    trigger: null,
+  });
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  if (Device.isDevice) {
+    try {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      // Learn more about projectId:
+      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+      token = await Notifications.getExpoPushTokenAsync({
+        projectId: "1148529b-4e1b-4efb-917a-6f9a3b10bc2f",
+      });
+    } catch (error) {
+      alert("Failed to get push token for push notification! + " + error);
+    }
+  } else {
+    alert("Must use physical device for Push Notifications");
+  }
+
+  return token;
+}

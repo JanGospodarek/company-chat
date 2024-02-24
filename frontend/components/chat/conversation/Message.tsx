@@ -6,7 +6,9 @@ import { loadAttachments, miau } from "@shared/api";
 import { Attachment, Message } from "@shared/types";
 import { useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-
+import Text from "@/components/reuseable/Text";
+import { useAppSelector } from "@/lib/hooks";
+import computeFont from "@/components/utils/getComputedFontSize";
 type Props = {
   message: Message;
   isFirst: boolean;
@@ -16,6 +18,7 @@ type Props = {
 };
 const Message = (props: Props) => {
   const { message, isFirst, isLast, loadMore, setInView } = props;
+  const fontSizeState = useAppSelector((state) => state.font);
   const { user } = useAuth();
   const messageRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(messageRef, {
@@ -60,6 +63,7 @@ const Message = (props: Props) => {
         placement={isMine ? "left-start" : "right-start"}
         delay={500}
         size="sm"
+        className={`${computeFont("text-sm", fontSizeState)} `}
       >
         <div
           className={`max-w-[400px] rounded-md   ${
@@ -92,7 +96,7 @@ const Message = (props: Props) => {
                         <div className="bg-slate-300 w-full h-full rounded-xl flex items-center justify-center">
                           <File size={attachments.length > 1 ? 130 : 260} />
                         </div>
-                        {attachment.name}
+                        <Text className="text-md">{attachment.name}</Text>
                       </div>
                     </a>
                   )}
@@ -100,7 +104,7 @@ const Message = (props: Props) => {
               ))}
             </div>
           )}
-          {message.content}
+          <Text className="text-md">{message.content}</Text>
         </div>
       </Tooltip>
     </div>

@@ -12,6 +12,7 @@ import { RootState } from "@/lib/store";
 
 import { computeDate } from "@/components/utils/computeDate";
 import { useAuth } from "@/contexts/AuthContext";
+import Text from "@/components/reuseable/Text";
 
 type Props = {
   chat: GroupChat | PrivateChat;
@@ -89,18 +90,18 @@ const Chat = (props: Props) => {
       </div>
       <div className="flex flex-col ml-2 justify-center w-px[234]">
         <div className="flex justify-between w-[170px]">
-          <div className="text-md font-semibold">
+          <Text className="text-md font-semibold">
             {chat.type === "PRIVATE"
               ? (chat as PrivateChat).receipient.username
               : chat.name}
-          </div>
+          </Text>
           {chat.messages.length > 0 && (
-            <div className="font-light text-xs flex items-center">{date}</div>
+            <Text className="font-light text-xs flex items-center">{date}</Text>
           )}
         </div>
         {chat.messages.length > 0 && (
-          <p
-            className={`text-xs text-left text-nowrap relative after:absolute after:h-full after:w-[170px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-white after:to-transparent after:from-0% after:to-20% ${
+          <Text
+            className={`text-left text-xs  text-nowrap relative after:absolute after:h-full after:w-[170px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-white after:to-transparent after:from-0% after:to-20% ${
               chat.messages[chat.messages.length - 1].readBy.some(
                 (u) => u.id === user?.id
               )
@@ -121,7 +122,7 @@ const Chat = (props: Props) => {
             ) : (
               <>📎</>
             )}
-          </p>
+          </Text>
         )}
       </div>
     </button>
