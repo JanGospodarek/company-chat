@@ -5,10 +5,6 @@ services:
     container_name: frontend
     build: ./frontend
 
-    volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
-
     networks:
       - proxy
 
@@ -22,8 +18,8 @@ services:
     build: ./backend
 
     volumes:
-      - ./backend/:/app/
-      - ./backend/src:/app/src
+      - ./backend:/app
+      - /app/node_modules
 
     networks:
       - proxy
@@ -36,14 +32,14 @@ services:
 
   web:
     container_name: web
-    build: ./web
+    image: nginx:alpine
 
     ports:
       - "80:80"
       - "443:443"
 
     volumes:
-      - ./web/conf:/etc/nginx/conf.d
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
 
     networks:
       - proxy
@@ -51,8 +47,6 @@ services:
     depends_on:
       - frontend
       - backend
-
-    restart: always
 
   db:
     container_name: db
@@ -63,23 +57,6 @@ services:
 
     networks:
       - backend
-
-    restart: always
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-
-    networks:
-      - proxy
-      - backend
-
-    depends_on:
-      - db
 
     restart: always
 
