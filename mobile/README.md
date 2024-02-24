@@ -14,7 +14,7 @@ In `mobile` directory:
 - `npm i`
 - `yarn start`
 
-### ANDROID STUDIO
+### ANDROID STUDIO (not preferred)
 
 If you are using Android studio:
 
@@ -23,7 +23,7 @@ If you are using Android studio:
 - Type `a` (open on Android) in terminal after running `yarn start`
 - Type `r` (reload) to reload app
 
-### EXPO GO
+### EXPO GO (preferred)
 
 If you are using Expo Go (prefered android)
 
