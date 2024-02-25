@@ -21,6 +21,9 @@ services:
       - proxy
       - backend
 
+    volumes:
+      - ./backend/uploads:/app/uploads
+
     depends_on:
       - db
 

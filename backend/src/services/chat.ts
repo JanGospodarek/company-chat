@@ -114,7 +114,8 @@ export async function handleFileUpload(
   for (const file of files) {
     console.log("in handle", file);
     const newPath = `${filePath}/${file.originalFilename}`;
-    fs.renameSync(file.filepath, newPath);
+    fs.copyFileSync(file.filepath, newPath);
+    fs.rmSync(file.filepath);
     console.log(file.mimetype, file.originalFilename, file.filepath, newPath);
     filesToSave.push({
       path: newPath,

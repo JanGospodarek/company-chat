@@ -11,6 +11,7 @@ COPY prisma ./prisma
 COPY tsconfig.json .
 COPY .env .
 COPY startup.sh .
+RUN mkdir -p /app/temp
 
 # Install node for prisma
 RUN apt-get update && apt-get install -y curl
