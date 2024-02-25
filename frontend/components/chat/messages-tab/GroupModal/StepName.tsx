@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/lib/hooks";
 import { Input } from "@nextui-org/react";
 import { useRef, useState } from "react";
 
@@ -9,7 +10,7 @@ type Props = {
 const StepName = (props: Props) => {
   const { groupName, setStep, setGroupName } = props;
   const groupNameRef = useRef<HTMLInputElement>(null);
-
+  const theme = useAppSelector((state) => state.ui.theme);
   const [error, setError] = useState("");
 
   return (
@@ -24,9 +25,17 @@ const StepName = (props: Props) => {
         errorMessage={error}
         value={props.groupName}
         onChange={(e) => setGroupName(e.target.value)}
+        classNames={{
+          input: ["text-text"],
+          label: ["text-text"],
+          description: ["text-text"],
+        }}
+        variant={theme === "normal" ? "flat" : "bordered"}
       />
       <button
-        className="bg-primary text-white p-2 rounded-lg w-full"
+        className={`bg-primary text-${
+          theme === "normal" ? "white" : "black"
+        } p-2 rounded-lg w-full`}
         onClick={() => {
           if (groupName.trim()) {
             setStep(2);
@@ -40,7 +49,7 @@ const StepName = (props: Props) => {
           }
         }}
       >
-        Select Members
+        Wybierz członków
       </button>
     </div>
   );

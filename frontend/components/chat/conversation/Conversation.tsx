@@ -231,6 +231,7 @@ const Conversation = (props: Props) => {
 
   const handleBackButton = () => {
     dispatch(selectChat(-1));
+    handleTabChange("messages");
   };
 
   return (
@@ -256,7 +257,7 @@ const Conversation = (props: Props) => {
             </Badge>
 
             <div className="flex flex-col ml-2 justify-center w-full">
-              <Text className="text-xl font-semibold">
+              <Text className="text-left text-xl text-semibold text-nowrap relative after:absolute after:h-full after:w-[200px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% text-text w-[200px] overflow-hidden">
                 {conversation.type === "GROUP"
                   ? conversation.name
                   : (conversation as PrivateChat).receipient.username}

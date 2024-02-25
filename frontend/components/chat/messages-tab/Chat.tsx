@@ -72,7 +72,10 @@ const Chat = (props: Props) => {
   }, [chat]);
 
   return (
-    <button className="flex mt-2" onClick={handleChatSelect}>
+    <button
+      className="flex mt-2 border-b-2 border-optionalBorderColor"
+      onClick={handleChatSelect}
+    >
       <div>
         <Badge
           content=""
@@ -90,18 +93,20 @@ const Chat = (props: Props) => {
       </div>
       <div className="flex flex-col ml-2 justify-center w-px[234]">
         <div className="flex justify-between w-[170px]">
-          <Text className="text-md font-semibold">
+          <Text className="text-md font-semibold text-text text-left  text-nowrap relative after:absolute after:h-full after:w-[140px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% w-[140px] overflow-hidden">
             {chat.type === "PRIVATE"
               ? (chat as PrivateChat).receipient.username
               : chat.name}
           </Text>
           {chat.messages.length > 0 && (
-            <Text className="font-light text-xs flex items-center">{date}</Text>
+            <Text className="font-light text-xs flex items-center text-primary">
+              {date}
+            </Text>
           )}
         </div>
         {chat.messages.length > 0 && (
           <Text
-            className={`text-left text-xs  text-nowrap relative after:absolute after:h-full after:w-[170px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-white after:to-transparent after:from-0% after:to-20% ${
+            className={`text-left text-xs  text-nowrap relative after:absolute after:h-full after:w-[170px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% text-textSecondary ${
               chat.messages[chat.messages.length - 1].readBy.some(
                 (u) => u.id === user?.id
               )

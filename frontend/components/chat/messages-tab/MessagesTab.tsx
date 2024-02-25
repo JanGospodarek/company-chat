@@ -41,7 +41,7 @@ const MessagesTab = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
-  const fontSizeState = useSelector((state: RootState) => state.font);
+  const fontSizeState = useSelector((state: RootState) => state.ui);
 
   const { handleTabChange } = props;
   // const [showSearchTab, setShowSearchTab] = useState(false);
@@ -69,9 +69,9 @@ const MessagesTab = (props: Props) => {
   };
 
   return (
-    <div className="my-4 px-8 max-w-[425px] w-full md:w-[300px] lg:w-[300px] flex flex-col justify-start md:border-r-2 border-secondary  flex-shrink-0">
+    <div className="my-4 px-8  w-full md:w-[300px]  flex flex-col justify-start md:border-r-2 border-secondary  flex-shrink-0 ">
       <div className=" flex justify-between relativ">
-        <Text className="text-3xl font-semibold">Messages</Text>
+        <Text className="text-3xl font-semibold text-text">Wiadomości</Text>
         <div className="flex gap-3 items-center">
           <div className="md:hidden">
             <UserActionsDropdown
@@ -86,10 +86,10 @@ const MessagesTab = (props: Props) => {
           </div>
 
           <button onClick={() => setShowNewChat(true)}>
-            <UserPlus size={24} />
+            <UserPlus size={24} className="fill-primary" />
           </button>
           <button onClick={() => setShowGroupModal(true)}>
-            <FolderPlus size={24} />
+            <FolderPlus size={24} className="fill-primary" />
           </button>
           {/* <button
             onClick={() => {
@@ -114,7 +114,7 @@ const MessagesTab = (props: Props) => {
         onClose={() => setShowNewChat(false)}
         backdrop="blur"
         size="xs"
-        className=""
+        className={`${fontSizeState.theme} bg-backgroundSecondary `}
         classNames={{
           body: "margin-0",
           wrapper: "margin-0",
@@ -122,7 +122,7 @@ const MessagesTab = (props: Props) => {
         }}
       >
         <ModalContent>
-          <ModalHeader className="text-black justify-center">
+          <ModalHeader className="text-text justify-center">
             <Text className="text-xl">Nowy chat</Text>
           </ModalHeader>
           <ModalBody className="overflow-scroll scrollbar-hide">
@@ -135,10 +135,10 @@ const MessagesTab = (props: Props) => {
                       size="sm"
                     />
                     <div className="flex flex-col">
-                      <Text className="font-semibold text-sm">
+                      <Text className="font-semibold text-sm text-text">
                         Dawid Komęza
                       </Text>
-                      <Text className="font-light text-sm">
+                      <Text className="font-light text-sm text-textSecondary">
                         @{user.username}
                       </Text>
                     </div>
