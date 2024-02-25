@@ -55,10 +55,10 @@ const UserActionsDropdown = (props: Props) => {
             }}
           >
             <Radio value="normal">
-              <p className="text-md text-text">normal</p>
+              <p className="text-md text-text">normalny</p>
             </Radio>
             <Radio value="large">
-              <p className="text-xl text-text">large</p>
+              <p className="text-xl text-text">duży</p>
             </Radio>
           </RadioGroup>
         </DropdownItem>

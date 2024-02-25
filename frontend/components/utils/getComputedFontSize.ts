@@ -20,9 +20,7 @@ const getComputedFontSize = (
   if (computeTo === undefined) return properity;
   const properityName = properity.split("-")[0];
   const currentFontSize = properity.split("-")[1];
-  console.log(currentFontSize);
   const currentIndex = tailwindFontsSizes.indexOf(currentFontSize);
-  console.log(currentIndex);
   if (currentIndex === -1) return properity;
   if (
     currentIndex < tailwindFontsSizes.length - 1 &&

@@ -35,7 +35,7 @@ const ChatsList = (props: Props) => {
 
   return (
     <div className="w-full flex flex-col mt-2 overflow-y-scroll h-full hide-scrollbar ">
-      <Text className="text-lg font-semibold text-primary">All Messages</Text>
+      <Text className="text-lg font-semibold text-primary">Wszystkie</Text>
       {Object.values(chats)
         .sort((a, b) => {
           if (a.messages.length === 0) {

@@ -75,7 +75,7 @@ const Message = (props: Props) => {
           {message.attachment && (
             <div className="flex gap-2 flex-wrap  justify-between p-2 bg-secondary-200 bg-opacity-30 rounded-2xl mt-2 mb-2">
               {attachments.map((attachment) => (
-                <>
+                <div key={String(Math.round(Math.random() * 1000))}>
                   {attachment.type.startsWith("image/") ? (
                     <div
                       key={attachment.path}
@@ -100,7 +100,7 @@ const Message = (props: Props) => {
                       </div>
                     </a>
                   )}
-                </>
+                </div>
               ))}
             </div>
           )}

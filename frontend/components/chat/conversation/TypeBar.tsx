@@ -40,9 +40,9 @@ const TypeBar = (props: Props) => {
     e.preventDefault();
 
     const i = getValue();
-
+    console.log(i);
     const message = i;
-
+    console.log(selectedFiles);
     if (selectedFiles.length > 0) {
       console.log(selectedFiles);
       sendMessageWithAttachment(chatId, message, selectedFiles);
@@ -62,6 +62,10 @@ const TypeBar = (props: Props) => {
       inputRef.current.focus();
     }
   };
+
+  useEffect(() => {
+    console.log(selectedFiles);
+  }, [selectedFiles]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -120,13 +124,13 @@ const TypeBar = (props: Props) => {
             transition={{ delay: 0.1 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute w-[80%] h-[8rem] bg-backgroundSecondary left-0 rounded-2xl px-3"
+            className="absolute w-[80%] h-[8rem] bg-backgroundSecondary left-0  rounded-2xl px-3"
           >
             {selectedFiles && (
               <div className="flex items-center h-full gap-4 overflow-x-scroll overflow-y-visible scrollbar-hide bg-backgroundSecondary">
                 {Array.from(selectedFiles).map((file) => (
                   <div
-                    key={file.name}
+                    key={file.name + String(Math.round(Math.random() * 1000))}
                     className="flex flex-col items-center gap-1 relative"
                   >
                     <div className="bg-default-300 h-[5rem] w-[5rem] rounded-lg">

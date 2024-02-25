@@ -22,7 +22,7 @@ const ActiveUsers = () => {
             fontSizeState
           )} font-semibold text-primary`}
         >
-          Active Users
+          Aktywni użytkownicy
         </h2>
       </div>
       <div className="flex gap-3 overflow-x-scroll hide-scrollbar">
