@@ -85,23 +85,18 @@ const MessagesTab = (props: Props) => {
             />
           </div>
 
-          <button onClick={() => setShowNewChat(true)}>
+          <button
+            onClick={() => setShowNewChat(true)}
+            aria-label="Create new chat"
+          >
             <UserPlus size={24} className="fill-primary" />
           </button>
-          <button onClick={() => setShowGroupModal(true)}>
+          <button
+            onClick={() => setShowGroupModal(true)}
+            aria-label="Create group"
+          >
             <FolderPlus size={24} className="fill-primary" />
           </button>
-          {/* <button
-            onClick={() => {
-              setShowSearchTab((state) => !state);
-            }}
-          >
-            {showSearchTab ? (
-              <XCircle size={24} />
-            ) : (
-              <MagnifyingGlass size={24} />
-            )}
-          </button> */}
         </div>
       </div>
       <div className="flex flex-col overflow-y-scroll hide-scrollbar">
