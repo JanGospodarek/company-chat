@@ -253,8 +253,11 @@ const Conversation = (props: Props) => {
       return n.slice(0, 2).toUpperCase();
     }
 
-    const initials = n.match(/\b\w/g) || [];
-    return ((initials.shift() || "") + (initials.pop() || "")).toUpperCase();
+    const split = n.split(" ");
+
+    const initials = n[0] + split[split.length - 1][0];
+
+    return initials.toUpperCase();
   };
 
   return (
