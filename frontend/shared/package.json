@@ -1,0 +1,14 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared modules",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "jsencrypt": "^3.3.2",
+    "socket.io-client": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.18"
+  }
+}

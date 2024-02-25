@@ -14,8 +14,6 @@ import { addChat, addMessageToChat, updateMessage } from "@/lib/chatsSlice";
 
 import { store } from "@/lib/store";
 
-// @ts-ignore
-import NotificationSound from "@/components/chat/notification_sound.mp3";
 import { useAppSelector } from "@/lib/hooks";
 
 export default function Home() {
@@ -108,7 +106,11 @@ export default function Home() {
               <GroupModal handleShowModal={handleShowModal} />
             )} */}
           </div>
-          <audio id="notification" ref={audioPlayer} src={NotificationSound} />
+          <audio
+            id="notification"
+            ref={audioPlayer}
+            src="notification_sound.mp3"
+          />
         </div>
       )}
       ;

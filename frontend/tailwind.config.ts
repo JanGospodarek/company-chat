@@ -38,6 +38,7 @@ const config: Config = {
             background: {
               DEFAULT: "#FFFFFF",
             },
+            // @ts-ignore
             text: {
               DEFAULT: "#252525",
             },
