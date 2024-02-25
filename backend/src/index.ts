@@ -12,6 +12,7 @@ import {
   receiveMessage,
   readMessage,
 } from "@services/message";
+import { setupLDAP } from "@services/ldap";
 
 import { decryptData } from "@services/crypto";
 
@@ -37,6 +38,7 @@ app.use("/media", mediaRouter);
 
 const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  setupLDAP();
 });
 
 app.get("/status", async (req, res) => {

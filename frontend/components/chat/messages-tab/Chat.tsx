@@ -30,6 +30,24 @@ const Chat = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
+  const chatName =
+    chat.type === "PRIVATE"
+      ? `${(chat as PrivateChat).receipient.name} ${
+          (chat as PrivateChat).receipient.surname
+        }`
+      : chat.name;
+
+  const getInitials = (name: string) => {
+    const n = name.trim();
+
+    if (n.split(" ").length === 1) {
+      return n.slice(0, 2).toUpperCase();
+    }
+
+    const initials = n.match(/\b\w/g) || [];
+    return ((initials.shift() || "") + (initials.pop() || "")).toUpperCase();
+  };
+
   const handleChatSelect = () => {
     const id = chat.chatId;
 
@@ -87,16 +105,16 @@ const Chat = (props: Props) => {
           <Avatar
             radius="full"
             size="lg"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+            name={chatName}
+            getInitials={getInitials}
+            showFallback
           />
         </Badge>
       </div>
       <div className="flex flex-col ml-2 justify-center w-px[234]">
         <div className="flex justify-between w-[170px]">
           <Text className="text-md font-semibold text-text text-left  text-nowrap relative after:absolute after:h-full after:w-[140px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% w-[140px] overflow-hidden">
-            {chat.type === "PRIVATE"
-              ? (chat as PrivateChat).receipient.username
-              : chat.name}
+            {chatName}
           </Text>
           {chat.messages.length > 0 && (
             <Text className="font-light text-xs flex items-center text-primary">

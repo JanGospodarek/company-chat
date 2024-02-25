@@ -5,26 +5,6 @@ import type { User } from "@shared/types";
 export type RawUser = Prisma.UserGetPayload<{}>;
 
 /**
- * Register a new user in the database
- * @param username username
- * @param hash password hash
- * @returns userID
- */
-export async function registerUser(
-  username: string,
-  hash: string
-): Promise<number> {
-  const user = await prisma.user.create({
-    data: {
-      username,
-      password: hash,
-    },
-  });
-
-  return user.id;
-}
-
-/**
  * Get a user by their username
  * @param username  username
  * @returns User
@@ -37,7 +17,8 @@ export async function getUserByUsername(username: string): Promise<User> {
     select: {
       id: true,
       username: true,
-      createdAt: true,
+      name: true,
+      surname: true,
     },
   });
 
@@ -71,7 +52,8 @@ export async function getNewUsers(userId: number): Promise<User[]> {
     select: {
       id: true,
       username: true,
-      createdAt: true,
+      name: true,
+      surname: true,
     },
     where: {
       AND: [
@@ -108,7 +90,8 @@ export async function getUsers(userId: number): Promise<User[]> {
     select: {
       id: true,
       username: true,
-      createdAt: true,
+      name: true,
+      surname: true,
     },
     where: {
       NOT: {

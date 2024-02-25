@@ -16,7 +16,8 @@ type RawChat = Prisma.ChatGetPayload<{
           select: {
             id: true;
             username: true;
-            createdAt: true;
+            name: true;
+            surname: true;
           };
         };
         ReadMessage: {
@@ -25,7 +26,8 @@ type RawChat = Prisma.ChatGetPayload<{
               select: {
                 id: true;
                 username: true;
-                createdAt: true;
+                name: true;
+                surname: true;
               };
             };
           };
@@ -38,7 +40,8 @@ type RawChat = Prisma.ChatGetPayload<{
           select: {
             id: true;
             username: true;
-            createdAt: true;
+            name: true;
+            surname: true;
           };
         };
       };
@@ -139,7 +142,8 @@ export async function getChats(
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
           ReadMessage: {
@@ -148,7 +152,8 @@ export async function getChats(
                 select: {
                   id: true,
                   username: true,
-                  createdAt: true,
+                  name: true,
+                  surname: true,
                 },
               },
             },
@@ -170,7 +175,8 @@ export async function getChats(
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
         },
@@ -210,7 +216,6 @@ export async function getChat(
             select: {
               id: true,
               username: true,
-              createdAt: true,
             },
           },
           ReadMessage: {
@@ -219,7 +224,6 @@ export async function getChat(
                 select: {
                   id: true,
                   username: true,
-                  createdAt: true,
                 },
               },
             },
@@ -236,7 +240,6 @@ export async function getChat(
             select: {
               id: true,
               username: true,
-              createdAt: true,
             },
           },
         },

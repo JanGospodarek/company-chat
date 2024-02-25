@@ -136,7 +136,7 @@ const MessagesTab = (props: Props) => {
                     />
                     <div className="flex flex-col">
                       <Text className="font-semibold text-sm text-text">
-                        Dawid Komęza
+                        {user.name} {user.surname}
                       </Text>
                       <Text className="font-light text-sm text-textSecondary">
                         @{user.username}
