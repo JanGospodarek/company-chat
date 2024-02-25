@@ -13,6 +13,20 @@ const ActiveUsers = () => {
     return null;
   }
 
+  const getInitials = (name: string) => {
+    const n = name.trim();
+
+    if (n.split(" ").length === 1) {
+      return n.slice(0, 2).toUpperCase();
+    }
+
+    const split = n.split(" ");
+
+    const initials = n[0] + split[split.length - 1][0];
+
+    return initials.toUpperCase();
+  };
+
   return (
     <div className="flex flex-col w-full mt-6">
       <div className="flex justify-between mb-2">
@@ -27,15 +41,24 @@ const ActiveUsers = () => {
       </div>
       <div className="flex gap-3 overflow-x-scroll hide-scrollbar">
         {activeUsers.users.map((user: User) => (
-          <Badge
-            content=""
-            color="success"
-            shape="circle"
-            className="mt-1"
-            key={user.username}
-          >
-            <Avatar radius="full" name={user.username} />
-          </Badge>
+          <div className="flex flex-col items-center">
+            <Badge
+              content=""
+              color="success"
+              shape="circle"
+              className="mt-1"
+              key={user.username}
+            >
+              <Avatar
+                radius="full"
+                name={user.username}
+                showFallback
+                getInitials={getInitials}
+                size="lg"
+              />
+            </Badge>
+            <p>{user.name}</p>
+          </div>
         ))}
       </div>
     </div>
