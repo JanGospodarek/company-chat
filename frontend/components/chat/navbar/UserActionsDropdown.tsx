@@ -8,16 +8,18 @@ import {
   DropdownTrigger,
   Radio,
   RadioGroup,
+  Switch,
 } from "@nextui-org/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { setFontSize } from "@/lib/fontSlice";
+import { setFontSize, setTheme } from "@/lib/uiSlice";
 type Props = {
   triggerElement: React.ReactNode;
 };
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { Moon, Sun } from "@phosphor-icons/react";
 
 const UserActionsDropdown = (props: Props) => {
   const { logOut } = useAuth();
@@ -25,7 +27,7 @@ const UserActionsDropdown = (props: Props) => {
 
   const { triggerElement } = props;
   const dispatch = useDispatch();
-  const fontSizeState = useSelector((state: RootState) => state.font.fontSize);
+  const fontSizeState = useSelector((state: RootState) => state.ui.fontSize);
 
   const handleLogout = async () => {
     await logOut();
@@ -37,7 +39,7 @@ const UserActionsDropdown = (props: Props) => {
     <Dropdown closeOnSelect={false}>
       <DropdownTrigger>{triggerElement}</DropdownTrigger>
       <DropdownMenu aria-label="Static Actions" onAction={() => {}}>
-        <DropdownItem key="adjust" className="text-primary flex" >
+        <DropdownItem key="adjust" className="text-primary flex">
           <RadioGroup
             label="Select font size"
             orientation="horizontal"
@@ -48,6 +50,23 @@ const UserActionsDropdown = (props: Props) => {
             <Radio value="large">large</Radio>
           </RadioGroup>
         </DropdownItem>
+        <DropdownItem key="adjust" className="text-primary flex">
+          <Switch
+            onValueChange={(isSelected) => dispatch(setTheme(isSelected))}
+            size="md"
+            color="primary"
+            thumbIcon={({ isSelected, className }) =>
+              isSelected ? (
+                <Moon className={className} />
+              ) : (
+                <Sun className={className} />
+              )
+            }
+          >
+            Motyw
+          </Switch>
+        </DropdownItem>
+
         <DropdownItem key="logout" className="text-danger ">
           <Button
             className="w-full "

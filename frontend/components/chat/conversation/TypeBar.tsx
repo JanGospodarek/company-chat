@@ -27,7 +27,7 @@ const TypeBar = (props: Props) => {
   const { chatId, buttonVisible, handleButtonClick } = props;
   const [selectedFiles, setSelectedFiles] = useState<File[]>([] as File[]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const fontSizeState = useAppSelector((state) => state.font);
+  const fontSizeState = useAppSelector((state) => state.ui);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 

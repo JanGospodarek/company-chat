@@ -41,7 +41,7 @@ const MessagesTab = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
-  const fontSizeState = useSelector((state: RootState) => state.font);
+  const fontSizeState = useSelector((state: RootState) => state.ui);
 
   const { handleTabChange } = props;
   // const [showSearchTab, setShowSearchTab] = useState(false);

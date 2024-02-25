@@ -5,7 +5,6 @@ import { useAppTheme } from "../ThemeProvider";
 import { ScalableText } from "../ThemeProvider";
 
 const ActiveUsers = () => {
-  //   const fontSizeState = useAppSelector((state) => state.font);
   const activeUsers = useAppSelector((state) => state.activeUsers);
   const theme = useAppTheme();
   if (activeUsers.users.length === 0) {

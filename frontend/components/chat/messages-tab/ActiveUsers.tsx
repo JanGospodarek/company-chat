@@ -6,7 +6,7 @@ import { RootState } from "@/lib/store";
 import type { User } from "../../../../shared/types";
 
 const ActiveUsers = () => {
-  const fontSizeState = useSelector((state: RootState) => state.font);
+  const fontSizeState = useSelector((state: RootState) => state.ui);
   const activeUsers = useSelector((state: RootState) => state.activeUsers);
 
   if (activeUsers.users.length === 0) {

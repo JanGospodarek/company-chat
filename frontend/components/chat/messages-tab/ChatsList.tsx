@@ -17,7 +17,7 @@ const ChatsList = (props: Props) => {
   const dispatch = useDispatch();
   const { handleChatSelect } = props;
   const chats = useSelector((state: RootState) => state.chats.chats);
-  const fontSizeState = useSelector((state: RootState) => state.font);
+  const fontSizeState = useSelector((state: RootState) => state.ui);
 
   useEffect(() => {
     async function fetchChats() {

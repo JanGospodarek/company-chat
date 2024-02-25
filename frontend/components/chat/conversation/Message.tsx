@@ -18,7 +18,7 @@ type Props = {
 };
 const Message = (props: Props) => {
   const { message, isFirst, isLast, loadMore, setInView } = props;
-  const fontSizeState = useAppSelector((state) => state.font);
+  const fontSizeState = useAppSelector((state) => state.ui);
   const { user } = useAuth();
   const messageRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(messageRef, {
