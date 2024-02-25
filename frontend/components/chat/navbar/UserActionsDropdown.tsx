@@ -62,7 +62,7 @@ const UserActionsDropdown = (props: Props) => {
             </Radio>
           </RadioGroup>
         </DropdownItem>
-        <DropdownItem key="adjust" className="text-primary flex">
+        <DropdownItem key="adjust-contrast" className="text-primary flex">
           <Switch
             onValueChange={(isSelected) => dispatch(setTheme(isSelected))}
             isSelected={theme === "high-contrast"}
