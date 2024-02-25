@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getUsers } from "@shared/api";
 import { User } from "@shared/types";
 import Text from "@/components/reuseable/Text";
+import { useAppSelector } from "@/lib/hooks";
 type Props = {
   groupMembers: string[];
   setGroupMembers: (members: string[]) => void;
@@ -12,7 +13,7 @@ type Props = {
 
 const StepMembers = (props: Props) => {
   const { groupMembers, setGroupMembers, submit, setStep } = props;
-
+  const theme = useAppSelector((state) => state.ui.theme);
   const [allUsers, setAllUsers] = useState([] as User[]);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ const StepMembers = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <Text className="text-lg font-semibold justify-center flex">
+      <Text className="text-lg font-semibold justify-center flex text-textSecondary">
         Dodaj użytkowników
       </Text>
       {/* <div className="flex flex-col">
@@ -41,7 +42,7 @@ const StepMembers = (props: Props) => {
                   size="sm"
                   src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
                 />
-                <Text className="text-md">{user.username}</Text>
+                <Text className="text-md text-text">{user.username}</Text>
               </div>
             </Checkbox>
           ))}
@@ -49,16 +50,20 @@ const StepMembers = (props: Props) => {
       </div>
       <div className="flex gap-2 ">
         <button
-          className="bg-primary text-white p-2 rounded-lg w-full"
+          className={`bg-primary text-${
+            theme === "normal" ? "white" : "black"
+          } p-2 rounded-lg w-full`}
           onClick={() => setStep(1)}
         >
-          <Text className="text-md">Back</Text>
+          <Text className="text-md">Cofnij</Text>
         </button>
         <button
-          className="bg-primary text-white p-2 rounded-lg w-full"
+          className={`bg-primary text-${
+            theme === "normal" ? "white" : "black"
+          } p-2 rounded-lg w-full`}
           onClick={submit}
         >
-          <Text className="text-md">Create</Text>
+          <Text className="text-md">Utwórz</Text>
         </button>
       </div>
     </div>

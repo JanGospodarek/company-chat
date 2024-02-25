@@ -43,14 +43,15 @@ const config: Config = {
             backgroundSecondary: {
               DEFAULT: "#F5F5F5",
             },
+
             text: {
-              DEFAULT: "#FFFFFF",
+              DEFAULT: "#000000",
             },
             textSecondary: {
-              DEFAULT: "#00d7fc",
+              DEFAULT: "#909090",
             },
             optionalBorderColor: {
-              DEFAULT: "#fcba03",
+              DEFAULT: "transparent",
             },
           },
         },
@@ -72,13 +73,13 @@ const config: Config = {
               DEFAULT: "#363636",
             },
             text: {
-              DEFAULT: "#000000",
+              DEFAULT: "#FFFFFF",
             },
             textSecondary: {
-              DEFAULT: "#909090",
+              DEFAULT: "#00d7fc",
             },
             optionalBorderColor: {
-              DEFAULT: "transparent",
+              DEFAULT: "#fcba03",
             },
           },
         },

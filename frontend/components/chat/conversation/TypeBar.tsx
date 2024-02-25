@@ -17,6 +17,7 @@ import { Input } from "@nextui-org/input";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppSelector } from "@/lib/hooks";
 import computeFont from "@/components/utils/getComputedFontSize";
+import Text from "@/components/reuseable/Text";
 type Props = {
   chatId: number;
   buttonVisible: boolean;
@@ -95,7 +96,7 @@ const TypeBar = (props: Props) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute z-50 w-10 h-10 bg-slate-100 rounded-full -top-14 flex justify-center items-center cursor-pointer"
+            className="absolute z-50 w-10 h-10 bg-backgroundSecondary rounded-full -top-14 flex justify-center items-center cursor-pointer"
             style={{
               filter: "drop-shadow(0px 0px 6px rgba(0,0,0,0.3))",
             }}
@@ -107,7 +108,7 @@ const TypeBar = (props: Props) => {
             role="button"
             onClick={handleButtonClick}
           >
-            <div className="w-[80%] h-[80%] border-medium border-primary rounded-full flex justify-center items-center">
+            <div className="w-[80%] h-[80%] border-medium border-primary rounded-full flex justify-center items-center bg-backgroundSecondary">
               <ArrowDown size={24} className="fill-primary" strokeWidth={10} />
             </div>
           </motion.div>
@@ -119,10 +120,10 @@ const TypeBar = (props: Props) => {
             transition={{ delay: 0.1 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute w-[80%] h-[8rem] bg-default-100 left-0 rounded-2xl px-3"
+            className="absolute w-[80%] h-[8rem] bg-backgroundSecondary left-0 rounded-2xl px-3"
           >
             {selectedFiles && (
-              <div className="flex items-center h-full gap-4 overflow-x-scroll overflow-y-visible scrollbar-hide">
+              <div className="flex items-center h-full gap-4 overflow-x-scroll overflow-y-visible scrollbar-hide bg-backgroundSecondary">
                 {Array.from(selectedFiles).map((file) => (
                   <div
                     key={file.name}
@@ -137,13 +138,13 @@ const TypeBar = (props: Props) => {
                         />
                       ) : (
                         <div className="w-full h-full flex justify-center items-center">
-                          <p className="text-2xl text-primary">📎</p>
+                          <Text className="text-2xl text-primary">📎</Text>
                         </div>
                       )}
                     </div>
-                    <p className="w-[5rem] overflow-hidden text-xs text-ellipsis whitespace-nowrap">
+                    <Text className="w-[5rem] overflow-hidden text-xs text-ellipsis whitespace-nowrap text-text">
                       {file.name}
-                    </p>
+                    </Text>
                     <button
                       className="absolute bg-red-500 p-1 rounded-full -right-2 -top-2 z-10"
                       onClick={() => removeFile(file)}
@@ -164,8 +165,12 @@ const TypeBar = (props: Props) => {
         }}
         className={`${
           selectedFiles.length > 0 ? "pt-[9rem]" : ""
-        } transition-all `}
-        variant="flat"
+        } transition-all color-white`}
+        classNames={{
+          input: ["text-text"],
+        }}
+        variant={fontSizeState.theme === "normal" ? "flat" : "bordered"}
+        color="primary"
         size="md"
         value={input}
         onValueChange={setInput}
@@ -173,7 +178,10 @@ const TypeBar = (props: Props) => {
         ref={inputRef}
         endContent={
           <ButtonGroup>
-            <Button isIconOnly className="cursor-pointer">
+            <Button
+              isIconOnly
+              className="cursor-pointer bg-backgroundSecondary"
+            >
               <label
                 htmlFor="file-input"
                 className="cursor-pointer w-full h-full flex justify-center items-center"
@@ -189,7 +197,7 @@ const TypeBar = (props: Props) => {
                 multiple
               />
             </Button>
-            <Button type="submit" isIconOnly>
+            <Button type="submit" isIconOnly className="bg-backgroundSecondary">
               <PaperPlaneTilt size={20} className="fill-primary" />
             </Button>
           </ButtonGroup>
