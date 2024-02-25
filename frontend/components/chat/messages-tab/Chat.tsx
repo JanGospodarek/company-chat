@@ -30,13 +30,6 @@ const Chat = (props: Props) => {
 
   const dispatch = useAppDispatch();
 
-  const chatName =
-    chat.type === "PRIVATE"
-      ? `${(chat as PrivateChat).receipient.name} ${
-          (chat as PrivateChat).receipient.surname
-        }`
-      : chat.name;
-
   const getInitials = (name: string) => {
     const n = name.trim();
 
@@ -108,7 +101,13 @@ const Chat = (props: Props) => {
           <Avatar
             radius="full"
             size="lg"
-            name={chatName}
+            name={
+              chat.type === "PRIVATE"
+                ? `${(chat as PrivateChat).receipient.name} ${
+                    (chat as PrivateChat).receipient.surname
+                  }`
+                : chat.name
+            }
             getInitials={getInitials}
             showFallback
           />
@@ -117,7 +116,11 @@ const Chat = (props: Props) => {
       <div className="flex flex-col ml-2 justify-center w-px[234]">
         <div className="flex justify-between w-[170px]">
           <Text className="text-md font-semibold text-text text-left  text-nowrap relative after:absolute after:h-full after:w-[140px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% w-[140px] overflow-hidden">
-            {chatName}
+            {chat.type === "PRIVATE"
+              ? `${(chat as PrivateChat).receipient.name} ${
+                  (chat as PrivateChat).receipient.surname
+                }`
+              : chat.name}
           </Text>
           {chat.messages.length > 0 && (
             <Text className="font-light text-xs flex items-center text-primary">

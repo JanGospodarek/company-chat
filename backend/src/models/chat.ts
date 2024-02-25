@@ -216,6 +216,8 @@ export async function getChat(
             select: {
               id: true,
               username: true,
+              name: true,
+              surname: true,
             },
           },
           ReadMessage: {
@@ -224,6 +226,8 @@ export async function getChat(
                 select: {
                   id: true,
                   username: true,
+                  name: true,
+                  surname: true,
                 },
               },
             },
@@ -240,6 +244,8 @@ export async function getChat(
             select: {
               id: true,
               username: true,
+              name: true,
+              surname: true,
             },
           },
         },
