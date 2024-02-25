@@ -14,8 +14,6 @@ import { addChat, addMessageToChat, updateMessage } from "@/lib/chatsSlice";
 
 import { store } from "@/lib/store";
 
-// @ts-ignore
-import NotificationSound from "@/components/chat/notification_sound.mp3";
 import { useAppSelector } from "@/lib/hooks";
 
 export default function Home() {
@@ -83,7 +81,7 @@ export default function Home() {
     <>
       {user && (
         <div className="font-league bg-secondary text-foreground w-[100vw] h-[100vh] flex justify-center items-center">
-          <div className="md:rounded-[50px] h-[100vh] w-[100vw] bg-white md:w-[80%] md:h-[80%] relative flex justify-center">
+          <div className="md:rounded-[50px] h-[100vh] w-[100vw]  md:w-[80%] md:h-[80%] md:min-w-[800px] relative flex justify-center bg-background">
             <div className="hidden md:flex h-full w-full">
               <LeftNavbar />
               <MessagesTab
@@ -108,7 +106,11 @@ export default function Home() {
               <GroupModal handleShowModal={handleShowModal} />
             )} */}
           </div>
-          <audio id="notification" ref={audioPlayer} src={NotificationSound} />
+          <audio
+            id="notification"
+            ref={audioPlayer}
+            src="notification_sound.mp3"
+          />
         </div>
       )}
       ;

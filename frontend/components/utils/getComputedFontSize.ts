@@ -15,15 +15,12 @@ export const tailwindFontsSizes = [
 ];
 const getComputedFontSize = (
   properity: string,
-  computeTo: { fontSize: "large" | "normal"; isInitial: boolean }
+  computeTo: { fontSize: "large" | "normal" }
 ) => {
-  if (computeTo.isInitial) return properity;
-
+  if (computeTo === undefined) return properity;
   const properityName = properity.split("-")[0];
   const currentFontSize = properity.split("-")[1];
-  console.log(currentFontSize);
   const currentIndex = tailwindFontsSizes.indexOf(currentFontSize);
-  console.log(currentIndex);
   if (currentIndex === -1) return properity;
   if (
     currentIndex < tailwindFontsSizes.length - 1 &&

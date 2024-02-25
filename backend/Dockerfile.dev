@@ -10,6 +10,7 @@ COPY src ./src
 COPY prisma ./prisma
 COPY tsconfig.json .
 COPY .env.development .
+RUN mkdir -p /app/temp
 
 RUN apt-get update && apt-get install -y \
     git \

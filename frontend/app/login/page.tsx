@@ -42,33 +42,33 @@ export default function Page() {
     }
   };
   return (
-    <div className="flex flex-col justify-center items-center h-[100vh] w-[100vw] light page bg-secondary">
+    <div className="flex flex-col justify-center items-center h-[100vh] w-[100vw] light page bg-secondary/35">
       <div className="flex flex-col justify-center items-center gap-4 backdrop-blur-xl bg-white/30 p-12 rounded-large">
         <h1 className="font-league font-semibold text-4xl">Miau login</h1>
 
         <Input
           type="email"
           label="email"
-          placeholder="Enter your email"
+          placeholder="Wpisz swój email"
           ref={email}
           className=" w-64"
         />
 
         <Input
           type="password"
-          label="Password"
-          placeholder="Enter your password"
+          label="Hasło"
+          placeholder="Wpisz hasło"
           ref={password}
         />
         {succeded ? (
           <Button color="success">
             <Link href="/" color="success">
-              Go to chats
+              Chat
             </Link>
           </Button>
         ) : (
           <Button color="primary" variant="ghost" onClick={handleLogin}>
-            {loading ? "Loading..." : "Log in"}
+            {loading ? "Czekaj..." : "Zaloguj się"}
           </Button>
         )}
         {error && <Alert message={error} type="error" />}

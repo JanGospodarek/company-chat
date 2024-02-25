@@ -5,7 +5,7 @@ import UserActionsDropdown from "./UserActionsDropdown";
 
 const LeftNavbar = () => {
   return (
-    <div className="h-full bg-text rounded-l-[50px] flex justify-end items-center flex-col py-8 px-3">
+    <div className="h-full  rounded-l-[50px] flex justify-end items-center flex-col py-8 px-3 bg-slate-800">
       <UserActionsDropdown
         triggerElement={
           <button>

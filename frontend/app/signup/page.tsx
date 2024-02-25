@@ -70,12 +70,12 @@ export default function Page() {
       {succeded ? (
         <Button color="success">
           <Link href="/chat" color="success">
-            Go to chats
+            Chat
           </Link>
         </Button>
       ) : (
         <Button color="primary" variant="bordered" onClick={handleRegister}>
-          {loading ? "Loading..." : "Register"}
+          {loading ? "Czekaj..." : "Zarejestruj się"}
         </Button>
       )}
 

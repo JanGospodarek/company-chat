@@ -8,16 +8,19 @@ import {
   DropdownTrigger,
   Radio,
   RadioGroup,
+  Switch,
 } from "@nextui-org/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { setFontSize } from "@/lib/fontSlice";
+import { setFontSize, setTheme } from "@/lib/uiSlice";
+import Text from "@/components/reuseable/Text";
 type Props = {
   triggerElement: React.ReactNode;
 };
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { Moon, Sun } from "@phosphor-icons/react";
 
 const UserActionsDropdown = (props: Props) => {
   const { logOut } = useAuth();
@@ -25,7 +28,8 @@ const UserActionsDropdown = (props: Props) => {
 
   const { triggerElement } = props;
   const dispatch = useDispatch();
-  const fontSizeState = useSelector((state: RootState) => state.font.fontSize);
+  const fontSizeState = useSelector((state: RootState) => state.ui.fontSize);
+  const theme = useSelector((state: RootState) => state.ui.theme);
 
   const handleLogout = async () => {
     await logOut();
@@ -34,20 +38,48 @@ const UserActionsDropdown = (props: Props) => {
   };
 
   return (
-    <Dropdown closeOnSelect={false}>
+    <Dropdown
+      closeOnSelect={false}
+      className={`${theme} bg-backgroundSecondary`}
+    >
       <DropdownTrigger>{triggerElement}</DropdownTrigger>
       <DropdownMenu aria-label="Static Actions" onAction={() => {}}>
-        <DropdownItem key="adjust" className="text-primary flex" >
+        <DropdownItem key="adjust" className="text-primary flex">
           <RadioGroup
-            label="Select font size"
+            label="Wybierz rozmiar czcionki"
             orientation="horizontal"
             onChange={(e) => dispatch(setFontSize(e.target.value))}
             value={fontSizeState}
+            classNames={{
+              label: "text-text",
+            }}
           >
-            <Radio value="normal">normal</Radio>
-            <Radio value="large">large</Radio>
+            <Radio value="normal">
+              <p className="text-md text-text">normalny</p>
+            </Radio>
+            <Radio value="large">
+              <p className="text-xl text-text">duży</p>
+            </Radio>
           </RadioGroup>
         </DropdownItem>
+        <DropdownItem key="adjust" className="text-primary flex">
+          <Switch
+            onValueChange={(isSelected) => dispatch(setTheme(isSelected))}
+            isSelected={theme === "high-contrast"}
+            size="md"
+            color="primary"
+            thumbIcon={({ isSelected, className }) =>
+              isSelected ? (
+                <Moon className={className} />
+              ) : (
+                <Sun className={className} />
+              )
+            }
+          >
+            <Text className="text-sm text-text">Motyw</Text>
+          </Switch>
+        </DropdownItem>
+
         <DropdownItem key="logout" className="text-danger ">
           <Button
             className="w-full "
@@ -55,7 +87,7 @@ const UserActionsDropdown = (props: Props) => {
             variant="flat"
             onClick={handleLogout}
           >
-            Logout
+            Wyloguj się
           </Button>
         </DropdownItem>
       </DropdownMenu>
