@@ -10,15 +10,13 @@ authRouter.use(decryptMiddleware);
 authRouter.use(cors());
 
 authRouter.post("/login", async (req, res) => {
-  console.log(req.body);
-
   const { username, password } = req.body;
   try {
     const { user, token } = await login(username, password);
 
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 1,
+      maxAge: 1000 * 60 * 60 * 24 * 1, // 1 day
     });
     res.send({ user });
   } catch (error: any) {

@@ -52,7 +52,7 @@ async function login(
   password: string
 ): Promise<{ user: User; token: string }> {
   if (!username || !password) {
-    throw new Error("Missing fields");
+    throw new Error("Brak wymaganych danych logowania");
   }
 
   let token = "";
@@ -60,7 +60,7 @@ async function login(
   const user = await getUserByUsernameLogin(username);
 
   if (!user) {
-    throw new Error("Wrong username or password");
+    throw new Error("Zły login lub hasło");
   }
 
   await loginUser(username, password);
@@ -74,7 +74,7 @@ async function login(
       expiresIn: "1d",
     });
   } catch (error) {
-    throw new Error("Error signing token");
+    throw new Error("Błąd podczas generowania tokenu");
   }
 
   const resUser: User = {
