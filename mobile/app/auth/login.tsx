@@ -1,10 +1,10 @@
 import { Link } from "expo-router";
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { ScalableText } from "../../components/ThemeProvider";
 
 import { Button, TextInput } from "react-native-paper";
-import { AuthProvider, useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useRouter } from "expo-router";
 import Alert from "@/components/Alert";
 import { useAppTheme } from "@/components/ThemeProvider";

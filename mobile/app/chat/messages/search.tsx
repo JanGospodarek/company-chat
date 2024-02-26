@@ -8,7 +8,6 @@ import {
 import { ScalableText } from "../../../components/ThemeProvider";
 
 import globalStyles from "@/app/globalStyles";
-import { LinearGradient } from "expo-linear-gradient";
 import { Avatar, Icon, IconButton, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { newPrivateChat, newPrivateChatList } from "@/shared/api";

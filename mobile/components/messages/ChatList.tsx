@@ -1,4 +1,4 @@
-import { View, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import Chat from "./Chat";
 import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";

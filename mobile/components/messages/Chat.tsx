@@ -1,8 +1,8 @@
-import { Link, useRouter } from "expo-router";
-import { View, StyleSheet, Button, TouchableOpacity, Text } from "react-native";
+import { useRouter } from "expo-router";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { ScalableText } from "../ThemeProvider";
 
-import { Avatar, Badge, useTheme } from "react-native-paper";
+import { Avatar, Badge } from "react-native-paper";
 import { GroupChat, PrivateChat } from "../../../shared/types";
 import React, { useState } from "react";
 import { selectChat } from "@/store/chatsSlice";

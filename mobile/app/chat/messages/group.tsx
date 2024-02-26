@@ -2,8 +2,7 @@ import { View, StyleSheet, TextInput, ScrollView } from "react-native";
 import globalStyles from "@/app/globalStyles";
 import { ScalableText } from "../../../components/ThemeProvider";
 
-import { LinearGradient } from "expo-linear-gradient";
-import { Button, Icon, IconButton, useTheme } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import { useRouter } from "expo-router";
 import Person from "@/components/createGroup/Person";
 import React from "react";

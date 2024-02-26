@@ -11,7 +11,6 @@ import { Audio } from "expo-av";
 import { LogBox, Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

@@ -1,20 +1,11 @@
 import { miau, sendMessageWithAttachment } from "@/shared/api";
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Image,
-  Button,
-  Pressable,
-} from "react-native";
+import { View, StyleSheet, TextInput, Image, Pressable } from "react-native";
 import { ScalableText } from "../ThemeProvider";
 
-import { IconButton, useTheme } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { Buffer } from "buffer";
-import * as ImageManipulator from "expo-image-manipulator";
 import { useAppTheme } from "../ThemeProvider";
 
 interface Props {

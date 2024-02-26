@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/store/hooks";
 import { View } from "react-native";
-import { Avatar, useTheme } from "react-native-paper";
+import { Avatar } from "react-native-paper";
 import { useAppTheme } from "../ThemeProvider";
 import { ScalableText } from "../ThemeProvider";
 
@@ -60,7 +60,11 @@ const ActiveUsers = () => {
               />
 
               <ScalableText
-                style={{ fontSize: 14, fontFamily: "League-Spartan-Bold" }}
+                style={{
+                  fontSize: 14,
+                  fontFamily: "League-Spartan-Bold",
+                  color: theme.colors.primaryFont,
+                }}
               >
                 {user.username}
               </ScalableText>

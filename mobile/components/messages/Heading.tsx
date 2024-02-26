@@ -1,4 +1,3 @@
-import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
 import { View, StyleSheet } from "react-native";
 import { IconButton } from "react-native-paper";
