@@ -28,7 +28,7 @@ authRouter.post("/authenticate", authenticate, async (req, res) => {
   const user = req.user as User;
 
   if (!user) {
-    return res.status(401).send({ error: "Unauthorized" });
+    return res.status(401).send({ error: "Błąd autoryzacji" });
   }
 
   return res.send({ user });
