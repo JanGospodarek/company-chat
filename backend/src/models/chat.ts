@@ -71,7 +71,7 @@ export async function createPrivateChat(
   });
 
   if (exists) {
-    throw new Error("Chat already exists");
+    throw new Error("Ten czat już istnieje");
   }
 
   const chat = await prisma.chat.create({

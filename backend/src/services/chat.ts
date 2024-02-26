@@ -29,11 +29,11 @@ import { saveMedia } from "@models/media";
 
 export async function newChat(user: User, data: NewChat): Promise<number> {
   if (user === undefined) {
-    throw new Error("Missing fields");
+    throw new Error("Brak wymaganych danych");
   }
 
   if (data.name === undefined && data.receipient === undefined) {
-    throw new Error("Missing fields");
+    throw new Error("Brak wymaganych danych");
   }
 
   if (data.name) {
@@ -46,11 +46,11 @@ export async function newChat(user: User, data: NewChat): Promise<number> {
     const receipient = await getUserByUsername(data.receipient!);
 
     if (!receipient) {
-      throw new Error("User not found");
+      throw new Error("Odbiorca nie istnieje");
     }
 
     if (receipient.username === user.username) {
-      throw new Error("You cannot create a chat with yourself");
+      throw new Error("Nie możesz stworzyć prywatnego czatu z samym sobą");
     }
 
     const chatId = await createPrivateChat(user.id, receipient.id);
