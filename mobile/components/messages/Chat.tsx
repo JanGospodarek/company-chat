@@ -18,6 +18,7 @@ type Props = {
 const Chat = (props: Props) => {
   const router = useRouter();
   const { chat } = props;
+  console.log(chat);
   const { user } = useAuth();
   const theme = useAppTheme();
   const [isChatActive, setIsChatActive] = useState(false);
@@ -35,7 +36,19 @@ const Chat = (props: Props) => {
     dispatch(selectChat(id));
     router.push("/chat/conversation/");
   };
+  const getInitials = (name: string) => {
+    const n = name.trim();
+    console.log(n);
+    if (n.split(" ").length === 1) {
+      return n.slice(0, 2).toUpperCase();
+    }
 
+    const split = n.split(" ");
+
+    const initials = n[0] + split[split.length - 1][0];
+
+    return initials.toUpperCase();
+  };
   React.useEffect(() => {
     if (chat.type === "PRIVATE") {
       const privateChat = chat as PrivateChat;
@@ -76,9 +89,15 @@ const Chat = (props: Props) => {
       onPress={handleChatSelect}
     >
       <View>
-        <Avatar.Image
+        <Avatar.Text
           size={56}
-          source={require("../../assets/images/avatar.jpeg")}
+          label={getInitials(
+            chat.type === "PRIVATE"
+              ? `${(chat as PrivateChat).receipient.name} ${
+                  (chat as PrivateChat).receipient.surname
+                }`
+              : chat.name
+          )}
         />
         {isChatActive && <Badge style={styles.badge} size={15}></Badge>}
       </View>
@@ -100,7 +119,9 @@ const Chat = (props: Props) => {
               }}
             >
               {chat.type === "PRIVATE"
-                ? (chat as PrivateChat).receipient.username
+                ? `${(chat as PrivateChat).receipient.name} ${
+                    (chat as PrivateChat).receipient.surname
+                  }`
                 : chat.name}
             </ScalableText>
           </View>

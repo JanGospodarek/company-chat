@@ -41,7 +41,7 @@ const ActiveUsers = () => {
       </div>
       <div className="flex gap-3 overflow-x-scroll hide-scrollbar">
         {activeUsers.users.map((user: User) => (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center" key={user.id}>
             <Badge
               content=""
               color="success"

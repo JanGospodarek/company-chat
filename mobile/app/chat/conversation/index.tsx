@@ -227,7 +227,17 @@ const Conversation = () => {
   const handleBackButton = () => {
     dispatch(selectChat(-1));
   };
+  const chatName =
+    conversation?.type === "PRIVATE"
+      ? `${(conversation as unknown as PrivateChat)?.receipient.name} ${
+          (conversation as unknown as PrivateChat)?.receipient.surname
+        }`
+      : conversation?.name;
 
+  const username =
+    conversation?.type === "PRIVATE"
+      ? (conversation as PrivateChat)?.receipient.username
+      : "";
   return (
     <View
       style={{
@@ -240,12 +250,9 @@ const Conversation = () => {
     >
       <Heading
         handleGoBack={handleBackButton}
-        title={
-          conversation.type === "GROUP"
-            ? conversation.name
-            : (conversation as PrivateChat).receipient.username
-        }
+        title={chatName}
         isActive={isUserActive}
+        subtitle={conversation?.type === "PRIVATE" ? username : ""}
       />
       <View
         style={{

@@ -262,7 +262,7 @@ const Conversation = (props: Props) => {
 
   return (
     <div className="flex flex-col m-4 w-full gap-2">
-      {conversation?.chatId && (
+      {conversation?.chatId ? (
         <>
           <div className="flex items-center gap-4 transition-all">
             <button onClick={handleBackButton}>
@@ -285,7 +285,7 @@ const Conversation = (props: Props) => {
             </Badge>
 
             <div className="flex flex-col ml-2 justify-center w-full">
-              <Text className="text-left text-xl text-semibold text-nowrap relative after:absolute after:h-full after:w-[200px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% text-text w-[200px] overflow-hidden">
+              <Text className="text-left text-xl text-semibold text-nowrap relative after:absolute after:h-full after:w-[200px] md:after:w-[300px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% text-text w-[200px] md:w-[300px] overflow-hidden">
                 {chatName}
               </Text>
               {conversation.type === "PRIVATE" && (
@@ -359,6 +359,12 @@ const Conversation = (props: Props) => {
             handleButtonClick={handleScrollButton}
           />
         </>
+      ) : (
+        <div className="flex items-center justify-center h-full w-full">
+          <Text className="text-center text-lg text-primary font-semibold">
+            Select a chat to start messaging
+          </Text>
+        </div>
       )}
     </div>
   );
