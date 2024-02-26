@@ -91,14 +91,14 @@ const wsAuthenticate = async (socket: Socket) => {
   const cookieString = socket.request.headers.cookie;
 
   if (!cookieString) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   const cookies = parse(cookieString);
   const token = cookies["token"];
 
   if (!token) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
@@ -106,13 +106,13 @@ const wsAuthenticate = async (socket: Socket) => {
   };
 
   if (!payload.username) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   const user = await getUserByUsername(payload.username);
 
   if (!user) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   socket.data["user"] = user;

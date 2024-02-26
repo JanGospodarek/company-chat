@@ -66,22 +66,22 @@ export async function addUsersToChat(
   data: AddUsers
 ): Promise<number> {
   if (user === undefined || data.chatId === undefined || !data.users.length) {
-    throw new Error("Missing fields");
+    throw new Error("Brak wymaganych danych");
   }
 
   // Check if user is in chat
   if (!(await userInChat(data.chatId, user.id))) {
-    throw new Error("User not in chat");
+    throw new Error("Użytkownik nie jest w czacie");
   }
 
   const chat = await getChat(data.chatId, user.id);
 
   if (!chat) {
-    throw new Error("Chat not found");
+    throw new Error("Czat nie istnieje");
   }
 
   if (chat.type === "PRIVATE") {
-    throw new Error("Cannot add users to private chat");
+    throw new Error("Nie możesz dodawać użytkowników do prywatnego czatu");
   }
 
   await aUsersToChat(chat.chatId, data.users);
@@ -98,9 +98,8 @@ export async function handleFileUpload(
   files: formidable.File[]
 ) {
   if (!userInChat(chatId, userId)) {
-    throw new Error("User not in chat");
+    throw new Error("Użytkownik nie jest w czacie");
   }
-  console.log("files", files);
   const messageId = await createMessage(chatId, userId, content || "");
 
   // Upload files
@@ -112,11 +111,9 @@ export async function handleFileUpload(
   const filesToSave: { path: string; type: string; name: string }[] = [];
 
   for (const file of files) {
-    console.log("in handle", file);
     const newPath = `${filePath}/${file.originalFilename}`;
     fs.copyFileSync(file.filepath, newPath);
     fs.rmSync(file.filepath);
-    console.log(file.mimetype, file.originalFilename, file.filepath, newPath);
     filesToSave.push({
       path: newPath,
       type: file.mimetype || "application/octet-stream",
@@ -138,9 +135,8 @@ export async function handleBaseFileUpload(
   files: { base: string; name: string; type: string }[]
 ) {
   if (!userInChat(chatId, userId)) {
-    throw new Error("User not in chat");
+    throw new Error("Użytkownik nie jest w czacie");
   }
-  console.log("files", files);
   const messageId = await createMessage(chatId, userId, content || "");
 
   // Upload files
@@ -154,7 +150,6 @@ export async function handleBaseFileUpload(
   for (const file of files) {
     let base64Image = file.base.split(";base64,").pop();
 
-    console.log("in handle", file);
     const newPath = `${filePath}/${file.name}`;
     fs.writeFileSync(newPath, base64Image as string, { encoding: "base64" });
     filesToSave.push({

@@ -81,7 +81,7 @@ chatRouter.get("/:id/messages", authenticate, async (req, res) => {
     const chat = await getChat(id, user.id);
 
     if (!chat) {
-      throw new Error("Chat not found");
+      throw new Error("Czat nie istnieje");
     }
 
     const messages = await getMessages(chat.chatId, 50, last);
@@ -98,7 +98,6 @@ chatRouter.post("/:id/messages/new", authenticate, async (req, res) => {
 
   if (req.body.mobile) {
     try {
-      console.log("FILES", req.body.files.length);
       await handleBaseFileUpload(id, user.id, req.body.content, req.body.files);
 
       return res.send({ status: "ok" });

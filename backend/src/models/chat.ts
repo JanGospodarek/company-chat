@@ -254,11 +254,11 @@ export async function getChat(
   });
 
   if (!rawChat) {
-    throw new Error("Chat not found");
+    throw new Error("Czas nie istnieje");
   }
 
   if (!(await userInChat(chatId, userId))) {
-    throw new Error("User not in chat");
+    throw new Error("Użytkownik nie jest w czacie");
   }
 
   return parseChat(rawChat, userId);

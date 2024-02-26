@@ -84,7 +84,7 @@ export async function getMessages(
     });
 
     if (!lastMessage) {
-      throw new Error("Message not found");
+      throw new Error("Wiadomość nie istnieje");
     }
 
     laterThan = {
@@ -175,7 +175,7 @@ export async function getMessage(messageId: number): Promise<Message> {
   });
 
   if (!message) {
-    throw new Error("Message not found");
+    throw new Error("Wiadomość nie istnieje");
   }
 
   return parseMessage(message);

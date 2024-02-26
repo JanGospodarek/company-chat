@@ -22,7 +22,7 @@ export async function getUserByUsername(username: string): Promise<User> {
     },
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error("Użytkownik nie istnieje");
 
   return user;
 }

@@ -73,7 +73,7 @@ export const loginUser = async (username: string, password: string) => {
   client.bind(`uid=${username},${ldapBindDn}`, password, (err, res) => {
     if (err) {
       client.unbind();
-      throw new Error("Wrong username or password");
+      throw new Error("Zły login lub hasło");
     }
 
     client.unbind();
@@ -85,6 +85,7 @@ export async function setupLDAP() {
   const job = new CronJob("0 */15 * * * *", () => {
     console.log("Syncing users");
     syncUsers();
+    console.log("Next job", job.nextDate());
   });
 
   job.start();
@@ -106,8 +107,6 @@ async function updateDB(user: User) {
       username: user.username,
     },
   });
-
-  console.log("DB USER", dbUser);
 
   if (!dbUser) {
     await prisma.user.create({
