@@ -82,6 +82,8 @@ export const loginUser = async (username: string, password: string) => {
 
 export async function setupLDAP() {
   // Create a new cron job that runs every 15 minutes
+  syncUsers();
+
   const job = new CronJob("0 */15 * * * *", () => {
     console.log("Syncing users");
     syncUsers();
