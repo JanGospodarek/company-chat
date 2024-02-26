@@ -98,7 +98,6 @@ services:
     volumes:
       - ./ldap/data:/var/lib/ldap
       - ./ldap/config:/etc/ldap/slapd.d
-      - ./ldap/
 
     ports:
       - "389:389"
