@@ -35,6 +35,7 @@ const SocketWrapper = (props: any) => {
   LogBox.ignoreLogs([
     "new NativeEventEmitter",
     "Maximum update depth exceeded",
+    "Unhandled Promise Rejection",
   ]);
 
   const [expoPushToken, setExpoPushToken] = useState("");
