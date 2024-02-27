@@ -51,7 +51,11 @@ export const decryptMiddleware = (
       return;
     }
   } else {
-    if (req.body.data) {
+    if (req.headers.keys) {
+      const key = req.headers.keys as string;
+
+      req.key = decryptKey(key);
+    } else if (req.body.data) {
       const decrypted = decryptData(req.body.data);
 
       if (decrypted && decrypted.data) {

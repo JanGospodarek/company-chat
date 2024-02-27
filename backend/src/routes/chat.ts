@@ -12,7 +12,11 @@ import { getNewUsers } from "@models/user";
 import bodyParser from "body-parser";
 import type { User } from "@shared/types";
 import { getMessages } from "@models/message";
-import { decryptMiddleware, encryptSocketData } from "@services/crypto";
+import {
+  decryptMiddleware,
+  decryptSocketData,
+  encryptSocketData,
+} from "@services/crypto";
 
 const chatRouter = express.Router();
 

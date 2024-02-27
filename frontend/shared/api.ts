@@ -403,6 +403,9 @@ export const sendMessageWithAttachment = async (
   const res = await fetch(`${apiURL}/chat/${chatId}/messages/new`, {
     method: "POST",
     body: formData,
+    headers: {
+      keys: encryptedKey || "",
+    },
   });
 
   if (res.status === 401) {
