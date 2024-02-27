@@ -112,6 +112,8 @@ services:
     environment:
       PHPLDAPADMIN_LDAP_HOSTS: "openldap"
       PHPLDAPADMIN_HTTPS: "false"
+    volumes:
+      - ./posixAccount.xml:/var/www/phpldapadmin/templates/creation/posixAccount.xml
     ports:
       - "8080:80"
     depends_on:
