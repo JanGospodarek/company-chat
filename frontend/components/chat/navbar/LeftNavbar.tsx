@@ -8,7 +8,7 @@ const LeftNavbar = () => {
     <div className="h-full  rounded-l-[50px] flex justify-end items-center flex-col py-8 px-3 bg-slate-800">
       <UserActionsDropdown
         triggerElement={
-          <button>
+          <button aria-label="settings">
             <Gear size={40} className="fill-white" />
           </button>
         }
