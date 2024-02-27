@@ -190,6 +190,7 @@ export const getChat = async (id: number) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      keys: encryptedKey || "",
     },
   });
 
