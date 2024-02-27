@@ -1,13 +1,9 @@
 import * as type from "./types";
 import { Socket, io } from "socket.io-client";
 import JSEncrypt from "jsencrypt";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import CryptoJS, { AES } from "crypto-js";
 
 // Check if the environment is test
-// const test = process.env.NODE_ENV === "test";
-// const apiURL = test ? "http://localhost:5000" : "/api";
-// const socketURL = test ? "http://localhost:5000" : "";
-// const socketPath = test ? "" : "/ws";
 const apiURL = `http://${process.env.EXPO_PUBLIC_SERVER_IP}/api`;
 const socketURL = `http://${process.env.EXPO_PUBLIC_SERVER_IP}`;
 const socketPath = "/ws";
@@ -15,11 +11,26 @@ const socketPath = "/ws";
 const encrypt = new JSEncrypt();
 encrypt.setPublicKey(process.env.EXPO_PUBLIC_PUBLIC_KEY || "");
 
-const decrypt = new JSEncrypt();
-decrypt.setPrivateKey(process.env.EXPO_PUBLIC_PRIVATE_KEY || "");
+let privateKey: string | null = null;
+let encryptedKey: string | null = null;
 
 export const encryptData = (data: any) => {
-  const encrypted = encrypt.encrypt(JSON.stringify(data));
+  if (privateKey === null) {
+    const key = CryptoJS.lib.WordArray.random(16); // 128 bits
+
+    privateKey = key.toString();
+
+    const encrypted = encrypt.encrypt(privateKey);
+
+    if (!encrypted) {
+      throw new Error("Encryption failed");
+    }
+
+    encryptedKey = encrypted;
+  }
+
+  const fullData = { key: privateKey, data };
+  const encrypted = encrypt.encrypt(JSON.stringify(fullData));
 
   if (!encrypted) {
     throw new Error("Encryption failed");
@@ -31,18 +42,35 @@ export const encryptData = (data: any) => {
 };
 
 export const decryptData = (data: string) => {
-  const decrypted = decrypt.decrypt(data);
-
-  if (decrypted === false) {
-    return null;
+  if (privateKey === null) {
+    throw new Error("Private key is null");
   }
 
-  return JSON.parse(decrypted);
+  const decrypted = AES.decrypt(data, privateKey);
+
+  const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
+
+  return JSON.parse(decryptedString);
+};
+
+export const encryptSocketData = (data: any, key: string) => {
+  const encrypted = AES.encrypt(JSON.stringify(data), key);
+
+  return encrypted.toString();
+};
+
+export const decryptSocketData = (data: string, key: string) => {
+  const decrypted = AES.decrypt(data, key);
+
+  const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
+
+  return JSON.parse(decryptedString);
 };
 
 export const register = async (username: string, password: string) => {
   const data = { username, password };
   const encrypted = encryptData(data);
+
   const res = await fetch(`${apiURL}/auth/register`, {
     method: "POST",
     headers: {
@@ -50,9 +78,10 @@ export const register = async (username: string, password: string) => {
     },
     body: encrypted,
   });
+
   if (res.status !== 200) {
-    const e = (await res.json()) as { error: string };
-    throw new Error(e.error);
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
   }
 
   const d = (await res.json()) as { user: type.User };
@@ -60,6 +89,7 @@ export const register = async (username: string, password: string) => {
   return d.user;
 };
 
+// done
 export const login = async (username: string, password: string) => {
   const data = { username, password };
   const encrypted = encryptData(data);
@@ -76,17 +106,19 @@ export const login = async (username: string, password: string) => {
     const data = (await res.json()) as { error: string };
     throw new Error(data.error);
   }
-  await AsyncStorage.setItem("cookie", res.headers.get("set-cookie") || "");
-  const d = (await res.json()) as { user: type.User };
 
-  return d.user;
+  const d = decryptData((await res.json()).encrypted) as type.User;
+
+  return d;
 };
 
+// done
 export const logout = async () => {
   const res = await fetch(`${apiURL}/auth/logout`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      keys: encryptedKey || "",
     },
   });
 
@@ -98,137 +130,11 @@ export const logout = async () => {
   return;
 };
 
+// done
 export const authenticate = async () => {
+  const encrypted = encryptData({});
+
   const res = await fetch(`${apiURL}/auth/authenticate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as { user: type.User };
-
-  return d.user;
-};
-
-export const getChats = async () => {
-  const res = await fetch(`${apiURL}/chat`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    chats: (type.GroupChat | type.PrivateChat)[];
-  };
-
-  return d.chats;
-};
-
-export const getChat = async (id: number) => {
-  const res = await fetch(`${apiURL}/chat/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    chat: type.GroupChat | type.PrivateChat;
-  };
-
-  return d.chat;
-};
-
-export const getUsers = async () => {
-  const res = await fetch(`${apiURL}/users`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    users: type.User[];
-  };
-
-  return d.users;
-};
-
-export const loadMoreMessages = async (chatId: number, lastId: number) => {
-  const res = await fetch(
-    `${apiURL}/chat/${chatId}/messages?lastId=${lastId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (res.status === 401) {
-    throw new Error("Unauthorized");
-  }
-
-  if (res.status !== 200) {
-    const data = (await res.json()) as { error: string };
-    throw new Error(data.error);
-  }
-
-  const d = (await res.json()) as {
-    messages: type.Message[];
-  };
-
-  return d.messages;
-};
-
-/**
- * New private chat
- * @param receipient The username of the receipient
- * @returns The chat ID
- */
-export const newPrivateChat = async (receipient: string) => {
-  const data = { receipient };
-  const encrypted = encryptData(data);
-
-  const res = await fetch(`${apiURL}/chat/new`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -245,13 +151,149 @@ export const newPrivateChat = async (receipient: string) => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as {
-    chat: number;
-  };
+  const data = decryptData((await res.json()).encrypted) as type.User;
 
-  return d.chat;
+  return data;
 };
 
+// done
+export const getChats = async () => {
+  const res = await fetch(`${apiURL}/chat`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      keys: encryptedKey || "",
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const data = decryptData((await res.json()).encrypted) as (
+    | type.GroupChat
+    | type.PrivateChat
+  )[];
+
+  return data;
+};
+
+// done
+export const getChat = async (id: number) => {
+  const res = await fetch(`${apiURL}/chat/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      keys: encryptedKey || "",
+    },
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const data = decryptData((await res.json()).encrypted) as
+    | type.GroupChat
+    | type.PrivateChat;
+
+  return data;
+};
+
+// done
+export const getUsers = async () => {
+  const res = await fetch(`${apiURL}/users`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      keys: encryptedKey || "",
+    },
+  });
+  console.log("res", res.status);
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const data = decryptData((await res.json()).encrypted) as type.User[];
+
+  return data;
+};
+
+// done
+export const loadMoreMessages = async (chatId: number, lastId: number) => {
+  const res = await fetch(
+    `${apiURL}/chat/${chatId}/messages?lastId=${lastId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        keys: encryptedKey || "",
+      },
+    }
+  );
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const data = decryptData((await res.json()).encrypted) as type.Message[];
+
+  return data;
+};
+
+// done
+/**
+ * New private chat
+ * @param receipient The username of the receipient
+ * @returns The chat ID
+ */
+export const newPrivateChat = async (receipient: string) => {
+  const data = { receipient };
+  const encrypted = encryptData(data);
+
+  const res = await fetch(`${apiURL}/chat/new`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // keys: encryptedKey || "",
+    },
+    body: encrypted,
+  });
+
+  if (res.status === 401) {
+    throw new Error("Unauthorized");
+  }
+
+  if (res.status !== 200) {
+    const data = (await res.json()) as { error: string };
+    throw new Error(data.error);
+  }
+
+  const d = decryptData((await res.json()).encrypted) as number;
+
+  return d;
+};
+
+// done
 /**
  * New group chat
  * @param name The name of the chat
@@ -278,11 +320,9 @@ export const newGroupChat = async (name: string) => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as {
-    chat: number;
-  };
+  const d = decryptData((await res.json()).encrypted) as number;
 
-  return d.chat;
+  return d;
 };
 
 /**
@@ -294,6 +334,7 @@ export const newPrivateChatList = async () => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      keys: encryptedKey || "",
     },
   });
 
@@ -306,11 +347,9 @@ export const newPrivateChatList = async () => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as {
-    newUsers: type.User[];
-  };
+  const data = decryptData((await res.json()).encrypted) as type.User[];
 
-  return d.newUsers;
+  return data;
 };
 
 /**
@@ -340,11 +379,9 @@ export const addUsersToChat = async (chatId: number, users: number[]) => {
     throw new Error(data.error);
   }
 
-  const d = (await res.json()) as {
-    chat: number;
-  };
+  const d = decryptData((await res.json()).encrypted) as number;
 
-  return d.chat;
+  return d;
 };
 
 /**
@@ -361,6 +398,7 @@ export const sendMessageWithAttachment = async (
       body: JSON.stringify({ content, files, mobile: true }),
       headers: {
         "Content-Type": "application/json",
+        keys: encryptedKey || "",
       },
     });
     if (res.status === 401) {
@@ -375,6 +413,37 @@ export const sendMessageWithAttachment = async (
     console.error("SEND MESSAGE WITH ATTACHMENT ERROR", error);
   }
 };
+
+// export const sendMessageWithAttachment = async (
+//   chatId: number,
+//   content: string,
+//   files: File[]
+// ) => {
+//   const formData = new FormData();
+
+//   formData.append("content", content);
+
+//   files.forEach((file) => {
+//     formData.append("files", file);
+//   });
+
+//   const res = await fetch(`${apiURL}/chat/${chatId}/messages/new`, {
+//     method: "POST",
+//     body: formData,
+//     headers: {
+//       keys: encryptedKey || "",
+//     },
+//   });
+
+//   if (res.status === 401) {
+//     throw new Error("Unauthorized");
+//   }
+
+//   if (res.status !== 200) {
+//     const data = (await res.json()) as { error: string };
+//     throw new Error(data.error);
+//   }
+// };
 
 export const loadAttachments = async (url: string, messageId: number) => {
   const res = await fetch(`${apiURL}/${url}?messageId=${messageId}`, {
@@ -400,16 +469,27 @@ export const loadAttachments = async (url: string, messageId: number) => {
 export class Miau {
   private socket: Socket;
   private activeChat: number | null = null;
+  private key: string;
 
   constructor() {
     this.socket = io(socketURL, {
       withCredentials: true,
       path: socketPath,
       autoConnect: false,
-      transports: ["websocket"],
+    });
+
+    this.key = this.generateKey();
+
+    this.socket.on("connect", () => {
+      this.sendKey();
     });
   }
 
+  private generateKey() {
+    const key = CryptoJS.lib.WordArray.random(16); // 128 bits
+
+    return key.toString();
+  }
   connect() {
     this.socket.connect();
   }
@@ -422,6 +502,17 @@ export class Miau {
     return this.socket;
   }
 
+  sendKey() {
+    if (this.key === null) {
+      throw new Error("Key is null");
+    }
+
+    const data = JSON.stringify({ key: this.key });
+    const encrypted = encrypt.encrypt(data);
+
+    this.socket.emit("key", encrypted);
+  }
+
   error(cb: (error: { message: string }) => void) {
     this.socket.on("error", cb);
   }
@@ -431,26 +522,39 @@ export class Miau {
   }
 
   onMessage(cb: (data: type.Message) => void) {
-    this.socket.on("message", cb);
+    this.socket.on("message", (data) => {
+      const decrypted = decryptSocketData(data, this.key);
+      cb(decrypted);
+    });
   }
 
   onActivity(cb: (data: type.User[]) => void) {
-    this.socket.on("activity", cb);
+    this.socket.on("activity", (data) => {
+      const decrypted = decryptSocketData(data, this.key);
+      cb(decrypted);
+    });
   }
 
   onNewChat(cb: (chatId: number) => void) {
-    this.socket.on("newChat", cb);
+    this.socket.on("newChat", (data) => {
+      const decrypted = decryptSocketData(data, this.key);
+      cb(decrypted);
+    });
   }
 
   onReadMessage(cb: (message: type.Message) => void) {
-    this.socket.on("read", cb);
+    this.socket.on("read", (data) => {
+      const decrypted = decryptSocketData(data, this.key);
+      cb(decrypted);
+    });
   }
 
   sendMessage(content: string) {
     const chatID = this.activeChat;
 
     const data = { chatID, content };
-    const encrypted = encrypt.encrypt(JSON.stringify(data));
+
+    const encrypted = encryptSocketData(data, this.key);
 
     if (chatID === null) {
       throw new Error("No active chat");
@@ -468,7 +572,9 @@ export class Miau {
   }
 
   markMessageAsRead(messageId: number) {
-    this.socket.emit("read", { messageId });
+    const data = { messageId };
+    const encrypted = encryptSocketData(data, this.key);
+    this.socket.emit("read", encrypted);
   }
 
   enterChat(chatID: number) {
