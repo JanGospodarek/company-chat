@@ -14,7 +14,7 @@ import {
 } from "@services/message";
 import { setupLDAP } from "@services/ldap";
 
-import { decryptData } from "@services/crypto";
+import { decryptData, decryptSocketData, parseKey } from "@services/crypto";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
@@ -69,27 +69,35 @@ io.on("connection_error", (err) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log("Connected");
   await connectUser(socket);
 
   socket.on("disconnect", async () => {
     await disconnectUser(socket.data["user"]);
   });
 
+  socket.on("key", async (data) => {
+    const key = decryptData(data);
+
+    socket.data["key"] = parseKey(key.key);
+  });
+
   socket.on("message", async (data) => {
     try {
-      const decrypted = decryptData(data);
+      const key = socket.data["key"];
+      const decrypted = decryptSocketData(data, key);
 
       await receiveMessage(decrypted, socket);
     } catch (error: any) {
-      // socket.emit("error", { message: error.message });
-      console.error(error);
+      socket.emit("error", { message: error.message });
     }
   });
 
   socket.on("read", async (data) => {
     try {
-      await readMessage(data, socket);
+      const key = socket.data["key"];
+      const decrypted = decryptSocketData(data, key);
+
+      await readMessage(decrypted, socket);
     } catch (error: any) {
       console.error(error);
     }

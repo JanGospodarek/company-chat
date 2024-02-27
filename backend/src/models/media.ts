@@ -4,8 +4,6 @@ export async function saveMedia(
   uuid: string,
   files: { path: string; type: string; name: string }[]
 ) {
-  console.log(uuid);
-
   const media = await prisma.media.createMany({
     data: files.map((path) => ({
       uuid,

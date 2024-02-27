@@ -5,6 +5,9 @@ import { getUsers } from "@models/user";
 const userRouter = express.Router();
 
 import type { User } from "@shared/types";
+import { decryptMiddleware, encryptSocketData } from "@services/crypto";
+
+userRouter.use(decryptMiddleware)
 
 userRouter.get("/", authenticate, async (req, res) => {
   const user = req.user as User;
@@ -12,7 +15,9 @@ userRouter.get("/", authenticate, async (req, res) => {
   try {
     const users = await getUsers(user.id);
 
-    res.send({ users });
+    const encrypted = encryptSocketData(users, req.key!);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }

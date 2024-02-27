@@ -25,7 +25,6 @@ mediaRouter.get("/:url", authenticate, async (req, res) => {
   const user = req.user as User;
 
   const url = req.params.url;
-  console.log(url);
   const messageId = parseInt(req.query.messageId as string);
 
   if (!url) {

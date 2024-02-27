@@ -12,7 +12,7 @@ import { getNewUsers } from "@models/user";
 import bodyParser from "body-parser";
 import type { User } from "@shared/types";
 import { getMessages } from "@models/message";
-import { decryptMiddleware } from "@services/crypto";
+import { decryptMiddleware, encryptSocketData } from "@services/crypto";
 
 const chatRouter = express.Router();
 
@@ -22,13 +22,17 @@ chatRouter.use(
     extended: true,
   })
 );
+chatRouter.use(decryptMiddleware);
+
 chatRouter.get("/", authenticate, async (req, res) => {
   const user = req.user as User;
 
   try {
     const chats = await getChats(user.id);
 
-    res.send({ chats });
+    const encrypted = encryptSocketData(chats, req.key!);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }
@@ -48,7 +52,9 @@ chatRouter.post("/new", authenticate, async (req, res) => {
   try {
     const chat = await newChat(user, data);
 
-    res.send({ chat });
+    const encrypted = encryptSocketData(chat, req.key!);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }
@@ -63,7 +69,9 @@ chatRouter.get("/new", authenticate, async (req, res) => {
   try {
     const newUsers = await getNewUsers(user.id);
 
-    res.send({ newUsers });
+    const encrypted = encryptSocketData(newUsers, req.key!);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }
@@ -86,7 +94,9 @@ chatRouter.get("/:id/messages", authenticate, async (req, res) => {
 
     const messages = await getMessages(chat.chatId, 50, last);
 
-    res.send({ messages });
+    const encrypted = encryptSocketData(messages, req.key!);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }
@@ -139,7 +149,9 @@ chatRouter.get("/:id", authenticate, async (req, res) => {
   try {
     const chat = await getChat(id, user.id);
 
-    res.send({ chat });
+    const encrypted = encryptSocketData(chat, req.key!);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }
@@ -155,7 +167,9 @@ chatRouter.post("/add", authenticate, async (req, res) => {
   try {
     const chat = await addUsersToChat(user, data);
 
-    res.send({ chat });
+    const encrypted = encryptSocketData(chat, req.key!);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(400).send({ error: error.message });
   }

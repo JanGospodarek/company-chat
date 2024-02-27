@@ -8,6 +8,7 @@ import {
   getMessage,
   readMessage as rMessage,
 } from "@models/message";
+import { encryptSocketData } from "./crypto";
 
 type Message = {
   chatID: number;
@@ -21,7 +22,20 @@ export const connectUser = async (socket: Socket) => {
 
   socketMap.set(user.id, socket);
 
-  notifyActivity();
+  if (!socket.data["key"]) {
+    const interval = setInterval(() => {
+      if (socket.data["key"]) {
+        clearInterval(interval);
+        notifyActivity();
+      }
+    }, 10);
+
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 5000); // 5s
+  } else {
+    notifyActivity();
+  }
 };
 
 export const disconnectUser = async (user: User) => {
@@ -56,7 +70,8 @@ export async function receiveMessage(data: Message, socket: Socket) {
   for (let user of users) {
     const s = socketMap.get(user.id);
     if (s) {
-      s.emit("message", message);
+      const encrypted = encryptSocketData(message, s.data["key"]);
+      s.emit("message", encrypted);
     }
   }
 }
@@ -70,10 +85,16 @@ async function notifyActivity() {
   }
 
   for (let [_, socket] of socketMap) {
-    socket.emit(
-      "activity",
-      activeUsers.filter((u) => u.id !== socket.data["user"].id)
+    if (!socket.data["key"]) {
+      continue;
+    }
+
+    const encrypted = encryptSocketData(
+      activeUsers.filter((u) => u.id !== socket.data["user"].id),
+      socket.data["key"]
     );
+
+    socket.emit("activity", encrypted);
   }
 }
 
@@ -81,7 +102,8 @@ export async function notifyNewChat(chatID: number, users: number[]) {
   for (let user of users) {
     const s = socketMap.get(user);
     if (s) {
-      s.emit("newChat", chatID);
+      const encrypted = encryptSocketData(chatID, s.data["key"]);
+      s.emit("newChat", encrypted);
     }
   }
 }
@@ -120,7 +142,8 @@ export async function readMessage(data: { messageId: number }, socket: Socket) {
   for (let user of users) {
     const s = socketMap.get(user.id);
     if (s) {
-      s.emit("read", newMessage);
+      const encrypted = encryptSocketData(newMessage, s.data["key"]);
+      s.emit("read", encrypted);
     }
   }
 }
@@ -146,7 +169,8 @@ export async function notifyMessage(messageId: number) {
   for (let user of users) {
     const s = socketMap.get(user.id);
     if (s) {
-      s.emit("message", message);
+      const encrypted = encryptSocketData(message, s.data["key"]);
+      s.emit("message", encrypted);
     }
   }
 }

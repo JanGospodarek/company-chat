@@ -2,7 +2,7 @@ import express from "express";
 
 import { authenticate, login } from "@services/auth";
 import type { User } from "@shared/types";
-import { decryptMiddleware } from "@services/crypto";
+import { decryptMiddleware, encryptSocketData } from "@services/crypto";
 import cors from "cors";
 const authRouter = express.Router();
 
@@ -18,7 +18,14 @@ authRouter.post("/login", async (req, res) => {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 1, // 1 day
     });
-    res.send({ user });
+
+    if (!req.key) {
+      throw new Error("Błędny klucz prywatny");
+    }
+
+    const encrypted = encryptSocketData(user, req.key);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(401).send({ error: error.message });
   }
@@ -31,7 +38,12 @@ authRouter.post("/authenticate", authenticate, async (req, res) => {
     return res.status(401).send({ error: "Błąd autoryzacji" });
   }
 
-  return res.send({ user });
+  if (!req.key) {
+    return res.status(401).send({ error: "Błąd autoryzacji" });
+  }
+
+  const encrypted = encryptSocketData(user, req.key);
+  return res.send({ encrypted });
 });
 
 authRouter.get("/logout", async (req, res) => {
