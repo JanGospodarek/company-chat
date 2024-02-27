@@ -119,6 +119,7 @@ export const logout = async () => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      keys: encryptedKey || "",
     },
   });
 
