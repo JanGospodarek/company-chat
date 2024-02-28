@@ -1,48 +1,33 @@
 import express from "express";
 
 import { authenticate, login } from "@services/auth";
-import { register, validatePassword } from "../services/auth";
 import type { User } from "@shared/types";
-import { decryptMiddleware } from "@services/crypto";
+import { decryptMiddleware, encryptSocketData } from "@services/crypto";
 import cors from "cors";
 const authRouter = express.Router();
 
 authRouter.use(decryptMiddleware);
 authRouter.use(cors());
-authRouter.post("/login", async (req, res) => {
-  console.log(req.body);
 
+authRouter.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const { user, token } = await login(username, password);
 
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 1,
+      maxAge: 1000 * 60 * 60 * 24 * 1, // 1 day
     });
-    res.send({ user });
+
+    if (!req.key) {
+      throw new Error("Błędny klucz prywatny");
+    }
+
+    const encrypted = encryptSocketData(user, req.key);
+
+    res.send({ encrypted });
   } catch (error: any) {
     res.status(401).send({ error: error.message });
-  }
-});
-
-authRouter.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  const mobile = false;
-  console.log(req.body, "test mobile");
-  try {
-    await register(username, password);
-
-    const { user, token } = await login(username, password);
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 1,
-    });
-
-    res.send({ user });
-  } catch (error: any) {
-    res.status(400).send({ error: error.message });
   }
 });
 
@@ -50,10 +35,15 @@ authRouter.post("/authenticate", authenticate, async (req, res) => {
   const user = req.user as User;
 
   if (!user) {
-    return res.status(401).send({ error: "Unauthorized" });
+    return res.status(401).send({ error: "Błąd autoryzacji" });
   }
 
-  return res.send({ user });
+  if (!req.key) {
+    return res.status(401).send({ error: "Błąd autoryzacji" });
+  }
+
+  const encrypted = encryptSocketData(user, req.key);
+  return res.send({ encrypted });
 });
 
 authRouter.get("/logout", async (req, res) => {

@@ -1,6 +1,7 @@
 import * as type from "./types";
 import { Socket, io } from "socket.io-client";
 import JSEncrypt from "jsencrypt";
+import CryptoJS, { AES } from "crypto-js";
 
 // Check if the environment is test
 const test = process.env.NODE_ENV === "test";
@@ -397,9 +398,24 @@ export const loadAttachments = async (url: string, messageId: number) => {
   return d.media;
 };
 
+export const encryptSocketData = (data: any, key: string) => {
+  const encrypted = AES.encrypt(data, key);
+
+  return encrypted.toString();
+};
+
+export const decryptSocketData = (data: string, key: string) => {
+  const decrypted = AES.decrypt(data, key);
+
+  const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
+
+  return JSON.parse(decryptedString);
+};
+
 export class Miau {
   private socket: Socket;
   private activeChat: number | null = null;
+  private key: string | null = null;
 
   constructor() {
     this.socket = io("/", {
@@ -407,6 +423,18 @@ export class Miau {
       path: socketPath,
       autoConnect: false,
     });
+
+    this.key = this.generateKey();
+
+    this.socket.on("connect", () => {
+      this.sendKey();
+    });
+  }
+
+  private generateKey() {
+    const key = CryptoJS.lib.WordArray.random(16); // 128 bits
+
+    return key.toString();
   }
 
   connect() {
@@ -419,6 +447,18 @@ export class Miau {
    */
   get() {
     return this.socket;
+  }
+
+  sendKey() {
+    if (this.key === null) {
+      throw new Error("Key is null");
+    }
+
+    const encrypted = encrypt.encrypt(this.key);
+
+    console.log(encrypted);
+
+    this.socket.emit("key", encrypted);
   }
 
   error(cb: (error: { message: string }) => void) {

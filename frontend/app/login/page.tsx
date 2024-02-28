@@ -47,16 +47,16 @@ export default function Page() {
         <h1 className="font-league font-semibold text-4xl">Miau login</h1>
 
         <Input
-          type="email"
-          label="email"
-          placeholder="Wpisz swój email"
+          type="login"
+          label="login"
+          placeholder="Wpisz swój login"
           ref={email}
           className=" w-64"
         />
 
         <Input
           type="password"
-          label="Hasło"
+          label="hasło"
           placeholder="Wpisz hasło"
           ref={password}
         />

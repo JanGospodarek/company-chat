@@ -1,9 +1,7 @@
 import Heading from "@/components/conversation/Heading";
 import TypeBar from "@/components/conversation/TypeBar";
-import { LinearGradient } from "expo-linear-gradient";
 
 import globalStyles from "@/app/globalStyles";
-import { useTheme } from "react-native-paper";
 import { StyleSheet, View, ScrollView } from "react-native";
 import { ScalableText } from "../../../components/ThemeProvider";
 
@@ -13,13 +11,11 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Message as IMessage, PrivateChat } from "../../../shared/types";
 import {
-  computeDate,
   computeLongDate,
   minuteDifference,
 } from "@/components/utils/computeDate";
 import { loadMoreMessages } from "../../../shared/api";
 import { loadOlderMessages, selectChat } from "@/store/chatsSlice";
-import SocketWrapper from "@/components/SocketWrapper";
 import { IOScrollView } from "react-native-intersection-observer";
 import { useAppTheme } from "@/components/ThemeProvider";
 type MessageGroup = {
@@ -227,7 +223,17 @@ const Conversation = () => {
   const handleBackButton = () => {
     dispatch(selectChat(-1));
   };
+  const chatName =
+    conversation?.type === "PRIVATE"
+      ? `${(conversation as unknown as PrivateChat)?.receipient.name} ${
+          (conversation as unknown as PrivateChat)?.receipient.surname
+        }`
+      : conversation?.name;
 
+  const username =
+    conversation?.type === "PRIVATE"
+      ? (conversation as PrivateChat)?.receipient.username
+      : "";
   return (
     <View
       style={{
@@ -240,12 +246,9 @@ const Conversation = () => {
     >
       <Heading
         handleGoBack={handleBackButton}
-        title={
-          conversation.type === "GROUP"
-            ? conversation.name
-            : (conversation as PrivateChat).receipient.username
-        }
+        title={chatName}
         isActive={isUserActive}
+        subtitle={conversation?.type === "PRIVATE" ? username : ""}
       />
       <View
         style={{

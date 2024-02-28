@@ -3,12 +3,7 @@ import { setFontSize, setTheme } from "@/store/uiSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ReactNode, useEffect } from "react";
 import { TextStyle } from "react-native";
-import {
-  DefaultTheme,
-  PaperProvider,
-  configureFonts,
-  useTheme,
-} from "react-native-paper";
+import { DefaultTheme, PaperProvider, useTheme } from "react-native-paper";
 import { Text } from "react-native";
 const primaryTheme = {
   ...DefaultTheme,

@@ -67,7 +67,7 @@ const StartScreen = () => {
         </Button>
       </Link>
 
-      <Link href="/auth/register" asChild>
+      {/* <Link href="/auth/register" asChild>
         <Button
           mode="outlined"
           style={{ width: "50%" }}
@@ -77,7 +77,7 @@ const StartScreen = () => {
             Zarejestruj się
           </ScalableText>
         </Button>
-      </Link>
+      </Link> */}
     </View>
   );
 };

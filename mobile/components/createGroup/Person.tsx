@@ -1,7 +1,7 @@
 import { User } from "@/shared/types";
 import React, { Dispatch, SetStateAction } from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Avatar, Button, useTheme } from "react-native-paper";
+import { TouchableOpacity, StyleSheet } from "react-native";
+import { Avatar } from "react-native-paper";
 import { useAppTheme } from "../ThemeProvider";
 import { ScalableText } from "../ThemeProvider";
 

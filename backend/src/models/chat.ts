@@ -16,7 +16,8 @@ type RawChat = Prisma.ChatGetPayload<{
           select: {
             id: true;
             username: true;
-            createdAt: true;
+            name: true;
+            surname: true;
           };
         };
         ReadMessage: {
@@ -25,7 +26,8 @@ type RawChat = Prisma.ChatGetPayload<{
               select: {
                 id: true;
                 username: true;
-                createdAt: true;
+                name: true;
+                surname: true;
               };
             };
           };
@@ -38,7 +40,8 @@ type RawChat = Prisma.ChatGetPayload<{
           select: {
             id: true;
             username: true;
-            createdAt: true;
+            name: true;
+            surname: true;
           };
         };
       };
@@ -68,7 +71,7 @@ export async function createPrivateChat(
   });
 
   if (exists) {
-    throw new Error("Chat already exists");
+    throw new Error("Ten czat już istnieje");
   }
 
   const chat = await prisma.chat.create({
@@ -139,7 +142,8 @@ export async function getChats(
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
           ReadMessage: {
@@ -148,7 +152,8 @@ export async function getChats(
                 select: {
                   id: true,
                   username: true,
-                  createdAt: true,
+                  name: true,
+                  surname: true,
                 },
               },
             },
@@ -170,7 +175,8 @@ export async function getChats(
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
         },
@@ -210,7 +216,8 @@ export async function getChat(
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
           ReadMessage: {
@@ -219,7 +226,8 @@ export async function getChat(
                 select: {
                   id: true,
                   username: true,
-                  createdAt: true,
+                  name: true,
+                  surname: true,
                 },
               },
             },
@@ -236,7 +244,8 @@ export async function getChat(
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
         },
@@ -245,11 +254,11 @@ export async function getChat(
   });
 
   if (!rawChat) {
-    throw new Error("Chat not found");
+    throw new Error("Czas nie istnieje");
   }
 
   if (!(await userInChat(chatId, userId))) {
-    throw new Error("User not in chat");
+    throw new Error("Użytkownik nie jest w czacie");
   }
 
   return parseChat(rawChat, userId);

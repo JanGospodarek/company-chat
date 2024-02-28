@@ -1,7 +1,8 @@
 export interface User {
   id: number;
   username: string;
-  createdAt: string | Date;
+  name: string;
+  surname: string;
 }
 
 interface Chat {
@@ -36,5 +37,4 @@ export interface Attachment {
   path: string;
   type: string;
   name: string;
-  base64: string;
 }

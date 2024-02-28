@@ -22,6 +22,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - &&\
 # Make sure that Windows doesn't mess up the line endings
 RUN  apt-get update && apt-get install -y dos2unix && dos2unix ./startup.sh
 
+RUN apt-get update && apt-get install -y postgresql-client
+
 RUN npm install -g prisma
 RUN chmod +x ./startup.sh
 

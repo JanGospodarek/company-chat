@@ -3,11 +3,9 @@ import { Strategy as JWTStrategy } from "passport-jwt";
 import type { Request } from "express";
 import jwt from "jsonwebtoken";
 
-import {
-  getUserByUsername,
-  getUserByUsernameLogin,
-  registerUser,
-} from "@models/user";
+import { loginUser } from "@services/ldap";
+
+import { getUserByUsername, getUserByUsernameLogin } from "@models/user";
 import { Socket } from "socket.io";
 
 import { parse } from "cookie";
@@ -54,7 +52,7 @@ async function login(
   password: string
 ): Promise<{ user: User; token: string }> {
   if (!username || !password) {
-    throw new Error("Missing fields");
+    throw new Error("Brak wymaganych danych logowania");
   }
 
   let token = "";
@@ -62,14 +60,10 @@ async function login(
   const user = await getUserByUsernameLogin(username);
 
   if (!user) {
-    throw new Error("Wrong username or password");
+    throw new Error("Zły login lub hasło");
   }
 
-  const isPasswordValid = Bun.password.verifySync(password, user.password);
-
-  if (!isPasswordValid) {
-    throw new Error("Wrong username or password");
-  }
+  await loginUser(username, password);
 
   const payload = {
     username: user.username,
@@ -80,71 +74,31 @@ async function login(
       expiresIn: "1d",
     });
   } catch (error) {
-    throw new Error("Error signing token");
+    throw new Error("Błąd podczas generowania tokenu");
   }
 
   const resUser: User = {
     username: user.username,
     id: user.id,
-    createdAt: user.createdAt.toString(),
+    name: user.name,
+    surname: user.surname,
   };
 
   return { user: resUser, token };
 }
 
-const register = async (username: string, password: string) => {
-  if (!username || !password) {
-    throw new Error("Missing fields");
-  }
-
-  // validatePassword(password, username);
-
-  const user = await getUserByUsernameLogin(username);
-
-  if (user) {
-    throw new Error("Username already exists");
-  }
-
-  const hashedPassword = Bun.password.hashSync(password, {
-    cost: 10,
-    algorithm: "bcrypt",
-  });
-
-  try {
-    await registerUser(username, hashedPassword);
-  } catch (error) {
-    throw new Error("Error registering user");
-  }
-};
-
-const validatePassword = (password: string, username: string) => {
-  // Password must be at least 8 characters long and contain at least one letter and one number and one uppercase letter
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/gm;
-
-  if (!regex.test(password)) {
-    throw new Error(
-      "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number"
-    );
-  }
-
-  // Password cannot contain the username
-  if (password.includes(username)) {
-    throw new Error("Password cannot contain the username");
-  }
-};
-
 const wsAuthenticate = async (socket: Socket) => {
   const cookieString = socket.request.headers.cookie;
 
   if (!cookieString) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   const cookies = parse(cookieString);
   const token = cookies["token"];
 
   if (!token) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
@@ -152,16 +106,16 @@ const wsAuthenticate = async (socket: Socket) => {
   };
 
   if (!payload.username) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   const user = await getUserByUsername(payload.username);
 
   if (!user) {
-    throw new Error("Unauthorized");
+    throw new Error("Błąd autoryzacji");
   }
 
   socket.data["user"] = user;
 };
 
-export { authenticate, wsAuthenticate, login, register, validatePassword };
+export { authenticate, wsAuthenticate, login };

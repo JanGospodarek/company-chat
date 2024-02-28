@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="font-league overflow-hidden">
+    <html className="font-league overflow-hidden" lang="pl">
       <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>

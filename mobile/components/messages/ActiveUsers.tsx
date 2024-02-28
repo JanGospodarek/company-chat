@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/store/hooks";
 import { View } from "react-native";
-import { useTheme } from "react-native-paper";
+import { Avatar } from "react-native-paper";
 import { useAppTheme } from "../ThemeProvider";
 import { ScalableText } from "../ThemeProvider";
 
@@ -10,6 +10,19 @@ const ActiveUsers = () => {
   if (activeUsers.users.length === 0) {
     return null;
   }
+  const getInitials = (name: string) => {
+    const n = name.trim();
+    console.log(n);
+    if (n.split(" ").length === 1) {
+      return n.slice(0, 2).toUpperCase();
+    }
+
+    const split = n.split(" ");
+
+    const initials = n[0] + split[split.length - 1][0];
+
+    return initials.toUpperCase();
+  };
   return (
     <View>
       <ScalableText
@@ -22,29 +35,43 @@ const ActiveUsers = () => {
       >
         Aktywni użytkownicy
       </ScalableText>
-      {activeUsers.users.map((user) => {
-        return (
-          <View
-            key={user.id}
-            style={{
-              width: 50,
-              height: 50,
-              backgroundColor: theme.colors.secondary,
-              padding: 10,
-              borderRadius: 25,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <ScalableText
-              style={{ fontSize: 14, fontFamily: "League-Spartan-Bold" }}
+      <View
+        style={{
+          overflow: "scroll",
+          display: "flex",
+          alignItems: "flex-start",
+          flexDirection: "row",
+          gap: 10,
+        }}
+      >
+        {activeUsers.users.map((user) => {
+          return (
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              key={user.id}
             >
-              {user.username.split("").slice(0, 3).join("")}
-            </ScalableText>
-          </View>
-        );
-      })}
+              <Avatar.Text
+                size={40}
+                label={getInitials(user.name + " " + user.surname)}
+              />
+
+              <ScalableText
+                style={{
+                  fontSize: 14,
+                  fontFamily: "League-Spartan-Bold",
+                  color: theme.colors.primaryFont,
+                }}
+              >
+                {user.username}
+              </ScalableText>
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 };

@@ -1,4 +1,6 @@
 import { createClient } from "ldapjs";
+import { CronJob } from "cron";
+import prisma from "@config/db";
 
 const ldapUrl = "ldap://host.docker.internal:389";
 const ldapBindDn = "cn=admin,dc=example,dc=org";
@@ -19,7 +21,7 @@ const getAttribute = (entry: any, attribute: string) => {
   return entry.attributes.find((a: any) => a.type === attribute)?.values[0];
 };
 
-export const loadLDAPUsers = async () => {
+const loadLDAPUsers = async () => {
   return new Promise<User[]>((resolve, reject) => {
     client.bind(ldapBindDn, ldapBindCredentials, (err) => {
       if (err) {
@@ -66,3 +68,55 @@ export const loadLDAPUsers = async () => {
     });
   });
 };
+
+export const loginUser = async (username: string, password: string) => {
+  client.bind(`uid=${username},${ldapBindDn}`, password, (err, res) => {
+    if (err) {
+      client.unbind();
+      throw new Error("Zły login lub hasło");
+    }
+
+    client.unbind();
+  });
+};
+
+export async function setupLDAP() {
+  // Create a new cron job that runs every 15 minutes
+  syncUsers();
+
+  const job = new CronJob("0 */15 * * * *", () => {
+    console.log("Syncing users");
+    syncUsers();
+    console.log("Next job", job.nextDate());
+  });
+
+  job.start();
+
+  console.log("Next job", job.nextDate());
+}
+
+async function syncUsers() {
+  const users = await loadLDAPUsers();
+
+  for (const user of users) {
+    await updateDB(user);
+  }
+}
+
+async function updateDB(user: User) {
+  const dbUser = await prisma.user.findUnique({
+    where: {
+      username: user.username,
+    },
+  });
+
+  if (!dbUser) {
+    await prisma.user.create({
+      data: {
+        username: user.username,
+        name: user.name,
+        surname: user.surname,
+      },
+    });
+  }
+}

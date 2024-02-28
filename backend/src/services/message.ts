@@ -8,6 +8,7 @@ import {
   getMessage,
   readMessage as rMessage,
 } from "@models/message";
+import { encryptSocketData } from "./crypto";
 
 type Message = {
   chatID: number;
@@ -21,7 +22,20 @@ export const connectUser = async (socket: Socket) => {
 
   socketMap.set(user.id, socket);
 
-  notifyActivity();
+  if (!socket.data["key"]) {
+    const interval = setInterval(() => {
+      if (socket.data["key"]) {
+        clearInterval(interval);
+        notifyActivity();
+      }
+    }, 10);
+
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 5000); // 5s
+  } else {
+    notifyActivity();
+  }
 };
 
 export const disconnectUser = async (user: User) => {
@@ -32,17 +46,17 @@ export const disconnectUser = async (user: User) => {
 
 export async function receiveMessage(data: Message, socket: Socket) {
   if (typeof data.chatID !== "number") {
-    throw new Error("Invalid chatID");
+    throw new Error("Błędny chatID");
   }
   if (typeof data.content !== "string" || data.content.length === 0) {
-    throw new Error("Invalid content");
+    throw new Error("Błędna zawartość wiadomości");
   }
 
   const user = socket.data["user"] as User;
   const chat = await getChat(data.chatID, user.id);
 
   if (!chat) {
-    throw new Error("Chat does not exist");
+    throw new Error("Chat nie istnieje");
   }
 
   const messageId = await createMessage(data.chatID, user.id, data.content);
@@ -56,7 +70,8 @@ export async function receiveMessage(data: Message, socket: Socket) {
   for (let user of users) {
     const s = socketMap.get(user.id);
     if (s) {
-      s.emit("message", message);
+      const encrypted = encryptSocketData(message, s.data["key"]);
+      s.emit("message", encrypted);
     }
   }
 }
@@ -70,10 +85,16 @@ async function notifyActivity() {
   }
 
   for (let [_, socket] of socketMap) {
-    socket.emit(
-      "activity",
-      activeUsers.filter((u) => u.id !== socket.data["user"].id)
+    if (!socket.data["key"]) {
+      continue;
+    }
+
+    const encrypted = encryptSocketData(
+      activeUsers.filter((u) => u.id !== socket.data["user"].id),
+      socket.data["key"]
     );
+
+    socket.emit("activity", encrypted);
   }
 }
 
@@ -81,21 +102,22 @@ export async function notifyNewChat(chatID: number, users: number[]) {
   for (let user of users) {
     const s = socketMap.get(user);
     if (s) {
-      s.emit("newChat", chatID);
+      const encrypted = encryptSocketData(chatID, s.data["key"]);
+      s.emit("newChat", encrypted);
     }
   }
 }
 
 export async function readMessage(data: { messageId: number }, socket: Socket) {
   if (typeof data.messageId !== "number") {
-    throw new Error("Invalid messageID");
+    throw new Error("Błędny messageId");
   }
 
   const user = socket.data["user"] as User;
   const message = await getMessage(data.messageId);
 
   if (!message) {
-    throw new Error("Message not found");
+    throw new Error("Wiadomość nie istnieje");
   }
 
   if (message.readBy.some((u) => u.id === user.id)) {
@@ -109,7 +131,7 @@ export async function readMessage(data: { messageId: number }, socket: Socket) {
   const chat = await getChat(message.chatId, user.id);
 
   if (!chat) {
-    throw new Error("Chat not found");
+    throw new Error("Czat nie istnieje");
   }
 
   const users =
@@ -120,7 +142,8 @@ export async function readMessage(data: { messageId: number }, socket: Socket) {
   for (let user of users) {
     const s = socketMap.get(user.id);
     if (s) {
-      s.emit("read", newMessage);
+      const encrypted = encryptSocketData(newMessage, s.data["key"]);
+      s.emit("read", encrypted);
     }
   }
 }
@@ -129,13 +152,13 @@ export async function notifyMessage(messageId: number) {
   const message = await getMessage(messageId);
 
   if (!message) {
-    throw new Error("Message not found");
+    throw new Error("Wiadomość nie istnieje");
   }
 
   const chat = await getChat(message.chatId, message.user.id);
 
   if (!chat) {
-    throw new Error("Chat not found");
+    throw new Error("Czat nie istnieje");
   }
 
   const users =
@@ -146,7 +169,8 @@ export async function notifyMessage(messageId: number) {
   for (let user of users) {
     const s = socketMap.get(user.id);
     if (s) {
-      s.emit("message", message);
+      const encrypted = encryptSocketData(message, s.data["key"]);
+      s.emit("message", encrypted);
     }
   }
 }

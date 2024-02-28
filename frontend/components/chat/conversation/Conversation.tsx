@@ -234,9 +234,35 @@ const Conversation = (props: Props) => {
     handleTabChange("messages");
   };
 
+  const chatName =
+    conversation?.type === "PRIVATE"
+      ? `${(conversation as PrivateChat)?.receipient.name} ${
+          (conversation as PrivateChat)?.receipient.surname
+        }`
+      : conversation?.name;
+
+  const username =
+    conversation?.type === "PRIVATE"
+      ? (conversation as PrivateChat)?.receipient.username
+      : "";
+
+  const getInitials = (name: string) => {
+    const n = name.trim();
+
+    if (n.split(" ").length === 1) {
+      return n.slice(0, 2).toUpperCase();
+    }
+
+    const split = n.split(" ");
+
+    const initials = n[0] + split[split.length - 1][0];
+
+    return initials.toUpperCase();
+  };
+
   return (
     <div className="flex flex-col m-4 w-full gap-2">
-      {conversation?.chatId && (
+      {conversation?.chatId ? (
         <>
           <div className="flex items-center gap-4 transition-all">
             <button onClick={handleBackButton}>
@@ -252,24 +278,24 @@ const Conversation = (props: Props) => {
               <Avatar
                 radius="full"
                 size="lg"
-                src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                showFallback
+                name={chatName}
+                getInitials={getInitials}
               />
             </Badge>
 
             <div className="flex flex-col ml-2 justify-center w-full">
-              <Text className="text-left text-xl text-semibold text-nowrap relative after:absolute after:h-full after:w-[200px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% text-text w-[200px] overflow-hidden">
-                {conversation.type === "GROUP"
-                  ? conversation.name
-                  : (conversation as PrivateChat).receipient.username}
+              <Text className="text-left text-xl text-semibold text-nowrap relative after:absolute after:h-full after:w-[200px] md:after:w-[300px] after:top-0 after:left-0 after:bg-gradient-to-l after:from-background after:to-transparent after:from-0% after:to-20% text-text w-[200px] md:w-[300px] overflow-hidden">
+                {chatName}
               </Text>
               {conversation.type === "PRIVATE" && (
                 <button
                   className="font-light text-sm text-primary underline text-left"
                   onClick={() => {
-                    navigator.clipboard.writeText("mateusz@kowalski.co.pl");
+                    navigator.clipboard.writeText(username);
                   }}
                 >
-                  <Text className="text-md">mateusz@kowalski.co.pl</Text>
+                  <Text className="text-md">@{username}</Text>
                 </button>
               )}
             </div>
@@ -333,6 +359,12 @@ const Conversation = (props: Props) => {
             handleButtonClick={handleScrollButton}
           />
         </>
+      ) : (
+        <div className="flex items-center justify-center h-full w-full">
+          <Text className="text-center text-lg text-primary font-semibold">
+            Select a chat to start messaging
+          </Text>
+        </div>
       )}
     </div>
   );

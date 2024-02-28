@@ -1,15 +1,12 @@
 import { View, StyleSheet, Image, Button, Pressable } from "react-native";
 import { ScalableText } from "../ThemeProvider";
 
-import { useTheme } from "react-native-paper";
 import { Attachment, Message } from "@/shared/types";
 import { useAuth } from "@/contexts/AuthContext";
 import React, { forwardRef, useEffect } from "react";
 import { loadAttachments, miau } from "@/shared/api";
 import { computeLongDate } from "../utils/computeDate";
 import { InView } from "react-native-intersection-observer";
-import { authenticate } from "@/shared/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import { useAppTheme } from "../ThemeProvider";

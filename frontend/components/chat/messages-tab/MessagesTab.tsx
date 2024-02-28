@@ -68,6 +68,20 @@ const MessagesTab = (props: Props) => {
     setShowNewChat(false);
   };
 
+  const getInitials = (name: string) => {
+    const n = name.trim();
+
+    if (n.split(" ").length === 1) {
+      return n.slice(0, 2).toUpperCase();
+    }
+
+    const split = n.split(" ");
+
+    const initials = n[0] + split[split.length - 1][0];
+
+    return initials.toUpperCase();
+  };
+
   return (
     <div className="my-4 px-8  w-full md:w-[300px]  flex flex-col justify-start md:border-r-2 border-secondary  flex-shrink-0 ">
       <div className=" flex justify-between relativ">
@@ -85,23 +99,18 @@ const MessagesTab = (props: Props) => {
             />
           </div>
 
-          <button onClick={() => setShowNewChat(true)}>
+          <button
+            onClick={() => setShowNewChat(true)}
+            aria-label="Create new chat"
+          >
             <UserPlus size={24} className="fill-primary" />
           </button>
-          <button onClick={() => setShowGroupModal(true)}>
+          <button
+            onClick={() => setShowGroupModal(true)}
+            aria-label="Create group"
+          >
             <FolderPlus size={24} className="fill-primary" />
           </button>
-          {/* <button
-            onClick={() => {
-              setShowSearchTab((state) => !state);
-            }}
-          >
-            {showSearchTab ? (
-              <XCircle size={24} />
-            ) : (
-              <MagnifyingGlass size={24} />
-            )}
-          </button> */}
         </div>
       </div>
       <div className="flex flex-col overflow-y-scroll hide-scrollbar">
@@ -131,12 +140,13 @@ const MessagesTab = (props: Props) => {
                 <ListboxItem key={user.id} onClick={() => handleNewChat(user)}>
                   <div className="flex flex-row items-center gap-4">
                     <Avatar
-                      src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
                       size="sm"
+                      name={user.name + " " + user.surname}
+                      getInitials={getInitials}
                     />
                     <div className="flex flex-col">
                       <Text className="font-semibold text-sm text-text">
-                        Dawid Komęza
+                        {user.name} {user.surname}
                       </Text>
                       <Text className="font-light text-sm text-textSecondary">
                         @{user.username}

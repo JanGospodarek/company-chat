@@ -13,7 +13,8 @@ type RawMessage = Prisma.MessageGetPayload<{
       select: {
         id: true;
         username: true;
-        createdAt: true;
+        name: true;
+        surname: true;
       };
     };
     ReadMessage: {
@@ -22,7 +23,8 @@ type RawMessage = Prisma.MessageGetPayload<{
           select: {
             id: true;
             username: true;
-            createdAt: true;
+            name: true;
+            surname: true;
           };
         };
       };
@@ -82,7 +84,7 @@ export async function getMessages(
     });
 
     if (!lastMessage) {
-      throw new Error("Message not found");
+      throw new Error("Wiadomość nie istnieje");
     }
 
     laterThan = {
@@ -109,7 +111,8 @@ export async function getMessages(
         select: {
           id: true,
           username: true,
-          createdAt: true,
+          name: true,
+          surname: true,
         },
       },
       ReadMessage: {
@@ -118,7 +121,8 @@ export async function getMessages(
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
         },
@@ -151,7 +155,8 @@ export async function getMessage(messageId: number): Promise<Message> {
         select: {
           id: true,
           username: true,
-          createdAt: true,
+          name: true,
+          surname: true,
         },
       },
       ReadMessage: {
@@ -160,7 +165,8 @@ export async function getMessage(messageId: number): Promise<Message> {
             select: {
               id: true,
               username: true,
-              createdAt: true,
+              name: true,
+              surname: true,
             },
           },
         },
@@ -169,7 +175,7 @@ export async function getMessage(messageId: number): Promise<Message> {
   });
 
   if (!message) {
-    throw new Error("Message not found");
+    throw new Error("Wiadomość nie istnieje");
   }
 
   return parseMessage(message);
@@ -212,12 +218,14 @@ export const parseMessage = (message: RawMessage): Message => {
     user: {
       id: message.user.id,
       username: message.user.username,
-      createdAt: message.user.createdAt,
+      name: message.user.username,
+      surname: message.user.username,
     },
     readBy: message.ReadMessage.map((r) => ({
       id: r.User.id,
       username: r.User.username,
-      createdAt: r.User.createdAt,
+      name: r.User.username,
+      surname: r.User.username,
     })),
   };
 };

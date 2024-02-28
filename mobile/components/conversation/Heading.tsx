@@ -6,13 +6,27 @@ interface Props {
   handleGoBack: () => void;
   isActive: boolean;
   title: string;
+  subtitle: string;
 }
 import { ScalableText } from "../ThemeProvider";
 
 const Heading = (props: Props) => {
-  const { handleGoBack, title, isActive } = props;
+  const { handleGoBack, title, isActive, subtitle } = props;
   const theme = useAppTheme();
   const router = useRouter();
+  const getInitials = (name: string) => {
+    const n = name.trim();
+    console.log(n);
+    if (n.split(" ").length === 1) {
+      return n.slice(0, 2).toUpperCase();
+    }
+
+    const split = n.split(" ");
+
+    const initials = n[0] + split[split.length - 1][0];
+
+    return initials.toUpperCase();
+  };
   return (
     <View style={styles.container}>
       <IconButton
@@ -26,10 +40,7 @@ const Heading = (props: Props) => {
         }}
       />
       <View>
-        <Avatar.Image
-          size={60}
-          source={require("../../assets/images/avatar.jpeg")}
-        />
+        <Avatar.Text size={60} label={getInitials(title)} />
         {isActive && <Badge style={styles.badge} size={15}></Badge>}
       </View>
       <View style={styles.textContainer}>
@@ -46,7 +57,7 @@ const Heading = (props: Props) => {
             fontSize: 14,
           }}
         >
-          monika.kowlska@ms.com
+          {subtitle}
         </ScalableText>
       </View>
     </View>

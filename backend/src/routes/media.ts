@@ -18,7 +18,6 @@ mediaRouter.get("/uploads/*", authenticate, async (req, res) => {
   }
 
   const filePath = `uploads/${url}`;
-  console.log(filePath, "ooodododod");
   res.sendFile(filePath, { root: "." });
 });
 
@@ -26,16 +25,15 @@ mediaRouter.get("/:url", authenticate, async (req, res) => {
   const user = req.user as User;
 
   const url = req.params.url;
-  console.log(url);
   const messageId = parseInt(req.query.messageId as string);
 
   if (!url) {
-    res.status(400).send({ error: "Missing url" });
+    res.status(400).send({ error: "Brak wymaganych danych" });
     return;
   }
 
   if (isNaN(messageId)) {
-    res.status(400).send({ error: "Invalid messageId" });
+    res.status(400).send({ error: "Błędne messageId" });
     return;
   }
 
@@ -43,15 +41,14 @@ mediaRouter.get("/:url", authenticate, async (req, res) => {
     const message = await getMessage(messageId);
 
     if (!userInChat(message.chatId, user.id)) {
-      throw new Error("User not in chat");
+      throw new Error("Użytkownik nie jest w czacie");
     }
 
     const media = await getMedia(url);
 
     if (!media) {
-      throw new Error("Media not found");
+      throw new Error("Media nie istnieje");
     }
-    console.log(media);
     res.send({ media });
   } catch (error: any) {
     res.status(400).send({ error: error.message });

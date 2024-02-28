@@ -1,5 +1,5 @@
 # AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
-# CRC32 86739427
+# CRC32 7931c1d6
 dn: olcOverlay={1}refint
 objectClass: olcOverlayConfig
 objectClass: olcRefintConfig
@@ -10,9 +10,9 @@ olcRefintAttribute: uniqueMember
 olcRefintAttribute: member
 olcRefintAttribute: memberOf
 structuralObjectClass: olcRefintConfig
-entryUUID: d9ebc27c-62b4-103e-92ff-2da61c4b72b3
+entryUUID: f53c78bc-69eb-103e-829d-1507573b24f3
 creatorsName: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-createTimestamp: 20240218142212Z
-entryCSN: 20240218142212.080259Z#000000#000#000000
+createTimestamp: 20240227184418Z
+entryCSN: 20240227184418.367260Z#000000#000#000000
 modifiersName: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-modifyTimestamp: 20240218142212Z
+modifyTimestamp: 20240227184418Z

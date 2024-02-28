@@ -26,6 +26,10 @@ const GroupModal = (props: Props) => {
     // add members to group
     await addUsersToChat(groupId, members);
 
+    setStep(1);
+    setGroupName("");
+    setGroupMembers([]);
+
     onClose();
   };
   const theme = useAppSelector((state) => state.ui.theme);

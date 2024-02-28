@@ -36,6 +36,7 @@ if [ -d "$selected_folder" ]; then
     # Add your further operations here with the selected folder
 else
     echo "Error: Invalid selection."
+    exit 1
 fi
 
 cd $selected_folder
@@ -49,3 +50,4 @@ psql -h db -d miau -U postgres -q < db/miau.sql
 # Restore uploads from backup
 tar --touch --no-same-owner --no-same-permissions -xzf content/content.tar.gz -C /
 
+echo "Backup restored successfully"

@@ -10,6 +10,7 @@ COPY src ./src
 COPY prisma ./prisma
 COPY tsconfig.json .
 COPY .env.development .
+COPY startup.dev.sh .
 RUN mkdir -p /app/temp
 
 RUN apt-get update && apt-get install -y \
@@ -20,7 +21,10 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - &&\
     apt-get install -y nodejs
 
-RUN npm install -g prisma
-RUN prisma generate
+# Make sure that Windows doesn't mess up the line endings
+RUN  apt-get update && apt-get install -y dos2unix && dos2unix ./startup.dev.sh
 
-CMD ["bun","dev"]
+RUN npm install -g prisma
+RUN chmod +x ./startup.dev.sh
+
+CMD ["./startup.dev.sh"]
