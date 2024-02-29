@@ -1,7 +1,7 @@
 # miau
-![image](https://github.com/JanGospodarek/company-chat/assets/102610659/8f6f5453-47af-475b-89c4-ecf7eb0fdf49)
+![image](https://github.com/JanGospodarek/company-chat/assets/102610659/8f6f5453-47af-475b-89c4-ecf7eb0fdf49) ![image](https://github.com/JanGospodarek/company-chat/assets/102610659/57d843f4-143d-4f62-8e70-d309da74ca62)
 
-![image](https://github.com/JanGospodarek/company-chat/assets/102610659/57d843f4-143d-4f62-8e70-d309da74ca62)
+
 
 ## How to run
 
